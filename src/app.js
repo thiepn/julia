@@ -82,6 +82,7 @@ function render() {
   $("#output-input").value = "";
   $("#output-feedback").textContent = "";
   renderQuestions(); renderSidebar();
+  window.scrollTo(0, 0);
   document.title = l.title + " — Julia Lab";
 }
 function setupEmbed() {
