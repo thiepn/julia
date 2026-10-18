@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101112">
+  <meta name="description" content="Julia Lab: focused Julia practice for Algorithmische Mathematik und Programmieren, Universität zu Köln.">
+  <title>Julia Lab — AMP</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip" href="#lesson-main">Skip to lesson</a>
+  <header class="topbar">
+    <a href="#lesson/01" class="brand" aria-label="Julia Lab home"><span class="brand-mark">j<span>.</span></span><span><strong>Julia Lab</strong><small>Algorithmische Mathematik und Programmieren</small></span></a>
+    <div class="top-right"><span class="course">Uni Köln · WS 2026/27</span><button class="quiet" id="settings-toggle" type="button">Compiler settings</button></div>
+  </header>
+  <div class="shell">
+    <nav class="sidebar" aria-label="Lessons">
+      <div class="sidebar-head"><span class="eyebrow">YOUR COURSE</span><h2>Learning path</h2><div class="progress-bar"><span id="progress-fill"></span></div><p id="progress-label">0 of 16 lessons reviewed</p></div>
+      <div id="nav-items"></div>
+      <p class="sidebar-foot">Practice material only. Consult the official weekly exercise sheets for required submissions.</p>
+    </nav>
+    <main id="lesson-main">
+      <div class="lesson-meta" id="lesson-meta"></div>
+      <h1 id="lesson-title"></h1>
+      <p class="lead" id="lesson-goal"></p>
+      <section class="paper" aria-labelledby="theory-title">
+        <div class="section-title"><span class="section-num">01</span><h2 id="theory-title">Understand the concept</h2></div>
+        <p id="lesson-theory"></p>
+        <div class="code-label">JULIA EXAMPLE</div>
+        <pre class="code"><code id="example-code"></code></pre>
+      </section>
+      <section class="paper" aria-labelledby="practice-title">
+        <div class="section-title"><span class="section-num">02</span><h2 id="practice-title">Quick checks</h2></div>
+        <p class="section-intro">Answer each question before moving on. Your selections are saved locally.</p>
+        <div id="questions"></div>
+      </section>
+      <section class="paper" aria-labelledby="coding-title">
+        <div class="section-title"><span class="section-num">03</span><h2 id="coding-title">Write Julia yourself</h2></div>
+        <p id="challenge-text"></p>
+        <div class="code-label">STARTER FILE <button class="text-button" id="copy-starter" type="button">Copy code</button></div>
+        <pre class="code"><code id="starter-code"></code></pre>
+        <p class="section-intro"><strong>Success criteria:</strong> <span id="challenge-checks"></span></p>
+        <details id="hint-1"><summary>Hint 1 · Concept</summary><p></p></details>
+        <details id="hint-2"><summary>Hint 2 · Approach</summary><p></p></details>
+        <details id="hint-3"><summary>Hint 3 · Last step</summary><p></p></details>
+      </section>
+      <div class="lesson-footer">
+        <button type="button" class="secondary" id="previous">← Previous</button>
+        <button type="button" class="primary" id="next">Next lesson →</button>
+      </div>
+    </main>
+    <aside class="compiler" aria-label="Julia code execution">
+      <div class="compiler-heading"><div><span class="eyebrow">WORKSPACE</span><h2>Run your Julia code</h2></div><span class="runtime-tag" id="runtime-state">Not configured</span></div>
+      <p class="compiler-explainer">Use the embedded editor when available. Copy the current lesson's starter code into it. Execution happens at JDoodle, not on this page.</p>
+      <div id="embed-slot">
+        <div class="placeholder" id="embed-placeholder"><span class="placeholder-icon">{ }</span><strong>Compiler not connected</strong><p>Add your own JDoodle Julia embed link in Compiler settings to run code here.</p></div>
+      </div>
+      <div class="compiler-links">
+        <a href="https://www.jdoodle.com/online-compiler-julia" rel="noopener noreferrer" target="_blank">Open JDoodle ↗</a>
+        <a href="https://onecompiler.com/julia" rel="noopener noreferrer" target="_blank">Open OneCompiler ↗</a>
+      </div>
+      <section class="result-panel" aria-labelledby="result-title">
+        <h3 id="result-title">Check practice output</h3>
+        <p>After running Julia, paste its printed output here. This compares text only; it does not verify program execution or hidden tests.</p>
+        <label for="output-input">Output from Julia</label>
+        <textarea id="output-input" spellcheck="false" rows="4" placeholder="Paste Julia output…"></textarea>
+        <button type="button" class="secondary full" id="check-output">Compare output</button>
+        <p class="feedback" id="output-feedback" role="status" aria-live="polite"></p>
+      </section>
+      <section id="settings-panel" class="settings-panel" hidden>
+        <h3>Configure JDoodle</h3>
+        <p>In JDoodle, create a project using Julia and choose <strong>Create Embed</strong>. Paste the resulting URL, e.g. https://www.jdoodle.com/embed/v1/your-key. Stored only in this browser.</p>
+        <label for="embed-url">JDoodle embed URL</label>
+        <input id="embed-url" type="url" inputmode="url" placeholder="https://www.jdoodle.com/embed/v1/…" autocomplete="off">
+        <button type="button" class="primary full" id="save-embed">Save compiler link</button>
+        <button type="button" class="quiet full" id="clear-embed">Remove embed configuration</button>
+        <p class="feedback" id="settings-feedback" role="status"></p>
+        <a href="https://www.jdoodle.com/docs/embeds/create-an-embed" target="_blank" rel="noopener noreferrer">JDoodle embed setup guide ↗</a>
+      </section>
+      <div class="privacy-note">No account. Lesson choices remain in your browser. Code executed through JDoodle is sent to JDoodle under its own terms.</div>
+    </aside>
+  </div>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
