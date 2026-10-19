@@ -3,6 +3,7 @@ import {readProgress, writeProgress, readEmbedUrl, writeEmbedUrl,
   validateEmbedUrl, checkChoice, countCorrect, readyForChallenge, checkPastedOutput} from "./checks.js";
 import {readDraft, writeDraft, clearDraft} from "./workspace.js";
 import {inspectEmbedMessage} from "./jdoodle-bridge.js";
+import {exportJuliaScript, validateJuliaImport, MAX_IMPORT_BYTES} from "./transfer.js";
 
 const $ = (selector) => document.querySelector(selector);
 const progress = readProgress();
@@ -181,6 +182,76 @@ $("#copy-draft").addEventListener("click", async () => {
   } catch {
     $("#draft-feedback").textContent = "Clipboard unavailable. Select the draft text and copy it manually.";
   }
+});
+$("#download-draft").addEventListener("click", () => {
+  let script;
+  try {
+    script = exportJuliaScript(current().id, $("#scratch-code").value);
+  } catch {
+    $("#draft-feedback").textContent = "Cannot export this draft. Check its size.";
+    return;
+  }
+  const url = URL.createObjectURL(new Blob([script.content],{type:script.mime}));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = script.filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  $("#draft-feedback").textContent = "Downloaded " + script.filename +
+    ". Open it in Julia or VS Code; downloading does not execute or grade the program.";
+});
+$("#import-draft").addEventListener("click",()=>$("#import-file").click());
+$("#import-file").addEventListener("change", async () => {
+  const input = $("#import-file");
+  const file = input.files?.[0];
+  const selectedLesson = current().id; // capture BEFORE asynchronous file reading
+  input.value = ""; // selecting the same file again should still trigger change
+  if (!file) return;
+  if (file.size > MAX_IMPORT_BYTES) {
+    $("#draft-feedback").textContent = "File too large for this lesson editor (50,000 characters maximum).";
+    return;
+  }
+  let source;
+  try { source = await file.text(); }
+  catch {
+    $("#draft-feedback").textContent = "File could not be read. Your current work is unchanged.";
+    return;
+  }
+  const validation = validateJuliaImport(file.name, source);
+  if (!validation.ok) {
+    $("#draft-feedback").textContent = validation.message + " Your current work is unchanged.";
+    return;
+  }
+  if (current().id !== selectedLesson) {
+    $("#draft-feedback").textContent = "Lesson changed while reading the file. Import cancelled to protect both drafts.";
+    return;
+  }
+  const originalLesson = selectedLesson;
+  if (!window.confirm("Replace the code draft for lesson " + originalLesson + " with the selected .jl file?")) {
+    $("#draft-feedback").textContent = "Import cancelled; your draft is unchanged.";
+    return;
+  }
+  // Protect against a lesson navigation occurring during the asynchronous read/confirmation.
+  if (current().id !== originalLesson) {
+    $("#draft-feedback").textContent = "Lesson changed. Import cancelled to protect both drafts.";
+    return;
+  }
+  if (!writeDraft(originalLesson, validation.code)) {
+    $("#draft-feedback").textContent = "Could not save imported code. Your existing draft is unchanged.";
+    return;
+  }
+  $("#scratch-code").value = validation.code;
+  $("#draft-feedback").textContent = "Imported " + file.name +
+    " for this lesson. Source was saved locally but not executed or graded.";
+});
+$("#go-to-compiler").addEventListener("click",()=>{
+  $("#compiler-panel").scrollIntoView({behavior:"auto",block:"start"});
+  $("#compiler-title").focus({preventScroll:true});
+});
+$("#back-to-draft").addEventListener("click",()=>{
+  $("#scratch-code").focus();
 });
 $("#reset-draft").addEventListener("click", () => {
   if (!window.confirm("Discard your current code for this lesson and restore its starter?")) return;

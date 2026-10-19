@@ -106,3 +106,11 @@ A fixed arithmetic smoke program was entered in the editor and Execute clicked. 
 Julia Lab now recognizes an origin/source/path-checked `onLoad` property as an ephemeral connection diagnostic, even if it arrives before the diagnostic panel opens. It is explicitly *not* readiness-for-commands, run success, or code mastery. Untrusted messages cannot trigger a grade, nor are code/output payloads retained.
 
 The manually gated probe is kept in `tests/live-jdoodle-probe.mjs` for reproducibility but removed from the standard CI workflow, preventing automatic repeated JDoodle runs. The normal Node + synthetic Chromium acceptance remains independent of JDoodle's external uptime. The next actual dependency is a functioning JDoodle execution and the vendor-generated expanded embedding snippet documenting ready/code/output events; neither can be inferred from `onLoad` alone.
+
+## J7 — Julia source file handoff and runtime fallback
+
+JDoodle's documented embed supports execution events, but the authentic J6 browser run returned the provider's "Unable to process your request" message, and no successful Julia output event was proven. Current official JDoodle docs do not identify why this particular request failed; no paid REST API/backend was introduced.
+
+J7 adds **Download .jl**, **Import .jl**, and a mobile-accessible **Go to compiler and alternatives** control. Download exports the exact current lesson draft as `amp-julia-lab-lesson-XX.jl` with no backend, making it usable in VS Code and standard Julia. Import accepts a local `.jl` file up to the existing 50,000-character editor limit and requires explicit confirmation before replacing only the current lesson's saved draft. Failed/cancelled imports preserve existing progress and code. All imported text stays local, and none is executed by the web app. A fallback explanation now distinguishes JDoodle service failures from the learner's code mistakes. OneCompiler and JDoodle external links are preserved.
+
+Once JDoodle's execution backend succeeds and the vendor-generated Receive Output event shape can be verified, automatic output checking can be added without relying on pasted output or an invented callback schema.

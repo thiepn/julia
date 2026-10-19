@@ -17,3 +17,13 @@
 .bridge-diagnostics>summary{font-size:13px;font-weight:700;color:var(--ink);cursor:pointer}
 .bridge-diagnostics p{font-size:12px;color:var(--muted)}
 .bridge-diagnostics #bridge-status{overflow-wrap:anywhere}
+
+/* Local .jl exchange and reachable mobile compiler fallback */
+.draft-actions{flex-wrap:wrap;justify-content:flex-start;gap:8px}
+.draft-actions .secondary{padding:10px 12px}
+.draft-actions .quiet{margin-left:auto}
+.jump-to-compiler{margin-top:10px;max-width:100%}
+.fallback-help{padding:12px 13px;margin:12px 0 20px;border:1px solid var(--line);font-size:12px;line-height:1.65;color:var(--muted)}
+.fallback-help strong{display:block;color:var(--ink);font-size:13px;margin-bottom:4px}
+.fallback-help button{display:block;margin-top:6px}
+@media(max-width:760px){.jump-to-compiler{width:100%}.draft-actions .quiet{margin-left:0}.compiler{scroll-margin-top:8px}}

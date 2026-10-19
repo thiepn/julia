@@ -45,11 +45,15 @@
           <span class="draft-caption">Draft only · not executed</span>
         </div>
         <textarea id="scratch-code" class="scratch-editor" rows="11" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="draft-help"></textarea>
-        <div class="draft-actions">
-          <button type="button" class="secondary" id="copy-draft">Copy my code</button>
+        <div class="draft-actions" role="group" aria-label="Julia source file tools">
+          <button type="button" class="secondary" id="copy-draft">Copy code</button>
+          <button type="button" class="secondary" id="download-draft">Download .jl</button>
+          <button type="button" class="secondary" id="import-draft">Import .jl</button>
           <button type="button" class="quiet" id="reset-draft">Reset to starter</button>
+          <input type="file" accept=".jl,text/plain" id="import-file" hidden aria-label="Julia source file to import">
         </div>
-        <p class="section-intro" id="draft-help">Write your Julia solution here, then copy it into the compiler to run. Julia Lab does not execute this textarea. Different lessons keep separate local drafts.</p>
+        <button type="button" class="primary jump-to-compiler" id="go-to-compiler">Go to compiler and alternatives ↓</button>
+        <p class="section-intro" id="draft-help">Your work is saved per lesson. Copy it to an online Julia compiler or download a .jl file for VS Code. Importing a .jl file replaces only the current lesson's draft after confirmation. None of these actions executes or grades code.</p>
         <p class="feedback" id="draft-feedback" role="status" aria-live="polite"></p>
         <p class="section-intro"><strong>Success criteria:</strong> <span id="challenge-checks"></span></p>
         <details id="hint-1"><summary>Hint 1 · Concept</summary><p></p></details>
@@ -61,8 +65,8 @@
         <button type="button" class="primary" id="next">Next lesson →</button>
       </div>
     </main>
-    <aside class="compiler" aria-label="Julia code execution">
-      <div class="compiler-heading"><div><span class="eyebrow">WORKSPACE</span><h2>Run your Julia code</h2></div><span class="runtime-tag" id="runtime-state">Checking editor…</span></div>
+    <aside class="compiler" aria-label="Julia code execution" id="compiler-panel">
+      <div class="compiler-heading"><div><span class="eyebrow">WORKSPACE</span><h2 id="compiler-title" tabindex="-1">Run your Julia code</h2></div><span class="runtime-tag" id="runtime-state">Checking editor…</span></div>
       <p class="compiler-explainer">Use the embedded editor when available. Copy your code draft into it. Execution happens at JDoodle, not on this page; iframe loading is not proof that Julia ran.</p>
       <div id="embed-slot">
         <div class="placeholder" id="embed-placeholder"><span class="placeholder-icon">{ }</span><strong>Loading course compiler</strong><p>The JDoodle editor is supplied for the course. If loading fails, use an external link below.</p></div>
@@ -70,6 +74,11 @@
       <div class="compiler-links">
         <a href="https://www.jdoodle.com/online-compiler-julia" rel="noopener noreferrer" target="_blank">Open JDoodle ↗</a>
         <a href="https://onecompiler.com/julia" rel="noopener noreferrer" target="_blank">Open OneCompiler ↗</a>
+      </div>
+      <div class="fallback-help">
+        <strong>JDoodle cannot execute?</strong>
+        If you see “Unable to process your request,” copy or download your code and run it in OneCompiler or locally with Julia. A provider error is not a failed programming exercise.
+        <button type="button" class="quiet" id="back-to-draft">Return to my code ↑</button>
       </div>
       <section class="result-panel" aria-labelledby="result-title">
         <h3 id="result-title">Check practice output</h3>

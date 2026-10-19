@@ -84,6 +84,46 @@ try {
     await page.getByRole("button",{name:"Previous"}).click();
     await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
   });
+  await check("download exports the correct real .jl file for current lesson",async()=>{
+    const value="using LinearAlgebra\nx = [3, 4]\nprintln(norm(x))\n";
+    await page.locator("#scratch-code").fill(value);
+    const [download]=await Promise.all([
+      page.waitForEvent("download"),
+      page.getByRole("button",{name:"Download .jl"}).click()
+    ]);
+    assert.equal(download.suggestedFilename(),"amp-julia-lab-lesson-01.jl");
+    const fs=await import("node:fs/promises");
+    const text=await fs.readFile(await download.path(),"utf8");
+    assert.equal(text,value);
+    assert.match(await page.locator("#draft-feedback").innerText(),/not execute or grade/i);
+  });
+  await check("import rejects invalid files and protects current draft on cancel",async()=>{
+    await page.locator("#scratch-code").fill("println(123)");
+    await page.locator("#import-file").setInputFiles({
+      name:"invalid.txt",mimeType:"text/plain",buffer:Buffer.from("println(999)")
+    });
+    assert.equal(await page.locator("#scratch-code").inputValue(),"println(123)");
+    assert.match(await page.locator("#draft-feedback").innerText(),/Select a \.jl/);
+    page.once("dialog",dialog=>dialog.dismiss());
+    await page.locator("#import-file").setInputFiles({
+      name:"verified.jl",mimeType:"text/plain",buffer:Buffer.from("println(456)")
+    });
+    assert.equal(await page.locator("#scratch-code").inputValue(),"println(123)");
+    page.once("dialog",dialog=>dialog.accept());
+    await page.locator("#import-file").setInputFiles({
+      name:"verified.jl",mimeType:"text/plain",buffer:Buffer.from("println(456)")
+    });
+    await page.getByText(/Imported verified\.jl for this lesson/).waitFor();
+    assert.equal(await page.locator("#scratch-code").inputValue(),"println(456)");
+    await page.reload();
+    assert.equal(await page.locator("#scratch-code").inputValue(),"println(456)");
+    assert.equal(await page.locator("#progress-label").innerText(),"1 of 16 concept sets reviewed");
+    await page.getByRole("button",{name:"Next lesson"}).click();
+    await page.getByRole("heading",{name:"Vectors & indexing"}).waitFor();
+    assert.equal(await page.locator("#scratch-code").inputValue(),"println(777)");
+    await page.getByRole("button",{name:"Previous"}).click();
+    await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
+  });
   await check("provided JDoodle embed is configured on all lessons without claiming Julia execution",async()=>{
     const slot = page.locator(".jdoodle-embed");
     await slot.waitFor();
@@ -190,6 +230,11 @@ try {
     await mobile.getByRole("heading",{name:"Plot mathematical functions"}).waitFor();
     assert.equal(await mobile.locator(".question").count(),3);
     assert.equal(await mobile.locator(".compiler-links a").count(),2);
+    await mobile.getByRole("button",{name:"Go to compiler and alternatives"}).click();
+    await mobile.locator("#compiler-title").waitFor();
+    assert.equal(await mobile.evaluate(()=>document.activeElement.id),"compiler-title");
+    await mobile.getByRole("button",{name:"Return to my code"}).click();
+    assert.equal(await mobile.evaluate(()=>document.activeElement.id),"scratch-code");
     const horizontal = await mobile.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
     assert.ok(horizontal<=2,"Unexpected horizontal page overflow: "+horizontal);
     assert.deepEqual(errors,[]);
