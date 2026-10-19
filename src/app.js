@@ -7,6 +7,7 @@ import {exportJuliaScript, validateJuliaImport, MAX_IMPORT_BYTES} from "./transf
 import {questionFeedback} from "./feedback.js";
 import {repairForLesson} from "./repair-cases.js";
 import {readRepair, writeRepair, clearRepair, compareRepairText} from "./repair-workspace.js";
+import {initNumericalExplorer,showNumericalExplorer} from "./numerical-view.js";
 
 const $ = (selector) => document.querySelector(selector);
 const progress = readProgress();
@@ -144,6 +145,8 @@ function render() {
     l.minutes + ' MIN</span><span>' + safe(l.source) + '</span>';
   $("#lesson-title").textContent = l.title;
   $("#lesson-goal").textContent = l.goal;
+  showNumericalExplorer(l.id);
+  $("#repair-section-number").textContent=["05","06"].includes(l.id)?"05":"04";
   $("#lesson-theory").textContent = l.theory;
   $("#example-code").textContent = l.example;
   $("#challenge-text").textContent = l.challenge;
@@ -398,5 +401,6 @@ $("#default-embed").addEventListener("click", () => {
 });
 window.addEventListener("hashchange", render);
 if (!location.hash) location.hash = "#lesson/01";
+initNumericalExplorer();
 render();
 setupEmbed();

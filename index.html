@@ -61,8 +61,61 @@
         <details id="hint-2"><summary>Hint 2 · Approach</summary><p></p></details>
         <details id="hint-3"><summary>Hint 3 · Last step</summary><p></p></details>
       </section>
+      <section class="paper numerical-explorer" id="numerical-explorer" aria-labelledby="numerical-heading" hidden>
+        <div class="section-title"><span class="section-num">04</span><h2 id="numerical-heading">Explore norms and transformations</h2></div>
+        <div class="numerical-controls">
+          <label>Norm
+            <select id="num-norm">
+              <option value="one">ℓ₁</option>
+              <option value="two">ℓ₂</option>
+              <option value="infinity">ℓ∞</option>
+            </select>
+          </label>
+          <label>Matrix
+            <select id="num-matrix">
+              <option value="identity">Identity</option>
+              <option value="stretch">Stretch (2, 1/2)</option>
+              <option value="shear">Horizontal shear</option>
+              <option value="rotation">Quarter turn</option>
+              <option value="singular">Singular projection</option>
+            </select>
+          </label>
+          <label>v₁: <output id="num-x-value">1</output>
+            <input id="num-x" type="range" min="-3" max="3" step="0.5" value="1">
+          </label>
+          <label>v₂: <output id="num-y-value">1</output>
+            <input id="num-y" type="range" min="-3" max="3" step="0.5" value="1">
+          </label>
+        </div>
+        <div class="numerical-layout">
+          <svg id="numerical-plot" role="img" viewBox="-7 -7 14 14" aria-label="Two-dimensional vector and norm boundary visualization">
+            <title>Vector and norm boundary</title>
+            <g id="numerical-plot-content"></g>
+          </svg>
+          <div class="numerical-details">
+            <div class="numerical-legend">
+              <span><i class="numeric-legend-input"></i>v</span>
+              <span><i class="numeric-legend-output"></i>A·v</span>
+              <span><i class="numeric-legend-boundary"></i>Norm boundary</span>
+              <span><i class="numeric-legend-direct"></i>A(boundary)</span>
+              <span id="num-inverse-legend"><i class="numeric-legend-inverse"></i>A⁻¹(boundary)</span>
+            </div>
+            <dl class="numerical-values">
+              <div><dt>v</dt><dd id="num-vector"></dd></div>
+              <div><dt>A·v</dt><dd id="num-mapped"></dd></div>
+              <div><dt>||v||<sub id="num-norm-name">ℓ₂</sub></dt><dd id="num-length"></dd></div>
+              <div><dt>||A·v||<sub id="num-norm-mapped-name">ℓ₂</sub></dt><dd id="num-mapped-length"></dd></div>
+              <div><dt>det(A)</dt><dd id="num-determinant"></dd></div>
+            </dl>
+            <p class="numerical-state" id="num-inverse-state"></p>
+            <button class="secondary" id="num-reset" type="button">Reset experiment</button>
+            <p id="num-storage-status" class="feedback" role="status"></p>
+          </div>
+        </div>
+        <p class="numerical-note">The boundary is ||v|| = 1 in the chosen norm. Its direct image A(boundary) generally differs from the inverse image A⁻¹(boundary), which is the unit boundary of ||A·v||. These are JavaScript numerical illustrations, not Julia executions or mathematical proofs.</p>
+      </section>
       <section class="paper repair-lab" aria-labelledby="repair-section-title">
-        <div class="section-title"><span class="section-num">04</span><h2 id="repair-section-title">Debug a Julia program</h2></div>
+        <div class="section-title"><span class="section-num" id="repair-section-number">04</span><h2 id="repair-section-title">Debug a Julia program</h2></div>
         <h3 id="repair-title"></h3>
         <p id="repair-objective"></p>
         <p class="repair-target"><strong>Expected behavior:</strong> <span id="repair-expected"></span></p>

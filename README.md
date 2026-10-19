@@ -128,3 +128,11 @@ Added 16 original, course-aligned **Debug a Julia program** exercises, one for e
 Repairs have a **separate local-storage namespace** from challenge drafts and MCQ progress. Reset requires confirmation. **Compare with example** performs a plainly labelled text comparison (allowing line-ending/trailing-space differences); it does not run Julia, award mastery, or imply that other valid implementations are wrong. **Copy repair code** allows the existing JDoodle/OneCompiler/local Julia path.
 
 This feature does not reproduce full solutions to Übung 1. JDoodle's J6 service error remains a blocker for trusted executed-output grading, and no speculative messages, paid API or backend are introduced.
+
+## J10 — native AMP Norm & Matrix Explorer
+
+Lessons 05 and 06 include an interactive, browser-computed 2D vector and matrix visualizer. Choose ℓ₁, ℓ₂ or ℓ∞, change the input vector, and try identity/stretch/shear/rotation/singular matrices. SVG plots the selected norm boundary, its direct image under A, and—only if invertible—the inverse image under A⁻¹. Numeric readouts show v, A·v, both selected norm values and det(A). Singular matrices explicitly disable the inverse curve and explain why ||A·v|| is not a norm then.
+
+This supports conceptual exploration rather than reproducing the submitted Übung 1 plots or emitting Julia code. All calculations use the browser's JavaScript IEEE 754 doubles. Settings persist under a new independent local-storage key; no Julia execution, grading, progress mutation, or external API call occurs. Reset changes only the experiment settings.
+
+J10 also repairs a demonstrated J9 exact-head Node test failure: the 02 indexing repair was shorter than the intended 30-character source minimum, so that case now explicitly assigns the first entry before printing. The original bug and teaching objective are preserved, and the test is not weakened.
