@@ -158,6 +158,45 @@
         <p id="elim-save-status" class="feedback" role="status"></p>
         <p class="elim-disclaimer">Row operations and residuals are calculated in this browser using JavaScript floating-point arithmetic. Run the separate Julia example in a compiler to compare results. A small residual does not by itself guarantee a small solution error.</p>
       </section>
+      <section class="paper precision-lab" id="precision-lab" aria-labelledby="precision-heading" hidden>
+        <div class="section-title"><span class="section-num">04</span><h2 id="precision-heading">Floating-point error and convergence</h2></div>
+        <div class="precision-controls">
+          <label for="precision-x">Evaluation point x</label>
+          <select id="precision-x"><option value="0.5">0.5</option><option value="1">1</option><option value="2">2</option></select>
+          <label for="precision-step">Step exponent k: <output id="precision-k">3</output></label>
+          <input id="precision-step" type="range" min="1" max="16" step="1" value="3" aria-describedby="precision-h"/>
+        </div>
+        <p id="precision-problem" class="precision-formula"></p>
+        <p class="precision-formula">Step size h = <strong id="precision-h"></strong> · Reference cos(x) = <strong id="precision-reference"></strong></p>
+        <svg id="precision-chart" role="img" viewBox="0 0 560 240" aria-label="Absolute approximation error on a logarithmic scale for 16 decreasing step sizes">
+          <title>Finite-difference error versus step size</title>
+          <g id="precision-chart-content"></g>
+        </svg>
+        <div class="precision-legend" aria-label="Error graph series">
+          <span class="precision-legend-forward">Forward difference</span>
+          <span class="precision-legend-central">Central difference</span>
+          <span class="precision-legend-stabilized">Stable forward identity</span>
+        </div>
+        <p class="precision-graph-label">Horizontal: exponent k in h = 10⁻ᵏ. Vertical: absolute error (logarithmic). Rounded-zero errors cannot be displayed on a log axis.</p>
+        <div class="precision-table-scroll">
+          <table class="precision-table">
+            <caption>Approximations at the selected step size</caption>
+            <thead><tr><th scope="col">Method</th><th scope="col">Estimate</th><th scope="col">Absolute error</th><th scope="col">Observed order</th></tr></thead>
+            <tbody id="precision-comparison"></tbody>
+          </table>
+        </div>
+        <p class="precision-rate-definition" id="precision-rate-definition"></p>
+        <p class="precision-warning" id="precision-warning" role="status" aria-live="polite"></p>
+        <details class="precision-code-details">
+          <summary>Julia code for this comparison</summary>
+          <pre class="code"><code id="precision-julia"></code></pre>
+          <button type="button" class="secondary" id="precision-copy">Copy Julia code</button>
+          <p class="feedback" id="precision-copy-status" role="status"></p>
+        </details>
+        <button class="secondary precision-reset" id="precision-reset" type="button">Reset experiment</button>
+        <p class="feedback" id="precision-save-status" role="status"></p>
+        <p class="precision-scope">Calculated with JavaScript Float64-like binary64 arithmetic, using cos(x) as a floating-point reference. These measurements are not Julia execution, an exact-error oracle, convergence proof, or coding mastery.</p>
+      </section>
       <section class="paper repair-lab" aria-labelledby="repair-section-title">
         <div class="section-title"><span class="section-num" id="repair-section-number">04</span><h2 id="repair-section-title">Debug a Julia program</h2></div>
         <h3 id="repair-title"></h3>
