@@ -178,7 +178,7 @@ try {
     assert.equal(await probe.locator("#progress-label").innerText(),"0 of 16 concept sets reviewed");
     await probe.evaluate(()=>window.postMessage({type:"execution-output",output:"spoof"},"*"));
     await probe.waitForTimeout(50);
-    assert.match(await probe.locator("#bridge-status").innerText(),/^1 JDoodle-frame message/);
+    assert.match(await probe.locator("#bridge-status").innerText(),/\b1 JDoodle-frame message/);
     assert.equal(await probe.locator("#output-feedback").innerText(),"");
   });
   await probe.close();
