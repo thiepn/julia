@@ -93,10 +93,16 @@ function setupEmbed() {
   $("#embed-url").value = url;
   const slot = $("#embed-slot");
   if (!validateEmbedUrl(url)) {
-    $("#runtime-state").textContent = "Not configured";
+    $("#runtime-state").textContent = "Embed disabled";
+    slot.replaceChildren();
+    const notice = document.createElement("div");
+    notice.className = "placeholder";
+    notice.id = "embed-placeholder";
+    notice.innerHTML = "<strong>Compiler not connected</strong><p>The JDoodle editor is disabled in this browser. Use an external link, or restore the course editor in settings.</p>";
+    slot.append(notice);
     return;
   }
-  $("#runtime-state").textContent = "Configured · unverified";
+  $("#runtime-state").textContent = "JDoodle configured · unverified";
   slot.replaceChildren();
   const embed = document.createElement("div");
   embed.setAttribute("data-pym-src", url);
@@ -105,6 +111,11 @@ function setupEmbed() {
   const script = document.createElement("script");
   script.src = "https://www.jdoodle.com/assets/jdoodle-pym.min.js";
   script.async = true;
+  script.onload = () => {
+    // Pym loader arriving is not proof of a functioning Julia runtime or executed program.
+    if ($("#runtime-state").textContent !== "Embed failed to load")
+      $("#runtime-state").textContent = "Editor script loaded · unverified";
+  };
   script.onerror = () => {
     $("#runtime-state").textContent = "Embed failed to load";
     const notice = document.createElement("p");
@@ -172,6 +183,10 @@ $("#save-embed").addEventListener("click", () => {
 $("#clear-embed").addEventListener("click", () => {
   if (writeEmbedUrl("")) location.reload();
   else $("#settings-feedback").textContent = "Could not update local browser storage.";
+});
+$("#default-embed").addEventListener("click", () => {
+  if (writeEmbedUrl(null)) location.reload();
+  else $("#settings-feedback").textContent = "Could not restore the course embed.";
 });
 window.addEventListener("hashchange", render);
 if (!location.hash) location.hash = "#lesson/01";

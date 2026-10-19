@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {lessons, stages} from "../src/lessons.js";
 import {validateEmbedUrl, checkChoice, countCorrect, readyForChallenge,
-  checkPastedOutput, readProgress, writeProgress, readEmbedUrl, writeEmbedUrl} from "../src/checks.js";
+  checkPastedOutput, readProgress, writeProgress, readEmbedUrl, writeEmbedUrl, DEFAULT_EMBED_URL} from "../src/checks.js";
 
 test("16 source-grounded lessons with 48 distinct multiple-choice checks", () => {
   assert.equal(lessons.length,16);
@@ -58,14 +58,19 @@ test("code-output checking does not give unjustified grading",()=>{
 });
 test("malformed progress is safely ignored; valid data persists",()=>{
   const memory=new Map([["amp-julia-lab:v1","{"]]);
-  const storage={getItem:key=>memory.get(key)||null,setItem:(key,v)=>memory.set(key,v)};
+  const storage={getItem:key=>memory.has(key)?memory.get(key):null,setItem:(key,v)=>memory.set(key,v),removeItem:key=>memory.delete(key)};
   assert.deepEqual(readProgress(storage),{});
   const progress={"01:0":2,"01:1":1};
   assert.equal(writeProgress(progress,storage),true);
   assert.deepEqual(readProgress(storage),progress);
-  assert.equal(readEmbedUrl(storage),"");
+  assert.equal(readEmbedUrl(storage),DEFAULT_EMBED_URL);
+  assert.equal(validateEmbedUrl(DEFAULT_EMBED_URL),true);
   assert.equal(writeEmbedUrl("https://www.jdoodle.com/embed/v1/test",storage),true);
   assert.equal(readEmbedUrl(storage),"https://www.jdoodle.com/embed/v1/test");
   assert.equal(writeEmbedUrl("javascript:alert(1)",storage),false);
   assert.equal(readEmbedUrl(storage),"https://www.jdoodle.com/embed/v1/test");
+  assert.equal(writeEmbedUrl("",storage),true);
+  assert.equal(readEmbedUrl(storage),"");
+  assert.equal(writeEmbedUrl(null,storage),true);
+  assert.equal(readEmbedUrl(storage),DEFAULT_EMBED_URL);
 });

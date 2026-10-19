@@ -32,6 +32,9 @@ try {
   const page = await browser.newPage({viewport:{width:1390,height:900}});
   const errors=[];
   page.on("pageerror", e=>errors.push(e.message));
+  // A deterministic placeholder checks our integration without claiming live JDoodle execution.
+  await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js", route =>
+    route.fulfill({status:200,contentType:"text/javascript",body:"window.__jdoodleLoaderFixture = true;"}));
   await page.goto("http://127.0.0.1:"+port+"/#lesson/01");
   await check("desktop loads curriculum",async()=>{
     await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
@@ -40,6 +43,7 @@ try {
     assert.equal(await page.locator('a[href="https://www.jdoodle.com/online-compiler-julia"]').count(),1);
     assert.equal(await page.locator('a[href="https://onecompiler.com/julia"]').count(),1);
     assert.deepEqual(errors,[]);
+    assert.equal(await page.evaluate(()=>window.__jdoodleLoaderFixture),true);
   });
   await check("MCQ checks persist across reload and hash navigation",async()=>{
     await page.locator('[data-question="0"][data-choice="2"]').click();
@@ -80,9 +84,22 @@ try {
     await page.getByRole("button",{name:"Previous"}).click();
     await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
   });
-  await check("unconfigured embed does not imply execution",async()=>{
-    assert.match(await page.locator("#runtime-state").innerText(),/Not configured/);
-    assert.match(await page.locator("#embed-placeholder").innerText(),/Compiler not connected/);
+  await check("provided JDoodle embed is configured on all lessons without claiming Julia execution",async()=>{
+    const slot = page.locator(".jdoodle-embed");
+    await slot.waitFor();
+    assert.equal(await slot.getAttribute("data-pym-src"),"https://www.jdoodle.com/embed/v1/d74ec9cf98a1b5b");
+    assert.match(await page.locator("#runtime-state").innerText(),/unverified|failed/i);
+    assert.equal(await page.locator("#progress-label").innerText(),"1 of 16 concept sets reviewed");
+    await page.getByRole("button",{name:"Next lesson"}).click();
+    await page.getByRole("heading",{name:"Vectors & indexing"}).waitFor();
+    assert.equal(await slot.getAttribute("data-pym-src"),"https://www.jdoodle.com/embed/v1/d74ec9cf98a1b5b");
+    await page.getByRole("button",{name:"Previous"}).click();
+    await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
+  });
+  await check("untrusted cross-origin-like output messages never grant grading",async()=>{
+    await page.evaluate(()=>window.postMessage({type:"jdoodle-execution-output",output:"28\n49",status:"success"},window.location.origin));
+    assert.equal(await page.locator("#output-feedback").innerText(),"");
+    assert.equal(await page.locator("#progress-label").innerText(),"1 of 16 concept sets reviewed");
   });
   await check("output comparison explicitly cannot award code mastery",async()=>{
     await page.locator("#output-input").fill("28\n49");
@@ -98,7 +115,7 @@ try {
     await page.locator("#embed-url").fill("https://evil.example/embed/v1/malicious");
     await page.getByRole("button",{name:"Save compiler link"}).click();
     assert.match(await page.locator("#settings-feedback").innerText(),/JDoodle HTTPS/);
-    assert.match(await page.locator("#runtime-state").innerText(),/Not configured/);
+    assert.match(await page.locator("#runtime-state").innerText(),/unverified|failed/i);
   });
   await check("JDoodle loader failure leaves fallbacks available",async()=>{
     await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js", route=>route.abort());
@@ -109,6 +126,18 @@ try {
     assert.equal(await page.locator(".jdoodle-embed").count(),1);
     assert.equal(await page.locator("#progress-label").innerText(),"1 of 16 concept sets reviewed");
     await page.evaluate(()=>localStorage.removeItem("amp-julia-lab:jdoodle-embed-v1"));
+  });
+  await check("explicitly disabling and restoring editor does not erase study progress", async()=>{
+    await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>route.abort());
+    await page.getByRole("button",{name:"Compiler settings"}).click();
+    await page.getByRole("button",{name:"Disable embedded editor"}).click();
+    await page.getByText("Compiler not connected").waitFor();
+    assert.equal(await page.locator("#progress-label").innerText(),"1 of 16 concept sets reviewed");
+    await page.getByRole("button",{name:"Compiler settings"}).click();
+    await page.getByRole("button",{name:"Restore course editor"}).click();
+    await page.getByText("Embed failed to load").waitFor();
+    assert.equal(await page.locator(".jdoodle-embed").getAttribute("data-pym-src"),"https://www.jdoodle.com/embed/v1/d74ec9cf98a1b5b");
+    assert.equal(await page.locator("#progress-label").innerText(),"1 of 16 concept sets reviewed");
   });
   await page.close();
 

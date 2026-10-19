@@ -1,5 +1,7 @@
 const STORAGE_KEY = "amp-julia-lab:v1";
 const EMBED_KEY = "amp-julia-lab:jdoodle-embed-v1";
+// Account-owned public embed supplied for Julia Lab J4. No credentials or session tokens.
+export const DEFAULT_EMBED_URL = "https://www.jdoodle.com/embed/v1/d74ec9cf98a1b5b";
 export function readProgress(storage = globalThis.localStorage) {
   try {
     const value = JSON.parse(storage.getItem(STORAGE_KEY) || "{}");
@@ -12,11 +14,20 @@ export function writeProgress(progress, storage = globalThis.localStorage) {
   catch { return false; }
 }
 export function readEmbedUrl(storage = globalThis.localStorage) {
-  try { return storage.getItem(EMBED_KEY) || ""; } catch { return ""; }
+  // Missing key means use the course embed; explicit "" disables remote loading.
+  try {
+    const saved = storage.getItem(EMBED_KEY);
+    return saved === null ? DEFAULT_EMBED_URL : saved;
+  } catch { return ""; } // On storage-denied browsers, avoid unexpected third-party loading.
 }
 export function writeEmbedUrl(value, storage = globalThis.localStorage) {
-  if (value && !validateEmbedUrl(value)) return false;
-  try { storage.setItem(EMBED_KEY, value); return true; } catch { return false; }
+  // null removes any local override; "" intentionally disables loading the provider.
+  if (value !== null && value !== "" && !validateEmbedUrl(value)) return false;
+  try {
+    if (value === null) storage.removeItem(EMBED_KEY);
+    else storage.setItem(EMBED_KEY, value);
+    return true;
+  } catch { return false; }
 }
 export function validateEmbedUrl(value) {
   try {

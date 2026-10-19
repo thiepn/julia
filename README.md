@@ -11,7 +11,7 @@ This is a learning companion, **not** an official course application or submissi
 - 16 coding challenges, source descriptions, example and starter code.
 - Course-specific emphasis on \`Plots.jl\`, norms and transformations, numerical errors, LR/QR/Cholesky and least squares.
 - Local browser progress only; keyboard-accessible navigation and responsive layout.
-- JDoodle editor slot on every lesson, **after the learner configures an actual Julia JDoodle embed URL**.
+- JDoodle editor slot on every lesson, preconfigured with the account-owned embed URL supplied by the user (`https://www.jdoodle.com/embed/v1/d74ec9cf98a1b5b`), with an optional local override or disable action.
 - External JDoodle and OneCompiler fallback links always accessible.
 - Output text comparison for student-pasted output. **This is not code execution verification**.
 
@@ -73,3 +73,9 @@ Once the embed is verified: preserve per-lesson scratch work and attach genuine 
 ## J3 — local coding workspace
 
 Every lesson now has an editable code draft which autosaves in browser local storage and survives lesson switching and reloads. The **Copy my code** button transfers the exact draft to the clipboard for JDoodle, OneCompiler or local Julia; **Reset to starter** requires explicit confirmation and affects only the current lesson. Unsaved or unavailable local storage is clearly reported. No typed draft is treated as executable proof, and any JDoodle iframe initialization remains labelled **unverified** until a real Julia project embed and its event payloads are tested. No speculative execution event listener or automatic coding-mastery claim is included.
+
+## J4 — supplied JDoodle course embed
+
+The user provided official JDoodle embed markup using `https://www.jdoodle.com/embed/v1/d74ec9cf98a1b5b`. That address is now the **default course embed**, following JDoodle's documented `data-pym-src` + `jdoodle-pym.min.js` integration. Saving a custom URL overrides this in the current browser; **Disable embedded editor** records an explicit disabled state; **Restore course editor** clears the override. The page retains separate per-lesson local drafts and fallback external compiler links.
+
+**Verification limitation:** The hosted editor has not yet been observed running Julia; web access to the embed session is unavailable from the connected verification environment. A successfully loaded third-party script or iframe is *not* proof that the embedded project uses Julia or that execution/output events work. No unverified code is granted completed coding-task status, and no speculative `postMessage` event listener was added. A live Julia execution + output-event payload must be documented and tested before execution-based grading can be implemented.
