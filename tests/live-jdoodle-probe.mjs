@@ -90,7 +90,7 @@ try{
     const run=jf.getByRole("button",{name:/^Execute$/i}).first();
     console.log("JDoodle execute button",await run.count(),"enabled",await run.isEnabled().catch(()=>false));
     if(editor && await run.isVisible().catch(()=>false)){
-      const known="println(\"J6_JULIA_OK_271\")";
+      const known='println("J6_" * "RUN_OK_" * string(11 * 13))';
       await editor.click({timeout:5000});
       await page.keyboard.press("ControlOrMeta+A");
       await page.keyboard.insertText(known);
@@ -101,11 +101,18 @@ try{
       console.log("JULIA_EXECUTE_BUTTON_CLICKED");
       await page.waitForTimeout(12000);
       const body=await jf.evaluate(()=>document.body?.innerText||"").catch(()=>"");
-      console.log("JULIA_EXECUTION_OUTPUT_SENTINEL_VISIBLE",body.includes("J6_JULIA_OK_271"));
+      const expectedResult = "J6_RUN_OK_143"; // This exact string is NOT present in source code.
+      const panes=await jf.evaluate(expected=>Array.from(document.querySelectorAll(".ace_editor")).map((el,i)=>({
+        index:i,containsCalculatedOutput:(el.innerText||"").includes(expected),
+        chars:(el.innerText||"").length,readOnly:el.classList.contains("ace_read-only")
+      })),expectedResult).catch(()=>[]);
+      const resultAppeared = body.includes(expectedResult);
+      console.log("JULIA_CALCULATED_OUTPUT_NOT_IN_SOURCE",resultAppeared);
+      console.log("JULIA_EDITOR_AND_OUTPUT_PANES",JSON.stringify(panes));
       const messages=await page.evaluate(()=>window.__juliaLabObservedMessages||[]);
       console.log("Provider message key schemas",
         JSON.stringify(messages.filter(x=>x.origin==="https://www.jdoodle.com"&&x.kind==="object").map(x=>x.keys).slice(-20)));
-      console.log("JULIA_EXECUTION_PROBE",body.includes("J6_JULIA_OK_271")?"OUTPUT_OBSERVED":"NOT_VERIFIED");
+      console.log("JULIA_EXECUTION_PROBE",resultAppeared && panes.some(p=>p.containsCalculatedOutput)?"CALCULATED_OUTPUT_OBSERVED":"NOT_VERIFIED");
     } else console.log("JULIA_RUN_NOT_TESTED: editor or Run control unavailable");
   }
   console.log("LIVE_PROBE_END: one user-authorized fixed Julia smoke test, no automatic grading");
