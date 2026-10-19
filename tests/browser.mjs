@@ -75,8 +75,10 @@ try {
     await page.getByRole("button",{name:"Reset to starter"}).click();
     assert.equal(await page.locator("#scratch-code").inputValue(),starter);
     await page.getByRole("button",{name:"Next lesson"}).click();
+    await page.getByRole("heading",{name:"Vectors & indexing"}).waitFor();
     assert.equal(await page.locator("#scratch-code").inputValue(),"println(777)");
     await page.getByRole("button",{name:"Previous"}).click();
+    await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
   });
   await check("unconfigured embed does not imply execution",async()=>{
     assert.match(await page.locator("#runtime-state").innerText(),/Not configured/);
