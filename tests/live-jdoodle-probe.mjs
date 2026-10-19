@@ -99,7 +99,7 @@ try{
       console.log("JULIA_CODE_ENTRY_UI",visibleInserted?"visible in text":"Monaco/virtual editor may not expose text");
       await run.click({timeout:5000});
       console.log("JULIA_EXECUTE_BUTTON_CLICKED");
-      await page.waitForTimeout(12000);
+      await page.waitForTimeout(20000);
       const body=await jf.evaluate(()=>document.body?.innerText||"").catch(()=>"");
       const expectedResult = "J6_RUN_OK_143"; // This exact string is NOT present in source code.
       const panes=await jf.evaluate(expected=>Array.from(document.querySelectorAll(".ace_editor")).map((el,i)=>({
@@ -109,6 +109,9 @@ try{
       const resultAppeared = body.includes(expectedResult);
       console.log("JULIA_CALCULATED_OUTPUT_NOT_IN_SOURCE",resultAppeared);
       console.log("JULIA_EDITOR_AND_OUTPUT_PANES",JSON.stringify(panes));
+      const outputText = await jf.evaluate(()=>document.querySelectorAll(".ace_editor")[1]?.innerText||"").catch(()=>"");
+      const redacted = outputText.slice(0,400).replace(/https?:\/\/\S+/g,"[URL]").replace(/[a-z0-9_-]{20,}/gi,"[REDACTED]");
+      console.log("JULIA_OUTPUT_PANE_REDACTED_PREVIEW",JSON.stringify(redacted));
       const messages=await page.evaluate(()=>window.__juliaLabObservedMessages||[]);
       console.log("Provider message key schemas",
         JSON.stringify(messages.filter(x=>x.origin==="https://www.jdoodle.com"&&x.kind==="object").map(x=>x.keys).slice(-20)));
