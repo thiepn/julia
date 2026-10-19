@@ -79,6 +79,13 @@
         <button type="button" class="secondary full" id="check-output">Compare output</button>
         <p class="feedback" id="output-feedback" role="status" aria-live="polite"></p>
       </section>
+      <details id="bridge-diagnostics" class="bridge-diagnostics">
+        <summary>Connection diagnostics (optional)</summary>
+        <p>JDoodle documents ready, code-change and output notifications, but this app has not validated the exact payload contract. This view counts messages only if they come from the configured JDoodle iframe. It never captures source code or output, and never grants coding mastery.</p>
+        <p id="bridge-status" role="status" aria-live="polite">No matching frame messages observed.</p>
+        <button type="button" id="copy-diag" class="secondary full">Copy safe diagnostic summary</button>
+        <p id="bridge-feedback" class="feedback" role="status"></p>
+      </details>
       <section id="settings-panel" class="settings-panel" hidden>
         <h3>Configure JDoodle</h3>
         <p>The supplied course JDoodle embed is selected by default. Enter a different JDoodle embed URL to override it in this browser. Editor loading is not confirmation of Julia execution.</p>

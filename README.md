@@ -79,3 +79,19 @@ Every lesson now has an editable code draft which autosaves in browser local sto
 The user provided official JDoodle embed markup using `https://www.jdoodle.com/embed/v1/d74ec9cf98a1b5b`. That address is now the **default course embed**, following JDoodle's documented `data-pym-src` + `jdoodle-pym.min.js` integration. Saving a custom URL overrides this in the current browser; **Disable embedded editor** records an explicit disabled state; **Restore course editor** clears the override. The page retains separate per-lesson local drafts and fallback external compiler links.
 
 **Verification limitation:** The hosted editor has not yet been observed running Julia; web access to the embed session is unavailable from the connected verification environment. A successfully loaded third-party script or iframe is *not* proof that the embedded project uses Julia or that execution/output events work. No unverified code is granted completed coding-task status, and no speculative `postMessage` event listener was added. A live Julia execution + output-event payload must be documented and tested before execution-based grading can be implemented.
+
+
+## J5 — read-only JDoodle event boundary
+
+Official JDoodle docs confirm that embeds can send ready, code-change and execution-output notifications to a containing page; however the public `drive-it-from-your-page` page does **not** define exact event names or field types. A checked **Get embedding code** snippet or observed live transcript is required to map these events safely.
+
+The app now offers an **opt-in, ephemeral Connection diagnostics** panel. Incoming messages must originate at `https://www.jdoodle.com`, come from the `contentWindow` of the currently configured JDoodle embed's iframe, and have the exact configured embed path. Messages from the host page, another JDoodle iframe, or unrelated origins are ignored. This is a conservative diagnostic, not verified execution; some valid provider messages may be discarded until their actual frame topology is established.
+
+Only the count, top-level data format, and a bounded, syntax-validated non-sensitive marker are exposed. No program text, outputs, credentials or message payloads are stored or logged. No `postMessage` commands, automatic code injection, or output-based completion is enabled. Connection reports explicitly state `liveJuliaExecutionVerified: false`.
+
+Synthetic browser fixtures validate the source/origin boundary, including forged same-page messages and a fake execution-result payload. **Those checks are not real JDoodle Julia execution.**
+
+### Next live verification
+1. From the actual JDoodle project, open **Get embedding code**. Select **Receive Code**, **Receive Output**, and **Receive Status**; copy the full expanded script including handlers (the boxes only generate JavaScript).
+2. In a real browser, run `println(2 + 3)` in the embedded Julia editor, inspect the emitted event names and payloads.
+3. Only after confirming the event shapes, frame origins, success/error and execution association should this app implement an output adapter; any successful output check must remain separate from multi-input code mastery.

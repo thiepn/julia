@@ -12,3 +12,8 @@
 .draft-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
 .draft-actions .quiet{min-height:42px;padding:10px}
 @media(max-width:400px){.draft-title{display:block}.draft-caption{display:block;margin-top:2px}.draft-actions{flex-wrap:wrap}}
+
+.bridge-diagnostics{margin-top:20px;border-top:1px solid var(--line);padding-top:16px}
+.bridge-diagnostics>summary{font-size:13px;font-weight:700;color:var(--ink);cursor:pointer}
+.bridge-diagnostics p{font-size:12px;color:var(--muted)}
+.bridge-diagnostics #bridge-status{overflow-wrap:anywhere}

@@ -101,6 +101,16 @@ try {
     assert.equal(await page.locator("#output-feedback").innerText(),"");
     assert.equal(await page.locator("#progress-label").innerText(),"1 of 16 concept sets reviewed");
   });
+  await check("same-page fake JDoodle output cannot become a trusted frame message",async()=>{
+    const panel=page.locator("#bridge-diagnostics");
+    await panel.locator("summary").click();
+    await page.evaluate(()=>window.postMessage({type:"execution-output",output:"28\n49"},window.location.origin));
+    await page.waitForTimeout(50);
+    assert.match(await page.locator("#bridge-status").innerText(),/No matching frame messages/);
+    assert.equal(await page.locator("#output-feedback").innerText(),"");
+    assert.equal(await page.locator("#progress-label").innerText(),"1 of 16 concept sets reviewed");
+    await panel.locator("summary").click();
+  });
   await check("output comparison explicitly cannot award code mastery",async()=>{
     await page.locator("#output-input").fill("28\n49");
     await page.getByRole("button",{name:"Compare output"}).click();
@@ -140,6 +150,35 @@ try {
     assert.equal(await page.locator("#progress-label").innerText(),"1 of 16 concept sets reviewed");
   });
   await page.close();
+
+  const probe=await browser.newPage({viewport:{width:1000,height:800}});
+  await probe.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>route.fulfill({
+    status:200,contentType:"text/javascript",
+    body:"const host=document.querySelector('.jdoodle-embed'); const f=document.createElement('iframe'); f.src=host.getAttribute('data-pym-src'); host.appendChild(f);"
+  }));
+  await probe.route("https://www.jdoodle.com/embed/v1/d74ec9cf98a1b5b",route=>route.fulfill({
+    status:200,contentType:"text/html",body:"<!doctype html><title>Fixture: not JDoodle</title>"
+  }));
+  await probe.goto("http://127.0.0.1:"+port+"/#lesson/01");
+  await check("simulated matching iframe is diagnosed without grading or capturing output",async()=>{
+    await probe.locator(".jdoodle-embed iframe").waitFor();
+    const panel=probe.locator("#bridge-diagnostics");
+    await panel.locator("summary").click();
+    const frame=probe.frame({url:/jdoodle\.com\/embed\/v1\/d74ec9cf98a1b5b/});
+    assert.ok(frame,"Synthetic same-origin provider iframe exists");
+    await frame.evaluate(()=>window.parent.postMessage({
+      type:"execution-output",output:"PRIVATE_JULIA_CODE",status:"success"
+    },"*"));
+    await probe.getByText(/1 JDoodle-frame message/).waitFor();
+    assert.match(await probe.locator("#bridge-status").innerText(),/execution-output/);
+    assert.doesNotMatch(await probe.locator("#bridge-status").innerText(),/PRIVATE_JULIA_CODE/);
+    assert.equal(await probe.locator("#progress-label").innerText(),"0 of 16 concept sets reviewed");
+    await probe.evaluate(()=>window.postMessage({type:"execution-output",output:"spoof"},"*"));
+    await probe.waitForTimeout(50);
+    assert.match(await probe.locator("#bridge-status").innerText(),/^1 JDoodle-frame message/);
+    assert.equal(await probe.locator("#output-feedback").innerText(),"");
+  });
+  await probe.close();
 
   const mobile = await browser.newPage({viewport:{width:390,height:844},isMobile:true,deviceScaleFactor:2,hasTouch:true});
   mobile.on("pageerror",e=>errors.push(e.message));

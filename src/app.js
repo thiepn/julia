@@ -2,10 +2,31 @@ import {lessons, stages} from "./lessons.js";
 import {readProgress, writeProgress, readEmbedUrl, writeEmbedUrl,
   validateEmbedUrl, checkChoice, countCorrect, readyForChallenge, checkPastedOutput} from "./checks.js";
 import {readDraft, writeDraft, clearDraft} from "./workspace.js";
+import {inspectEmbedMessage} from "./jdoodle-bridge.js";
 
 const $ = (selector) => document.querySelector(selector);
 const progress = readProgress();
 let currentIndex = 0;
+// Diagnostics are opt-in and ephemeral. No provider code/output is retained.
+let diagnosticCount = 0;
+let diagnosticLast = null;
+function renderDiagnostics() {
+  const description = diagnosticCount
+    ? diagnosticCount + " JDoodle-frame message(s) received; latest marker: " + diagnosticLast.marker +
+      " (" + diagnosticLast.format + "). Event meanings are unverified; no code was graded."
+    : "No matching frame messages observed. This does not establish whether the editor can run Julia.";
+  $("#bridge-status").textContent = description;
+}
+window.addEventListener("message", (event) => {
+  const details = $("#bridge-diagnostics");
+  if (!details?.open) return;
+  const frame = document.querySelector(".jdoodle-embed iframe");
+  const inspected = inspectEmbedMessage(event, frame, readEmbedUrl());
+  if (!inspected) return;
+  diagnosticCount++;
+  diagnosticLast = inspected;
+  renderDiagnostics();
+});
 const safe = (value) => String(value).replace(/[&<>"']/g, char =>
   ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
 const current = () => lessons[currentIndex];
@@ -163,6 +184,27 @@ $("#check-output").addEventListener("click", () => {
   const feedback = $("#output-feedback");
   feedback.textContent = result.message;
   feedback.dataset.status = result.status;
+});
+$("#bridge-diagnostics").addEventListener("toggle", () => {
+  diagnosticCount = 0;
+  diagnosticLast = null;
+  renderDiagnostics();
+});
+$("#copy-diag").addEventListener("click", async () => {
+  // Only structural metadata; no source code or program output is copied.
+  const report = "Julia Lab JDoodle diagnostic: " + JSON.stringify({
+    embedConfigured: validateEmbedUrl(readEmbedUrl()),
+    matchingFrameMessages: diagnosticCount,
+    latestMarker: diagnosticLast?.marker ?? null,
+    latestFormat: diagnosticLast?.format ?? null,
+    liveJuliaExecutionVerified: false
+  });
+  try {
+    await navigator.clipboard.writeText(report);
+    $("#bridge-feedback").textContent = "Diagnostic summary copied (no Julia code or output).";
+  } catch {
+    $("#bridge-feedback").textContent = "Clipboard unavailable. Select the summary text instead.";
+  }
 });
 $("#settings-toggle").addEventListener("click", () => {
   $("#settings-panel").hidden = !$("#settings-panel").hidden;
