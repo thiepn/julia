@@ -16,13 +16,13 @@
   </header>
   <div class="shell">
     <nav class="sidebar" aria-label="Lessons">
-      <div class="sidebar-head"><span class="eyebrow">YOUR COURSE</span><h2>Learning path</h2><div class="progress-bar"><span id="progress-fill"></span></div><p id="progress-label">0 of 16 lessons reviewed</p></div>
+      <div class="sidebar-head"><span class="eyebrow">YOUR COURSE</span><h2>Learning path</h2><div class="progress-bar"><span id="progress-fill"></span></div><p id="progress-label">0 of 16 lessons reviewed</p><button type="button" class="continue-button" id="continue-lesson">Continue lesson 01 · Variables & numbers</button><p id="continue-detail" class="continue-detail">Übung 1 essentials</p></div>
       <div id="nav-items"></div>
       <p class="sidebar-foot">Practice material only. Consult the official weekly exercise sheets for required submissions.</p>
     </nav>
     <main id="lesson-main">
       <div class="lesson-meta" id="lesson-meta"></div>
-      <h1 id="lesson-title"></h1>
+      <h1 id="lesson-title" tabindex="-1"></h1>
       <p class="lead" id="lesson-goal"></p>
       <section class="paper" aria-labelledby="theory-title">
         <div class="section-title"><span class="section-num">01</span><h2 id="theory-title">Understand the concept</h2></div>
@@ -34,6 +34,7 @@
         <div class="section-title"><span class="section-num">02</span><h2 id="practice-title">Quick checks</h2></div>
         <p class="section-intro">Answer each question before moving on. Your selections are saved locally.</p>
         <div id="questions"></div>
+        <p class="concept-brief" id="concept-brief" role="status" aria-live="polite"></p>
       </section>
       <section class="paper" aria-labelledby="coding-title">
         <div class="section-title"><span class="section-num">03</span><h2 id="coding-title">Write Julia yourself</h2></div>

@@ -58,6 +58,33 @@ try {
     await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
     assert.equal(await page.locator(".question-head .correct").count(),2);
   });
+  await check("J8 answer reasoning and continue learning target the next unreviewed concept",async()=>{
+    assert.match(await page.locator("#continue-lesson").innerText(),/Continue lesson 02/);
+    await page.getByRole("button",{name:/Continue lesson 02/}).click();
+    await page.getByRole("heading",{name:"Vectors & indexing"}).waitFor();
+    assert.equal(await page.evaluate(()=>document.activeElement.id),"lesson-title");
+    await page.locator('[data-question="0"][data-choice="0"]').click();
+    assert.match(await page.locator(".question").first().locator(".answer-reason").innerText(),/Julia starts indexing at 1/);
+    assert.match(await page.locator(".question").first().locator(".retry").innerText(),/Try again/);
+    assert.equal(await page.locator("#concept-brief").innerText(),"0/3 correct · Answer at least two to review this concept checkpoint.");
+    await page.locator('[data-question="0"][data-choice="1"]').click();
+    assert.match(await page.locator(".question").first().locator(".answer-reason").innerText(),/first vector element uses index 1/);
+    await page.locator('[data-question="1"][data-choice="1"]').click();
+    assert.match(await page.locator("#concept-brief").innerText(),/2\/3 correct · Concept checkpoint reviewed/);
+    assert.match(await page.locator("#continue-lesson").innerText(),/Continue lesson 03/);
+    assert.equal(await page.locator("#output-feedback").innerText(),"");
+    await page.getByRole("button",{name:"Previous"}).click();
+    await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
+    assert.equal(await page.locator("#progress-label").innerText(),"2 of 16 concept sets reviewed");
+    // This test should not modify the state expected by J7 checks below.
+    await page.evaluate(()=>{
+      const p=JSON.parse(localStorage.getItem("amp-julia-lab:v1")||"{}");
+      delete p["02:0"];delete p["02:1"];
+      localStorage.setItem("amp-julia-lab:v1",JSON.stringify(p));
+    });
+    await page.reload();
+    assert.match(await page.locator("#continue-lesson").innerText(),/Continue lesson 02/);
+  });
   await check("per-lesson coding drafts survive navigation and reload",async()=>{
     const starter = await page.locator("#scratch-code").inputValue();
     assert.match(starter,/side = 7/);
@@ -230,6 +257,8 @@ try {
     await mobile.getByRole("heading",{name:"Plot mathematical functions"}).waitFor();
     assert.equal(await mobile.locator(".question").count(),3);
     assert.equal(await mobile.locator(".compiler-links a").count(),2);
+    assert.equal(await mobile.locator("#continue-lesson").isVisible(),true);
+    assert.equal(await mobile.locator("#concept-brief").isVisible(),true);
     await mobile.getByRole("button",{name:"Go to compiler and alternatives"}).click();
     await mobile.locator("#compiler-title").waitFor();
     assert.equal(await mobile.evaluate(()=>document.activeElement.id),"compiler-title");

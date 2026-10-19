@@ -4,6 +4,7 @@ import {readProgress, writeProgress, readEmbedUrl, writeEmbedUrl,
 import {readDraft, writeDraft, clearDraft} from "./workspace.js";
 import {inspectEmbedMessage} from "./jdoodle-bridge.js";
 import {exportJuliaScript, validateJuliaImport, MAX_IMPORT_BYTES} from "./transfer.js";
+import {questionFeedback} from "./feedback.js";
 
 const $ = (selector) => document.querySelector(selector);
 const progress = readProgress();
@@ -43,6 +44,20 @@ window.addEventListener("message", (event) => {
 const safe = (value) => String(value).replace(/[&<>"']/g, char =>
   ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
 const current = () => lessons[currentIndex];
+function nextConceptIndex() {
+  const index = lessons.findIndex(lesson => !readyForChallenge(lesson, progress));
+  return index === -1 ? lessons.length - 1 : index;
+}
+function renderContinue() {
+  const index=nextConceptIndex();
+  const item=lessons[index];
+  const done=lessons.every(lesson => readyForChallenge(lesson, progress));
+  $("#continue-lesson").textContent = (done ? "Review lesson " : "Continue lesson ") + item.id + " · " + item.title;
+  $("#continue-lesson").dataset.index=String(index);
+  $("#continue-detail").textContent=done
+    ? "All concept sets reviewed. Coding tasks remain unverified."
+    : item.stage;
+}
 
 function lessonIndexFromHash() {
   const match = location.hash.match(/^#lesson\/(\d{2})$/);
@@ -57,6 +72,7 @@ function renderSidebar() {
   const mastered = lessons.filter(l => readyForChallenge(l, progress)).length;
   $("#progress-fill").style.width = ((mastered / lessons.length) * 100) + "%";
   $("#progress-label").textContent = mastered + " of " + lessons.length + " concept sets reviewed";
+  renderContinue();
   $("#nav-items").innerHTML = stages.map(stage => {
     const items = lessons.filter(l => l.stage === stage);
     return '<div class="nav-group"><h3>' + safe(stage) + '</h3>' +
@@ -76,6 +92,7 @@ function renderQuestions() {
     const key = l.id + ":" + i, chosen = progress[key];
     const answered = Number.isInteger(chosen);
     const isRight = answered && checkChoice(l,i,chosen);
+    const detail = answered ? questionFeedback(l,i,chosen) : null;
     return '<div class="question"><div class="question-head"><span>QUESTION ' + (i+1) + ' / 3</span>' +
       (answered ? ('<span class="'+(isRight?"correct":"retry")+'">' + (isRight?"Correct":"Try again") + '</span>') : "") +
       '</div><h3>' + safe(q.q) + '</h3><div class="choices">' +
@@ -83,9 +100,15 @@ function renderQuestions() {
         '" data-choice="' + j + '" class="choice ' + (chosen===j?"selected":"") +
         '" aria-pressed="'+(chosen===j ? "true" : "false")+'">' +
         '<span>' + String.fromCharCode(65+j) + '</span>' + safe(choice) + '</button>').join("") + '</div>' +
+      (detail ? '<p class="answer-reason ' + (detail.correct ? "right":"wrong") +
+        '" role="status">' + safe(detail.explanation) + '</p>' : "") +
       '<details class="question-hint"><summary>Need a hint?</summary><p>' + safe(q.hint) +
       '</p></details></div>';
   }).join("");
+  const correct=countCorrect(l,progress);
+  $("#concept-brief").textContent=correct>=2
+    ? correct + "/3 correct · Concept checkpoint reviewed. Coding task not verified."
+    : correct + "/3 correct · Answer at least two to review this concept checkpoint.";
   document.querySelectorAll(".choice").forEach(button => {
     button.addEventListener("click", () => {
       const i = Number(button.dataset.question), choice = Number(button.dataset.choice);
@@ -159,6 +182,10 @@ function setupEmbed() {
   };
   document.body.append(script);
 }
+$("#continue-lesson").addEventListener("click",()=>{
+  navigate(nextConceptIndex());
+  $("#lesson-title").focus({preventScroll:true});
+});
 $("#previous").addEventListener("click", () => navigate(currentIndex-1));
 $("#next").addEventListener("click", () => navigate(currentIndex+1));
 $("#copy-starter").addEventListener("click", async () => {
