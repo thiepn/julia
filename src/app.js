@@ -1,6 +1,7 @@
 import {lessons, stages} from "./lessons.js";
 import {readProgress, writeProgress, readEmbedUrl, writeEmbedUrl,
   validateEmbedUrl, checkChoice, countCorrect, readyForChallenge, checkPastedOutput} from "./checks.js";
+import {readDraft, writeDraft, clearDraft} from "./workspace.js";
 
 const $ = (selector) => document.querySelector(selector);
 const progress = readProgress();
@@ -72,6 +73,8 @@ function render() {
   $("#example-code").textContent = l.example;
   $("#challenge-text").textContent = l.challenge;
   $("#starter-code").textContent = l.starter;
+  $("#scratch-code").value = readDraft(l.id, l.starter);
+  $("#draft-feedback").textContent = "Saved only in this browser; not executed or automatically graded.";
   $("#challenge-checks").textContent = l.checks;
   [1,2,3].forEach(i => {
     const el = $("#hint-"+i); el.open = false;
@@ -120,6 +123,29 @@ $("#copy-starter").addEventListener("click", async () => {
   } catch {
     $("#output-feedback").textContent = "Clipboard unavailable. Select and copy the starter code shown above.";
   }
+});
+$("#scratch-code").addEventListener("input", () => {
+  const saved = writeDraft(current().id, $("#scratch-code").value);
+  $("#draft-feedback").textContent = saved
+    ? "Draft saved locally. Execution and correctness are not verified."
+    : "Could not save draft (storage unavailable or draft too large). Copy your work elsewhere.";
+});
+$("#copy-draft").addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText($("#scratch-code").value);
+    $("#draft-feedback").textContent = "Your current draft was copied. Paste it into JDoodle, OneCompiler or VS Code to run.";
+  } catch {
+    $("#draft-feedback").textContent = "Clipboard unavailable. Select the draft text and copy it manually.";
+  }
+});
+$("#reset-draft").addEventListener("click", () => {
+  if (!window.confirm("Discard your current code for this lesson and restore its starter?")) return;
+  if (!clearDraft(current().id)) {
+    $("#draft-feedback").textContent = "Could not reset the saved draft; no changes were made.";
+    return;
+  }
+  $("#scratch-code").value = current().starter;
+  $("#draft-feedback").textContent = "Starter restored. This does not affect other lessons.";
 });
 $("#check-output").addEventListener("click", () => {
   const result = checkPastedOutput(current().expected, $("#output-input").value);

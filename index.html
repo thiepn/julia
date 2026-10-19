@@ -40,6 +40,17 @@
         <p id="challenge-text"></p>
         <div class="code-label">STARTER FILE <button class="text-button" id="copy-starter" type="button">Copy code</button></div>
         <pre class="code"><code id="starter-code"></code></pre>
+        <div class="draft-title">
+          <label for="scratch-code">YOUR CODE · SAVED LOCALLY</label>
+          <span class="draft-caption">Draft only · not executed</span>
+        </div>
+        <textarea id="scratch-code" class="scratch-editor" rows="11" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="draft-help"></textarea>
+        <div class="draft-actions">
+          <button type="button" class="secondary" id="copy-draft">Copy my code</button>
+          <button type="button" class="quiet" id="reset-draft">Reset to starter</button>
+        </div>
+        <p class="section-intro" id="draft-help">Write your Julia solution here, then copy it into the compiler to run. Julia Lab does not execute this textarea. Different lessons keep separate local drafts.</p>
+        <p class="feedback" id="draft-feedback" role="status" aria-live="polite"></p>
         <p class="section-intro"><strong>Success criteria:</strong> <span id="challenge-checks"></span></p>
         <details id="hint-1"><summary>Hint 1 · Concept</summary><p></p></details>
         <details id="hint-2"><summary>Hint 2 · Approach</summary><p></p></details>
@@ -52,7 +63,7 @@
     </main>
     <aside class="compiler" aria-label="Julia code execution">
       <div class="compiler-heading"><div><span class="eyebrow">WORKSPACE</span><h2>Run your Julia code</h2></div><span class="runtime-tag" id="runtime-state">Not configured</span></div>
-      <p class="compiler-explainer">Use the embedded editor when available. Copy the current lesson's starter code into it. Execution happens at JDoodle, not on this page.</p>
+      <p class="compiler-explainer">Use the embedded editor when available. Copy your code draft into it. Execution happens at JDoodle, not on this page; iframe loading is not proof that Julia ran.</p>
       <div id="embed-slot">
         <div class="placeholder" id="embed-placeholder"><span class="placeholder-icon">{ }</span><strong>Compiler not connected</strong><p>Add your own JDoodle Julia embed link in Compiler settings to run code here.</p></div>
       </div>
@@ -62,7 +73,7 @@
       </div>
       <section class="result-panel" aria-labelledby="result-title">
         <h3 id="result-title">Check practice output</h3>
-        <p>After running Julia, paste its printed output here. This compares text only; it does not verify program execution or hidden tests.</p>
+        <p>After running Julia, paste its printed output here. This compares text only; it cannot confirm code execution, test other inputs or award coding mastery.</p>
         <label for="output-input">Output from Julia</label>
         <textarea id="output-input" spellcheck="false" rows="4" placeholder="Paste Julia output…"></textarea>
         <button type="button" class="secondary full" id="check-output">Compare output</button>

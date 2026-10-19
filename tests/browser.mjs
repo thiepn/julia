@@ -54,6 +54,30 @@ try {
     await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
     assert.equal(await page.locator(".question-head .correct").count(),2);
   });
+  await check("per-lesson coding drafts survive navigation and reload",async()=>{
+    const starter = await page.locator("#scratch-code").inputValue();
+    assert.match(starter,/side = 7/);
+    await page.locator("#scratch-code").fill("println(123)\n# my own work");
+    assert.match(await page.locator("#draft-feedback").innerText(),/saved locally/i);
+    await page.reload();
+    assert.equal(await page.locator("#scratch-code").inputValue(),"println(123)\n# my own work");
+    await page.getByRole("button",{name:"Next lesson"}).click();
+    await page.getByRole("heading",{name:"Vectors & indexing"}).waitFor();
+    assert.match(await page.locator("#scratch-code").inputValue(),/v = \[3, 5, 7, 9\]/);
+    await page.locator("#scratch-code").fill("println(777)");
+    await page.getByRole("button",{name:"Previous"}).click();
+    await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
+    assert.equal(await page.locator("#scratch-code").inputValue(),"println(123)\n# my own work");
+    page.once("dialog", dialog=>dialog.dismiss());
+    await page.getByRole("button",{name:"Reset to starter"}).click();
+    assert.equal(await page.locator("#scratch-code").inputValue(),"println(123)\n# my own work");
+    page.once("dialog", dialog=>dialog.accept());
+    await page.getByRole("button",{name:"Reset to starter"}).click();
+    assert.equal(await page.locator("#scratch-code").inputValue(),starter);
+    await page.getByRole("button",{name:"Next lesson"}).click();
+    assert.equal(await page.locator("#scratch-code").inputValue(),"println(777)");
+    await page.getByRole("button",{name:"Previous"}).click();
+  });
   await check("unconfigured embed does not imply execution",async()=>{
     assert.match(await page.locator("#runtime-state").innerText(),/Not configured/);
     assert.match(await page.locator("#embed-placeholder").innerText(),/Compiler not connected/);
@@ -73,6 +97,16 @@ try {
     await page.getByRole("button",{name:"Save compiler link"}).click();
     assert.match(await page.locator("#settings-feedback").innerText(),/JDoodle HTTPS/);
     assert.match(await page.locator("#runtime-state").innerText(),/Not configured/);
+  });
+  await check("JDoodle loader failure leaves fallbacks available",async()=>{
+    await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js", route=>route.abort());
+    await page.evaluate(()=>localStorage.setItem("amp-julia-lab:jdoodle-embed-v1","https://www.jdoodle.com/embed/v1/testembed"));
+    await page.reload();
+    await page.getByText("Embed failed to load").waitFor();
+    assert.equal(await page.locator(".compiler-links a").count(),2);
+    assert.equal(await page.locator(".jdoodle-embed").count(),1);
+    assert.equal(await page.locator("#progress-label").innerText(),"1 of 16 concept sets reviewed");
+    await page.evaluate(()=>localStorage.removeItem("amp-julia-lab:jdoodle-embed-v1"));
   });
   await page.close();
 
