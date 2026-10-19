@@ -106,7 +106,7 @@ try {
     await panel.locator("summary").click();
     await page.evaluate(()=>window.postMessage({type:"execution-output",output:"28\n49"},window.location.origin));
     await page.waitForTimeout(50);
-    assert.match(await page.locator("#bridge-status").innerText(),/No matching frame messages/);
+    assert.match(await page.locator("#bridge-status").innerText(),/No matching diagnostic messages/);
     assert.equal(await page.locator("#output-feedback").innerText(),"");
     assert.equal(await page.locator("#progress-label").innerText(),"1 of 16 concept sets reviewed");
     await panel.locator("summary").click();
