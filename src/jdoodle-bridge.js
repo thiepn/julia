@@ -23,7 +23,11 @@ export function inspectEmbedMessage(event, frame, configuredUrl) {
   const format = data === null ? "null" : Array.isArray(data) ? "array" : typeof data;
   let marker = "unspecified";
   if (data && typeof data === "object" && !Array.isArray(data)) {
+    // Observed in the actual JDoodle iframe on 2026-10-19. An onLoad
+    // property is evidence of an embed lifecycle message, NOT Julia running.
+    if (Object.prototype.hasOwnProperty.call(data, "onLoad")) marker = "onLoad";
     for (const key of ["type","event","action"]) {
+      if (marker !== "unspecified") break;
       // Marker values are never accepted as proof of status or execution.
       if (typeof data[key] === "string" && /^[a-zA-Z0-9:._/-]{1,48}$/.test(data[key])) {
         marker = data[key];

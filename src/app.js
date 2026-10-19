@@ -10,19 +10,31 @@ let currentIndex = 0;
 // Diagnostics are opt-in and ephemeral. No provider code/output is retained.
 let diagnosticCount = 0;
 let diagnosticLast = null;
+let lifecycleOnLoadObserved = false;
 function renderDiagnostics() {
+  const lifecycle = lifecycleOnLoadObserved
+    ? "JDoodle sent an onLoad notification. Julia execution remains unverified. "
+    : "";
   const description = diagnosticCount
     ? diagnosticCount + " JDoodle-frame message(s) received; latest marker: " + diagnosticLast.marker +
       " (" + diagnosticLast.format + "). Event meanings are unverified; no code was graded."
-    : "No matching frame messages observed. This does not establish whether the editor can run Julia.";
-  $("#bridge-status").textContent = description;
+    : "No matching diagnostic messages observed. This does not establish whether the editor can run Julia.";
+  $("#bridge-status").textContent = lifecycle + description;
 }
 window.addEventListener("message", (event) => {
   const details = $("#bridge-diagnostics");
-  if (!details?.open) return;
   const frame = document.querySelector(".jdoodle-embed iframe");
   const inspected = inspectEmbedMessage(event, frame, readEmbedUrl());
   if (!inspected) return;
+  // The observed onLoad event arrives during initial iframe startup, usually
+  // before the diagnostics panel is opened. Track only this narrow signal
+  // without retaining any code/output/payload or claiming an executed program.
+  if (inspected.marker === "onLoad") {
+    lifecycleOnLoadObserved = true;
+    if (details?.open) renderDiagnostics();
+    return;
+  }
+  if (!details?.open) return;
   diagnosticCount++;
   diagnosticLast = inspected;
   renderDiagnostics();
@@ -197,6 +209,7 @@ $("#copy-diag").addEventListener("click", async () => {
     matchingFrameMessages: diagnosticCount,
     latestMarker: diagnosticLast?.marker ?? null,
     latestFormat: diagnosticLast?.format ?? null,
+    providerOnLoadObserved: lifecycleOnLoadObserved,
     liveJuliaExecutionVerified: false
   });
   try {

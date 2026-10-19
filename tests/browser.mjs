@@ -162,9 +162,12 @@ try {
   await probe.goto("http://127.0.0.1:"+port+"/#lesson/01");
   await check("simulated matching iframe is diagnosed without grading or capturing output",async()=>{
     await probe.locator(".jdoodle-embed iframe").waitFor();
+    const frame=probe.frame({url:/jdoodle\.com\/embed\/v1\/d74ec9cf98a1b5b/});
+    assert.ok(frame,"Synthetic provider iframe exists");
+    await frame.evaluate(()=>window.parent.postMessage({onLoad:true,output:"PRIVATE"}, "*"));
     const panel=probe.locator("#bridge-diagnostics");
     await panel.locator("summary").click();
-    const frame=probe.frame({url:/jdoodle\.com\/embed\/v1\/d74ec9cf98a1b5b/});
+    await probe.getByText(/JDoodle sent an onLoad notification/).waitFor();
     assert.ok(frame,"Synthetic same-origin provider iframe exists");
     await frame.evaluate(()=>window.parent.postMessage({
       type:"execution-output",output:"PRIVATE_JULIA_CODE",status:"success"

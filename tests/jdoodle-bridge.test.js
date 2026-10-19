@@ -19,6 +19,13 @@ test("JDoodle diagnostic admits only exact frame origin, source and configured p
   assert.equal(inspectEmbedMessage(event,{...frame,isConnected:false},url),null);
   assert.equal(inspectEmbedMessage(event,frame,""),null);
 });
+test("real JDoodle onLoad key is recognized only as an unverified lifecycle message",()=>{
+  const frame=mockFrame();
+  const event={origin:JDOODLE_ORIGIN,source:frame.contentWindow,data:{onLoad:true,output:"SENSITIVE_DATA"}};
+  const parsed=inspectEmbedMessage(event,frame,url);
+  assert.deepEqual(parsed,{format:"object",marker:"onLoad",verifiedOrigin:true,executionVerified:false});
+  assert.equal(JSON.stringify(parsed).includes("SENSITIVE_DATA"),false);
+});
 test("diagnostic never treats result payloads as proven execution",()=>{
   const frame=mockFrame();
   const event={origin:JDOODLE_ORIGIN,source:frame.contentWindow,

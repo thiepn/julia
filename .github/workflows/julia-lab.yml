@@ -33,8 +33,3 @@ jobs:
       - name: Chromium desktop/mobile acceptance
         run: node tests/browser.mjs
 
-      - name: One-time JDoodle live read-only probe (no execution or grading)
-        if: contains(github.event.pull_request.title, 'Julia Lab')
-        env:
-          JULIA_LAB_LIVE_PROBE: "1"
-        run: node tests/live-jdoodle-probe.mjs

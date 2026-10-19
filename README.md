@@ -95,3 +95,14 @@ Synthetic browser fixtures validate the source/origin boundary, including forged
 1. From the actual JDoodle project, open **Get embedding code**. Select **Receive Code**, **Receive Output**, and **Receive Status**; copy the full expanded script including handlers (the boxes only generate JavaScript).
 2. In a real browser, run `println(2 + 3)` in the embedded Julia editor, inspect the emitted event names and payloads.
 3. Only after confirming the event shapes, frame origins, success/error and execution association should this app implement an output adapter; any successful output check must remain separate from multi-input code mastery.
+
+
+## J6 — observed live JDoodle behavior (2026-10-19)
+
+On a GitHub-hosted Chromium runner the user's supplied embed and JDoodle Pym script both returned HTTP 200. The frame loaded an editor with Julia selected (versions 1.12.4 and 1.9.3 visible), an ACE editor, and an enabled Execute button. A structured `{onLoad: ...}` message was observed from JDoodle.
+
+A fixed arithmetic smoke program was entered in the editor and Execute clicked. After a longer 20-second wait, the distinct calculated output was **absent**. The output pane instead displayed a JDoodle service error: *"Unable to process your request. Please try again, or contact JDoodle Support at hello@jdoodle.com."* No structured completed-output event appeared. **Live Julia execution and the execution event contract remain NOT VERIFIED; output-based grading is NOT IMPLEMENTED.**
+
+Julia Lab now recognizes an origin/source/path-checked `onLoad` property as an ephemeral connection diagnostic, even if it arrives before the diagnostic panel opens. It is explicitly *not* readiness-for-commands, run success, or code mastery. Untrusted messages cannot trigger a grade, nor are code/output payloads retained.
+
+The manually gated probe is kept in `tests/live-jdoodle-probe.mjs` for reproducibility but removed from the standard CI workflow, preventing automatic repeated JDoodle runs. The normal Node + synthetic Chromium acceptance remains independent of JDoodle's external uptime. The next actual dependency is a functioning JDoodle execution and the vendor-generated expanded embedding snippet documenting ready/code/output events; neither can be inferred from `onLoad` alone.

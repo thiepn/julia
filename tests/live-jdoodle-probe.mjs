@@ -1,7 +1,8 @@
-// One-time, read-only browser reconnaissance of the *public* supplied JDoodle
-// embed. Do not post programs, change account settings, or interpret its event
-// fields as trusted. This is not an automated test of Julia code execution.
-// Run only when JULIA_LAB_LIVE_PROBE=1; no credentials/API plans involved.
+// Optional manual diagnostic for the *public* JDoodle embed.
+// WARNING: this script performs one fixed test Julia execution when explicitly
+// enabled. It is intentionally NOT part of ordinary CI. Do not interpret event
+// metadata or errors as a passing execution; never post secrets or user code.
+// Run only when JULIA_LAB_LIVE_PROBE=1; no account credentials are used.
 import {chromium, request} from "playwright";
 import {createServer} from "node:http";
 import {readFile} from "node:fs/promises";
