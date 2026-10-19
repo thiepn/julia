@@ -34,7 +34,7 @@ export const feedbackByLesson = {
 ],
 "07":[
 ["A loop summing 1 through 4 visits each integer once and accumulates the total.","Trace the loop's running sum from 1 to 4."],
-["The >= operator includes equality, so 3 >= 3 is true.","Compare > with >=."],
+["The >= operator includes equality, so 3 >= 3 is true.","Compare > with >=; only one includes the equality case."],
 ["Only 4 is strictly positive: neither -1 nor 0 is greater than zero.","Zero is not a positive number."]
 ],
 "08":[
