@@ -115,6 +115,49 @@
         </div>
         <p class="numerical-note">The boundary is ||v|| = 1 in the chosen norm. Its direct image A(boundary) generally differs from the inverse image A⁻¹(boundary), which is the unit boundary of ||A·v||. These are JavaScript numerical illustrations, not Julia executions or mathematical proofs.</p>
       </section>
+      <section class="paper elimination-lab" id="elimination-lab" aria-labelledby="elim-heading" hidden>
+        <div class="section-title"><span class="section-num">04</span><h2 id="elim-heading">Trace Gaussian elimination</h2></div>
+        <div class="elim-controls">
+          <label for="elim-system">Linear system</label>
+          <select id="elim-system">
+            <option value="regular">3×3 linear system</option>
+            <option value="swap">Zero leading pivot</option>
+            <option value="small">Small leading pivot</option>
+            <option value="singular">Singular system</option>
+          </select>
+          <label for="elim-pivot">Pivot selection</label>
+          <select id="elim-pivot">
+            <option value="partial">Partial pivoting</option>
+            <option value="none">Without pivoting</option>
+          </select>
+        </div>
+        <p class="elim-step" id="elim-stage" aria-live="polite"></p>
+        <p class="elim-operation" id="elim-operation" aria-live="polite"></p>
+        <div class="elim-matrix-scroll">
+          <table class="elim-matrix" aria-label="Augmented matrix A and b at the selected elimination step">
+            <thead><tr><th scope="col">Row</th><th scope="col">a₁</th><th scope="col">a₂</th><th scope="col">a₃</th><th scope="col">b</th></tr></thead>
+            <tbody id="elim-matrix-body"></tbody>
+          </table>
+        </div>
+        <div class="elim-step-actions" role="group" aria-label="Elimination steps">
+          <button class="secondary" id="elim-start" type="button" disabled>First</button>
+          <button class="secondary" id="elim-prev" type="button" disabled>Previous step</button>
+          <button class="primary" id="elim-next" type="button">Next step</button>
+          <button class="secondary" id="elim-end" type="button">Last</button>
+        </div>
+        <div id="elim-solution" class="elim-result" hidden aria-live="polite">
+          <p id="elim-solution-text"></p>
+          <p id="elim-residual"></p>
+        </div>
+        <details class="elim-julia-details">
+          <summary>Julia code for this system</summary>
+          <pre class="code"><code id="elim-julia"></code></pre>
+          <button class="secondary" id="elim-copy" type="button">Copy Julia code</button>
+          <p id="elim-copy-status" class="feedback" role="status"></p>
+        </details>
+        <p id="elim-save-status" class="feedback" role="status"></p>
+        <p class="elim-disclaimer">Row operations and residuals are calculated in this browser using JavaScript floating-point arithmetic. Run the separate Julia example in a compiler to compare results. A small residual does not by itself guarantee a small solution error.</p>
+      </section>
       <section class="paper repair-lab" aria-labelledby="repair-section-title">
         <div class="section-title"><span class="section-num" id="repair-section-number">04</span><h2 id="repair-section-title">Debug a Julia program</h2></div>
         <h3 id="repair-title"></h3>

@@ -84,3 +84,30 @@
 .numerical-note{color:var(--muted);margin-top:15px}
 @media(max-width:850px){.numerical-layout{grid-template-columns:1fr}.numerical-controls{grid-template-columns:1fr 1fr}}
 @media(max-width:420px){.numerical-controls{grid-template-columns:1fr} }
+
+/* Elimination stepper: visible row operations, matrix data, no coding grade. */
+.elimination-lab[hidden]{display:none}
+.elim-controls{display:grid;grid-template-columns:auto minmax(140px,1fr);gap:10px 14px;align-items:center;margin-bottom:18px}
+.elim-controls label{font-size:14px;font-weight:650}
+.elim-controls select{padding:9px;min-width:0;font-size:14px;color:var(--ink);border:1px solid var(--line);background:var(--surface)}
+.elim-step{font-size:14px!important;font-weight:700;color:var(--accent);margin:0 0 4px}
+.elim-operation{font-size:15px!important;min-height:2.7em;margin:0 0 10px}
+.elim-matrix-scroll{max-width:100%;overflow-x:auto;border:1px solid var(--line)}
+.elim-matrix{border-collapse:collapse;width:100%;min-width:320px;font:14px/1.5 "Cascadia Code",Consolas,monospace;font-variant-numeric:tabular-nums}
+.elim-matrix th,.elim-matrix td{text-align:right;padding:10px 8px;border-bottom:1px solid var(--line)}
+.elim-matrix th:first-child{text-align:left;color:var(--muted);font-size:13px}
+.elim-matrix thead th{font-size:13px;color:var(--muted);font-weight:700;background:var(--washed)}
+.elim-matrix tbody tr:last-child>*{border-bottom:0}
+.elim-matrix .elim-active-row>*{background:var(--active)}
+.elim-matrix td.elim-rhs{border-left:2px solid var(--muted);font-weight:700}
+.elim-matrix td.elim-pivot-column{text-decoration:underline;text-underline-offset:3px}
+.elim-step-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.elim-step-actions button{flex:1;min-width:90px}
+.elim-result{padding:12px 14px;border-left:3px solid var(--accent);background:var(--washed);margin-top:14px}
+.elim-result[hidden]{display:none}
+.elim-result p{font-size:14px!important;margin:0 0 6px}
+.elim-result p:last-child{margin-bottom:0}
+.elim-julia-details{margin-top:18px}
+.elim-julia-details pre{margin-top:12px}
+.elim-disclaimer{font-size:14px!important;color:var(--muted);margin-top:16px}
+@media(max-width:500px){.elim-controls{grid-template-columns:1fr;gap:6px}.elim-step-actions button{min-width:calc(50% - 6px)}}

@@ -136,3 +136,9 @@ Lessons 05 and 06 include an interactive, browser-computed 2D vector and matrix 
 This supports conceptual exploration rather than reproducing the submitted Übung 1 plots or emitting Julia code. All calculations use the browser's JavaScript IEEE 754 doubles. Settings persist under a new independent local-storage key; no Julia execution, grading, progress mutation, or external API call occurs. Reset changes only the experiment settings.
 
 J10 also repairs a demonstrated J9 exact-head Node test failure: the 02 indexing repair was shorter than the intended 30-character source minimum, so that case now explicitly assigns the first entry before printing. The original bug and teaching objective are preserved, and the test is not weakened.
+
+## J11 — Gaussian Elimination Lab (Lessons 12–13)
+
+Four independent 3×3 example systems provide a **step-by-step interactive Gaussian elimination trace**, including row selection, partial-pivot swaps, row eliminations, an upper-triangular system, back-substitution, a final computed solution and original-system residual. Changing the pivoting strategy demonstrates zero-pivot failure, tiny-pivot sensitivity, and singular systems without asserting a unique solution. Previous/Next/First/Last navigate snapshots of the augmented matrix. A Julia `A \\ b` example for the chosen dataset is displayed and can be copied for external execution.
+
+Implementation uses native DOM controls and browser-side JavaScript binary64 formulas; it is **not** running Julia, proving correctness, or grading submitted code. No automatic mastery or cross-app writes. Settings use an independent localStorage key, and no existing question/lesson IDs, drafts, repairs, JDoodle embed or fallbacks change. Substantive AMP practice focused on linear-system algorithms rather than J10's norm geometry. Original `AGENTS.md` main copy restrictions respected.
