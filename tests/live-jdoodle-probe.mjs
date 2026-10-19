@@ -71,6 +71,44 @@ try{
     }).catch(e=>({error:String(e.message).slice(0,130)}));
     console.log("Provider frame inspect",safeUrl(f.url()),JSON.stringify(summary));
   }
-  console.log("LIVE_PROBE_END: no Julia program executed, no event payload contract assumed");
+
+  // ONE interactive smoke execution of a fixed harmless Julia program.
+  const jf=page.frames().find(f=>{
+    try{const u=new URL(f.url());return u.origin==="https://www.jdoodle.com"&&u.pathname==="/embed/v1/d74ec9cf98a1b5b";}
+    catch{return false;}
+  });
+  if(!jf){console.log("JULIA_RUN_NOT_TESTED: expected JDoodle frame missing");}
+  else {
+    const selectors=[".monaco-editor",".ace_editor",".cm-editor","textarea","[contenteditable=true]"];
+    const counts={};
+    for(const selector of selectors)counts[selector]=await jf.locator(selector).count();
+    console.log("Provider editor selector counts",JSON.stringify(counts));
+    let editor=null;
+    for(const selector of [".monaco-editor",".ace_editor",".cm-editor","[contenteditable=true]","textarea"]){
+      if(counts[selector]>0){editor=jf.locator(selector).first();break;}
+    }
+    const run=jf.getByRole("button",{name:/^Execute$/i}).first();
+    console.log("JDoodle execute button",await run.count(),"enabled",await run.isEnabled().catch(()=>false));
+    if(editor && await run.isVisible().catch(()=>false)){
+      const known="println(\"J6_JULIA_OK_271\")";
+      await editor.click({timeout:5000});
+      await page.keyboard.press("ControlOrMeta+A");
+      await page.keyboard.insertText(known);
+      await page.waitForTimeout(500);
+      const visibleInserted=await jf.evaluate(x=>document.body.innerText.includes(x),known).catch(()=>false);
+      console.log("JULIA_CODE_ENTRY_UI",visibleInserted?"visible in text":"Monaco/virtual editor may not expose text");
+      await run.click({timeout:5000});
+      console.log("JULIA_EXECUTE_BUTTON_CLICKED");
+      await page.waitForTimeout(12000);
+      const body=await jf.evaluate(()=>document.body?.innerText||"").catch(()=>"");
+      console.log("JULIA_EXECUTION_OUTPUT_SENTINEL_VISIBLE",body.includes("J6_JULIA_OK_271"));
+      const messages=await page.evaluate(()=>window.__juliaLabObservedMessages||[]);
+      console.log("Provider message key schemas",
+        JSON.stringify(messages.filter(x=>x.origin==="https://www.jdoodle.com"&&x.kind==="object").map(x=>x.keys).slice(-20)));
+      console.log("JULIA_EXECUTION_PROBE",body.includes("J6_JULIA_OK_271")?"OUTPUT_OBSERVED":"NOT_VERIFIED");
+    } else console.log("JULIA_RUN_NOT_TESTED: editor or Run control unavailable");
+  }
+  console.log("LIVE_PROBE_END: one user-authorized fixed Julia smoke test, no automatic grading");
+
 } catch(e){console.log("LIVE_PROBE_NOT_VERIFIED",String(e.message).slice(0,260));}
 finally{if(browser)await browser.close();await new Promise(r=>server.close(r));}
