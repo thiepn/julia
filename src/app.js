@@ -5,6 +5,8 @@ import {readDraft, writeDraft, clearDraft} from "./workspace.js";
 import {inspectEmbedMessage} from "./jdoodle-bridge.js";
 import {exportJuliaScript, validateJuliaImport, MAX_IMPORT_BYTES} from "./transfer.js";
 import {questionFeedback} from "./feedback.js";
+import {repairForLesson} from "./repair-cases.js";
+import {readRepair, writeRepair, clearRepair, compareRepairText} from "./repair-workspace.js";
 
 const $ = (selector) => document.querySelector(selector);
 const progress = readProgress();
@@ -119,6 +121,22 @@ function renderQuestions() {
     });
   });
 }
+function renderRepair() {
+  const r=repairForLesson(current().id);
+  $("#repair-title").textContent=r.title;
+  $("#repair-objective").textContent=r.objective;
+  $("#repair-expected").textContent=r.expected;
+  $("#repair-editor").value=readRepair(r.id,r.broken);
+  $("#repair-feedback").textContent="Draft not executed or graded.";
+  $("#repair-feedback").dataset.status="";
+  $("#repair-hint-1").open=false;
+  $("#repair-hint-1").querySelector("p").textContent=r.hints[0];
+  $("#repair-hint-2").open=false;
+  $("#repair-hint-2").querySelector("p").textContent=r.hints[1];
+  $("#repair-reference").open=false;
+  $("#repair-reference-code").textContent=r.reference;
+  $("#repair-cause").textContent=r.cause;
+}
 function render() {
   currentIndex = lessonIndexFromHash();
   const l = current();
@@ -133,6 +151,7 @@ function render() {
   $("#scratch-code").value = readDraft(l.id, l.starter);
   $("#draft-feedback").textContent = "Saved only in this browser; not executed or automatically graded.";
   $("#challenge-checks").textContent = l.checks;
+  renderRepair();
   [1,2,3].forEach(i => {
     const el = $("#hint-"+i); el.open = false;
     el.querySelector("p").textContent = l.hints[i-1];
@@ -182,6 +201,42 @@ function setupEmbed() {
   };
   document.body.append(script);
 }
+$("#repair-editor").addEventListener("input",()=>{
+  const r=repairForLesson(current().id);
+  const saved=writeRepair(r.id,$("#repair-editor").value);
+  $("#repair-feedback").textContent=saved
+    ? "Repair draft saved in this browser. Julia execution not verified."
+    : "Could not save repair (storage unavailable or text too long). Copy the text elsewhere.";
+  $("#repair-feedback").dataset.status=saved?"saved":"error";
+});
+$("#repair-compare").addEventListener("click",()=>{
+  const r=repairForLesson(current().id);
+  const matches=compareRepairText($("#repair-editor").value,r.reference).matches;
+  $("#repair-feedback").textContent=matches
+    ? "Text matches the reference example. This does not verify Julia execution or alternative inputs."
+    : "Text differs from the reference example. Your repair may still be valid; compare the algorithm, then run it in Julia.";
+  $("#repair-feedback").dataset.status=matches?"match":"different";
+});
+$("#repair-copy").addEventListener("click",async()=>{
+  try{
+    await navigator.clipboard.writeText($("#repair-editor").value);
+    $("#repair-feedback").textContent="Repair code copied. Run it in Julia, JDoodle or OneCompiler to check behavior.";
+  }catch{
+    $("#repair-feedback").textContent="Clipboard unavailable. Select the repair code and copy it manually.";
+  }
+});
+$("#repair-reset").addEventListener("click",()=>{
+  const r=repairForLesson(current().id);
+  if(!window.confirm("Discard the repair draft for lesson "+r.id+" and restore the buggy example?"))return;
+  if(!clearRepair(r.id)){
+    $("#repair-feedback").textContent="Could not reset the saved repair. Code has not changed.";
+    return;
+  }
+  $("#repair-editor").value=r.broken;
+  $("#repair-reference").open=false;
+  $("#repair-feedback").textContent="Buggy example restored for this lesson.";
+  $("#repair-feedback").dataset.status="";
+});
 $("#continue-lesson").addEventListener("click",()=>{
   navigate(nextConceptIndex());
   $("#lesson-title").focus({preventScroll:true});

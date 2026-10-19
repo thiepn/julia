@@ -37,3 +37,16 @@
 .concept-brief{margin-top:14px;font-size:14px!important;font-weight:600;color:var(--ink)}
 #lesson-title:focus{outline-offset:5px}
 @media(max-width:760px){.continue-button{margin-top:8px}.continue-detail{margin-top:6px!important}}
+
+/* J9: standalone repair exercise, distinct from the graded concept questions */
+.repair-lab h3{font-size:17px;font-weight:650;line-height:1.4;margin:0 0 8px}
+.repair-lab>label{display:block;margin:18px 0 8px;font-size:14px;font-weight:650}
+.repair-target{font-size:14px!important;color:var(--ink);margin:12px 0}
+.repair-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.repair-actions .quiet{margin-left:auto}
+.repair-feedback{font-size:14px!important;line-height:1.5;margin-top:10px;color:var(--muted)}
+.repair-feedback[data-status="match"]{color:var(--accent)}
+.repair-feedback[data-status="error"]{color:#b26f43}
+.repair-lab #repair-reference pre{margin-top:12px}
+.repair-lab #repair-cause{font-size:14px;color:var(--ink)}
+@media(max-width:760px){.repair-actions .quiet{margin-left:0}}

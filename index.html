@@ -61,6 +61,27 @@
         <details id="hint-2"><summary>Hint 2 · Approach</summary><p></p></details>
         <details id="hint-3"><summary>Hint 3 · Last step</summary><p></p></details>
       </section>
+      <section class="paper repair-lab" aria-labelledby="repair-section-title">
+        <div class="section-title"><span class="section-num">04</span><h2 id="repair-section-title">Debug a Julia program</h2></div>
+        <h3 id="repair-title"></h3>
+        <p id="repair-objective"></p>
+        <p class="repair-target"><strong>Expected behavior:</strong> <span id="repair-expected"></span></p>
+        <label for="repair-editor">Repair this code</label>
+        <textarea id="repair-editor" class="scratch-editor" rows="10" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="repair-expected repair-feedback"></textarea>
+        <div class="repair-actions">
+          <button type="button" class="secondary" id="repair-compare">Compare with example</button>
+          <button type="button" class="secondary" id="repair-copy">Copy repair code</button>
+          <button type="button" class="quiet" id="repair-reset">Reset repair</button>
+        </div>
+        <p class="feedback repair-feedback" id="repair-feedback" role="status" aria-live="polite"></p>
+        <details id="repair-hint-1"><summary>Hint 1</summary><p></p></details>
+        <details id="repair-hint-2"><summary>Hint 2</summary><p></p></details>
+        <details id="repair-reference">
+          <summary>Show one reference repair</summary>
+          <pre class="code"><code id="repair-reference-code"></code></pre>
+          <p id="repair-cause"></p>
+        </details>
+      </section>
       <div class="lesson-footer">
         <button type="button" class="secondary" id="previous">← Previous</button>
         <button type="button" class="primary" id="next">Next lesson →</button>
