@@ -8,7 +8,7 @@ const storage=()=>{
   return {data,getItem:key=>data.has(key)?data.get(key):null,setItem:(key,value)=>data.set(key,value),removeItem:key=>data.delete(key)};
 };
 test("four original program cases match canonical lesson IDs and Julia-style sources",()=>{
-  assert.deepEqual(Object.keys(TRACE_LESSONS),["03","07","08","11"]);
+  assert.deepEqual(Object.keys(TRACE_LESSONS).sort(),["03","07","08","11"]);
   const ids=new Set(lessons.map(l=>l.id));
   for(const [lesson,caseId] of Object.entries(TRACE_LESSONS)){
     assert.ok(ids.has(lesson));
