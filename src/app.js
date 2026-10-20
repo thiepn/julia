@@ -11,6 +11,7 @@ import {initNumericalExplorer,showNumericalExplorer} from "./numerical-view.js";
 import {initEliminationLab,showEliminationLab} from "./elimination-view.js";
 import {initPrecisionLab,showPrecisionLab} from "./precision-view.js";
 import {initFittingLab,showFittingLab} from "./fitting-view.js";
+import {initProgramTrace,showProgramTrace} from "./program-trace-view.js";
 
 const $ = (selector) => document.querySelector(selector);
 const progress = readProgress();
@@ -152,7 +153,8 @@ function render() {
   showEliminationLab(l.id);
   showPrecisionLab(l.id);
   showFittingLab(l.id);
-  $("#repair-section-number").textContent=["05","06","09","10","12","13","15"].includes(l.id)?"05":"04";
+  showProgramTrace(l.id);
+  $("#repair-section-number").textContent=["03","05","06","07","08","09","10","11","12","13","15"].includes(l.id)?"05":"04";
   $("#lesson-theory").textContent = l.theory;
   $("#example-code").textContent = l.example;
   $("#challenge-text").textContent = l.challenge;
@@ -411,5 +413,6 @@ initNumericalExplorer();
 initEliminationLab();
 initPrecisionLab();
 initFittingLab();
+initProgramTrace();
 render();
 setupEmbed();

@@ -254,6 +254,43 @@
         <p class="feedback" id="fit-storage-status" role="status"></p>
         <p class="fit-scope">Fitted parameters and errors are calculated in the browser using JavaScript binary64. This is not Julia execution, a proof of numerical stability, or coding mastery.</p>
       </section>
+      <section class="paper program-trace" id="program-trace" aria-labelledby="trace-heading" hidden>
+        <div class="section-title"><span class="section-num">04</span><h2 id="trace-heading">Predict program state</h2></div>
+        <h3 id="trace-title"></h3>
+        <pre class="code"><code id="trace-code"></code></pre>
+        <p class="trace-iteration" id="trace-iteration"></p>
+        <p id="trace-context"></p>
+        <p class="trace-before"><span id="trace-state-name">total</span> before iteration: <strong id="trace-before"></strong></p>
+        <div id="trace-prediction-fields">
+          <label for="trace-input" id="trace-predict-label">Predict the next value</label>
+          <input id="trace-input" type="number" step="1" inputmode="numeric" autocomplete="off" min="-100000" max="100000" aria-describedby="trace-explanation"/>
+          <div id="trace-branch-wrap" hidden>
+            <label for="trace-branch">Prediction for <code id="trace-condition"></code></label>
+            <select id="trace-branch">
+              <option value="">Choose true or false</option>
+              <option value="true">true</option>
+              <option value="false">false</option>
+            </select>
+          </div>
+          <div class="trace-actions">
+            <button type="button" class="primary" id="trace-check">Check prediction</button>
+            <button type="button" class="secondary" id="trace-next" disabled>Next iteration</button>
+            <button type="button" class="quiet" id="trace-reset">Reset trace</button>
+          </div>
+        </div>
+        <p id="trace-explanation" class="trace-feedback" aria-live="polite" role="status"></p>
+        <p id="trace-finish" class="trace-finish" hidden></p>
+        <div class="trace-history-wrap">
+          <table class="trace-history">
+            <caption>Completed iterations</caption>
+            <thead><tr><th scope="col">Iteration</th><th scope="col">Loop values</th><th scope="col">Before</th><th scope="col">After</th></tr></thead>
+            <tbody id="trace-history"></tbody>
+          </table>
+          <p id="trace-history-empty">No iterations completed.</p>
+        </div>
+        <p id="trace-save-status" class="feedback" role="status"></p>
+        <p class="trace-scope">Predictions are checked against the shown program's modeled state. This does not execute learner-authored Julia code or award coding mastery.</p>
+      </section>
       <section class="paper repair-lab" aria-labelledby="repair-section-title">
         <div class="section-title"><span class="section-num" id="repair-section-number">04</span><h2 id="repair-section-title">Debug a Julia program</h2></div>
         <h3 id="repair-title"></h3>

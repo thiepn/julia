@@ -189,3 +189,27 @@
 .fit-reset{margin-top:16px}
 .fit-scope{font-size:14px!important;color:var(--muted);line-height:1.6;margin-top:16px}
 @media(max-width:500px){.fit-controls{grid-template-columns:1fr;gap:6px}.fit-values>div{flex-wrap:wrap}.fit-values dd{text-align:left}}
+
+/* J14 program-state predictions: distinct from passive numerical walkthroughs. */
+.program-trace[hidden]{display:none}
+.program-trace h3{font-size:17px;line-height:1.4;margin:0 0 12px}
+.trace-iteration{font-size:14px!important;font-weight:700;color:var(--accent);margin:16px 0 6px}
+.trace-before{font-size:15px!important;margin:10px 0 14px}
+#trace-prediction-fields>label,#trace-branch-wrap>label{font-size:14px;display:block;font-weight:650;margin:12px 0 7px}
+#trace-input,#trace-branch{display:block;width:100%;max-width:350px;background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:10px;font-size:16px}
+#trace-branch-wrap[hidden],#trace-prediction-fields[hidden],#trace-finish[hidden],#trace-history-empty[hidden]{display:none}
+.trace-actions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.trace-actions .quiet{margin-left:auto}
+.trace-feedback{font-size:14px!important;line-height:1.55;padding-left:12px;border-left:3px solid var(--muted);margin:12px 0}
+.trace-feedback:empty{display:none}
+.trace-feedback[data-result="correct"]{border-left-color:#298c62}
+.trace-feedback[data-result="incorrect"]{border-left-color:#b7733a}
+.trace-feedback[data-result="invalid"]{border-left-color:#bb4c4c}
+.trace-finish{font-size:15px!important;font-weight:650}
+.trace-history-wrap{max-width:100%;overflow-x:auto;margin:14px 0}
+.trace-history{width:100%;border-collapse:collapse;min-width:350px;font-size:14px;font-variant-numeric:tabular-nums}
+.trace-history caption{text-align:left;font-weight:650;padding:10px 0}
+.trace-history th,.trace-history td{border-bottom:1px solid var(--line);padding:8px;text-align:left}
+.trace-history tbody tr:last-child>*{border-bottom:0}
+.trace-scope{font-size:14px!important;color:var(--muted);line-height:1.55}
+@media(max-width:500px){.trace-actions .quiet{margin-left:0}.trace-actions button{flex:1;min-width:120px}}
