@@ -213,3 +213,26 @@
 .trace-history tbody tr:last-child>*{border-bottom:0}
 .trace-scope{font-size:14px!important;color:var(--muted);line-height:1.55}
 @media(max-width:500px){.trace-actions .quiet{margin-left:0}.trace-actions button{flex:1;min-width:120px}}
+
+/* J15: numerical factorization stepper, readable matrix values. */
+.factor-lab[hidden],.factor-result[hidden],#factor-right-group[hidden],#factor-orthogonality[hidden]{display:none}
+.factor-controls{display:grid;grid-template-columns:minmax(150px,auto) minmax(160px,1fr);align-items:center;gap:10px 14px;margin-bottom:18px}
+.factor-controls label{font-size:14px;font-weight:650}
+.factor-controls select{padding:10px;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);min-width:0}
+.factor-progress{font-size:14px!important;font-weight:700;color:var(--accent);margin:6px 0}
+.factor-operation{font-size:16px!important;line-height:1.5;margin:8px 0}
+.factor-explanation{font-size:14px!important;line-height:1.5;color:var(--muted)}
+.factor-matrices{display:flex;gap:16px;justify-content:flex-start;align-items:flex-start;flex-wrap:wrap;margin:18px 0}
+.factor-matrices>div{min-width:95px}
+.factor-matrices h3{font-size:15px;margin:0 0 9px}
+.factor-matrix{border-collapse:collapse;font:15px/1.4 "Cascadia Code",Consolas,monospace;font-variant-numeric:tabular-nums}
+.factor-matrix td{text-align:right;padding:10px 9px;border:1px solid var(--line);min-width:46px}
+.factor-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
+.factor-actions button{flex:1;min-width:100px}
+.factor-result{background:var(--washed);border-left:3px solid var(--accent);padding:12px 14px}
+.factor-result p{margin:6px 0;font-size:14px!important;line-height:1.5}
+.factor-code{margin-top:16px}
+.factor-code pre{margin-top:12px}
+.factor-reset{margin-top:16px}
+.factor-scope{font-size:14px!important;color:var(--muted);line-height:1.6;margin-top:16px}
+@media(max-width:520px){.factor-controls{grid-template-columns:1fr;gap:7px}.factor-matrices{gap:12px}.factor-matrix td{padding:8px 6px;min-width:39px}}

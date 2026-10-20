@@ -291,6 +291,62 @@
         <p id="trace-save-status" class="feedback" role="status"></p>
         <p class="trace-scope">Predictions are checked against the shown program's modeled state. This does not execute learner-authored Julia code or award coding mastery.</p>
       </section>
+      <section class="paper factor-lab" id="factor-lab" aria-labelledby="factor-heading" hidden>
+        <div class="section-title"><span class="section-num">04</span><h2 id="factor-heading">Explore QR and Cholesky</h2></div>
+        <div class="factor-controls">
+          <label for="factor-case">Matrix</label>
+          <select id="factor-case">
+            <option value="spd">Symmetric positive-definite</option>
+            <option value="nonsymmetric">Non-symmetric invertible</option>
+            <option value="indefinite">Symmetric indefinite</option>
+            <option value="rankdef">Rank-deficient</option>
+            <option value="close">Nearly dependent columns</option>
+          </select>
+          <label for="factor-method">Factorization method</label>
+          <select id="factor-method">
+            <option value="qr">QR · orthogonal columns</option>
+            <option value="cholesky">Cholesky · positive definiteness</option>
+          </select>
+        </div>
+        <p id="factor-progress" class="factor-progress" aria-live="polite"></p>
+        <p id="factor-operation" class="factor-operation"></p>
+        <p id="factor-explanation" class="factor-explanation"></p>
+        <div class="factor-matrices">
+          <div>
+            <h3>A</h3>
+            <table aria-label="Original matrix" class="factor-matrix"><tbody id="factor-a"></tbody></table>
+          </div>
+          <div>
+            <h3 id="factor-left-label">Q</h3>
+            <table aria-label="Left factor" class="factor-matrix"><tbody id="factor-left"></tbody></table>
+          </div>
+          <div id="factor-right-group">
+            <h3>R</h3>
+            <table aria-label="Upper triangular factor" class="factor-matrix"><tbody id="factor-right"></tbody></table>
+          </div>
+        </div>
+        <div class="factor-actions" role="group" aria-label="Factorization steps">
+          <button type="button" class="secondary" id="factor-first">First</button>
+          <button type="button" class="secondary" id="factor-prev">Previous step</button>
+          <button type="button" class="primary" id="factor-next">Next step</button>
+          <button type="button" class="secondary" id="factor-last">Last</button>
+        </div>
+        <div class="factor-result" id="factor-result" hidden aria-live="polite">
+          <p id="factor-status"></p>
+          <p id="factor-reconstruction"></p>
+          <p id="factor-orthogonality"></p>
+          <p id="factor-warning"></p>
+        </div>
+        <details class="factor-code">
+          <summary>Julia factorization example</summary>
+          <pre class="code"><code id="factor-julia"></code></pre>
+          <button type="button" class="secondary" id="factor-copy">Copy Julia code</button>
+          <p class="feedback" id="factor-copy-status" role="status"></p>
+        </details>
+        <button type="button" class="secondary factor-reset" id="factor-reset">Reset experiment</button>
+        <p id="factor-save-status" class="feedback" role="status"></p>
+        <p class="factor-scope">Calculations use JavaScript binary64 on fixed 2×2 matrices. Norms and failure classifications are numerical examples, not Julia execution, general factorization proofs or coding grades.</p>
+      </section>
       <section class="paper repair-lab" aria-labelledby="repair-section-title">
         <div class="section-title"><span class="section-num" id="repair-section-number">04</span><h2 id="repair-section-title">Debug a Julia program</h2></div>
         <h3 id="repair-title"></h3>
