@@ -22,19 +22,19 @@ const examples={
     original: "function forward_substitution(L, b)\n" +
       "    x = Vector{Float64}(undef, length(b))\n" +
       "    for i in eachindex(b)\n" +
-      "        x[i] = (b[i] - sum(L[i,j]*x[j] for j in 1:(i-1))) / L[i,i]\n" +
+      "        x[i] = (b[i] - sum((L[i,j]*x[j] for j in 1:(i-1)); init=0.0)) / L[i,i]\n" +
       "    end\n" +
       "    return x\nend",
     a: "function backward_substitution(U, b)\n" +
       "    x = Vector{Float64}(undef, length(b))\n" +
       "    for i in length(b):-1:1\n" +
-      "        x[i] = (b[i] - sum(U[i,j]*x[j] for j in (i+1):length(b))) / U[i,i]\n" +
+      "        x[i] = (b[i] - sum((U[i,j]*x[j] for j in (i+1):length(b)); init=0.0)) / U[i,i]\n" +
       "    end\n" +
       "    return x\nend",
     b: "function forward_substitution(L, b)\n" +
       "    x = Vector{Float64}(undef, length(b))\n" +
       "    for i in eachindex(b)\n" +
-      "        x[i] = (b[i] - sum(L[i,j]*x[j] for j in 1:(i-1))) / L[i,i]\n" +
+      "        x[i] = (b[i] - sum((L[i,j]*x[j] for j in 1:(i-1)); init=0.0)) / L[i,i]\n" +
       "    end\n" +
       "    return x\nend"
   }
