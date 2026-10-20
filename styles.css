@@ -268,3 +268,9 @@
 .sensitivity-reset{margin-top:16px}
 .sensitivity-scope{margin-top:14px}
 @media(max-width:520px){.sensitivity-controls{grid-template-columns:1fr;gap:7px}.sensitivity-metrics>div{flex-wrap:wrap}.sensitivity-metrics dd{text-align:left}}
+
+/* J17 independent task selection shares the canonical Julia editor. */
+.practice-switch{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:4px 0 16px}
+.practice-switch label{font-size:14px;font-weight:650;min-width:90px}
+.practice-switch select{flex:1;min-width:185px;max-width:470px;background:var(--surface);color:var(--ink);font-size:15px;padding:10px;border:1px solid var(--line)}
+#transfer-plan[hidden],#transfer-tests[hidden],#hint-1[hidden],#hint-2[hidden],#hint-3[hidden]{display:none}

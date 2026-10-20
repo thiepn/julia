@@ -38,6 +38,14 @@
       </section>
       <section class="paper" aria-labelledby="coding-title">
         <div class="section-title"><span class="section-num">03</span><h2 id="coding-title">Write Julia yourself</h2></div>
+        <div class="practice-switch">
+          <label for="practice-mode">Coding task</label>
+          <select id="practice-mode" aria-describedby="draft-help">
+            <option value="original">Original lesson challenge</option>
+            <option value="a">Transfer A</option>
+            <option value="b">Transfer B</option>
+          </select>
+        </div>
         <p id="challenge-text"></p>
         <div class="code-label">STARTER FILE <button class="text-button" id="copy-starter" type="button">Copy code</button></div>
         <pre class="code"><code id="starter-code"></code></pre>
@@ -57,6 +65,8 @@
         <p class="section-intro" id="draft-help">Your work is saved per lesson. Copy it to an online Julia compiler or download a .jl file for VS Code. Importing a .jl file replaces only the current lesson's draft after confirmation. None of these actions executes or grades code.</p>
         <p class="feedback" id="draft-feedback" role="status" aria-live="polite"></p>
         <p class="section-intro"><strong>Success criteria:</strong> <span id="challenge-checks"></span></p>
+        <details id="transfer-plan" hidden><summary>Planning cue</summary><p></p></details>
+        <details id="transfer-tests" hidden><summary>Additional case to test</summary><p></p></details>
         <details id="hint-1"><summary>Hint 1 · Concept</summary><p></p></details>
         <details id="hint-2"><summary>Hint 2 · Approach</summary><p></p></details>
         <details id="hint-3"><summary>Hint 3 · Last step</summary><p></p></details>

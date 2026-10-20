@@ -498,6 +498,90 @@ try {
     await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
     assert.equal(await page.locator("#progress-label").innerText(),"1 of 16 concept sets reviewed");
   });
+  await check("J17 independent coding transfer retains original drafts and per-variant work",async()=>{
+    await page.goto("http://127.0.0.1:"+port+"/#lesson/01");
+    await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
+    assert.equal(await page.locator("#practice-mode").inputValue(),"original");
+    const canonicalDraft=await page.locator("#scratch-code").inputValue();
+    const canonicalTask=await page.locator("#challenge-text").innerText();
+    await page.locator("#practice-mode").selectOption("a");
+    assert.match(await page.locator("#challenge-text").innerText(),/circumference and area/);
+    assert.match(await page.locator("#starter-code").innerText(),/r = 3/);
+    assert.equal(await page.locator("#transfer-plan").isVisible(),true);
+    assert.equal(await page.locator("#hint-1").isVisible(),false);
+    await page.locator("#transfer-plan summary").click();
+    assert.match(await page.locator("#transfer-plan p").innerText(),/2πr/);
+    await page.locator("#transfer-tests summary").click();
+    assert.match(await page.locator("#transfer-tests p").innerText(),/r=0/);
+    await page.locator("#scratch-code").fill("println(12345) # transfer a");
+    await page.locator("#practice-mode").selectOption("b");
+    assert.match(await page.locator("#challenge-text").innerText(),/Celsius entries/);
+    assert.doesNotMatch(await page.locator("#scratch-code").inputValue(),/12345/);
+    await page.locator("#scratch-code").fill("println(98765) # transfer b");
+    await page.locator("#practice-mode").selectOption("original");
+    assert.equal(await page.locator("#scratch-code").inputValue(),canonicalDraft);
+    assert.equal(await page.locator("#challenge-text").innerText(),canonicalTask);
+    assert.equal(await page.locator("#transfer-plan").isVisible(),false);
+    assert.equal(await page.locator("#hint-1").isVisible(),true);
+    await page.locator("#practice-mode").selectOption("a");
+    assert.match(await page.locator("#scratch-code").inputValue(),/12345/);
+    await page.reload();
+    assert.equal(await page.locator("#practice-mode").inputValue(),"original");
+    assert.equal(await page.locator("#scratch-code").inputValue(),canonicalDraft);
+    await page.locator("#practice-mode").selectOption("a");
+    assert.match(await page.locator("#scratch-code").inputValue(),/12345/);
+    await page.locator("#output-input").fill("some text");
+    await page.locator("#check-output").click();
+    assert.match(await page.locator("#output-feedback").innerText(),/only to the original task/);
+    await page.locator("#practice-mode").selectOption("b");
+    assert.match(await page.locator("#scratch-code").inputValue(),/98765/);
+    page.once("dialog",dialog=>dialog.dismiss());
+    await page.locator("#reset-draft").click();
+    assert.match(await page.locator("#scratch-code").inputValue(),/98765/);
+    page.once("dialog",dialog=>dialog.accept());
+    await page.locator("#reset-draft").click();
+    assert.match(await page.locator("#scratch-code").inputValue(),/temperatures/);
+    await page.locator("#practice-mode").selectOption("a");
+    assert.match(await page.locator("#scratch-code").inputValue(),/12345/);
+    await page.locator("#practice-mode").selectOption("original");
+    assert.equal(await page.locator("#scratch-code").inputValue(),canonicalDraft);
+    await page.goto("http://127.0.0.1:"+port+"/#lesson/16");
+    await page.getByRole("heading",{name:"Conditioning capstone"}).waitFor();
+    await page.locator("#practice-mode").selectOption("b");
+    assert.match(await page.locator("#challenge-text").innerText(),/stable coordinate|compare/);
+    assert.equal(await page.locator("#progress-label").innerText(),"1 of 16 concept sets reviewed");
+    await page.goto("http://127.0.0.1:"+port+"/#lesson/01");
+    await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
+    assert.equal(await page.locator("#scratch-code").inputValue(),canonicalDraft);
+  });
+  await check("J17 transfer-specific .jl export/import preserves original and alternate drafts",async()=>{
+    await page.goto("http://127.0.0.1:"+port+"/#lesson/01");
+    await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
+    const original=await page.locator("#scratch-code").inputValue();
+    await page.locator("#practice-mode").selectOption("a");
+    const [download]=await Promise.all([
+      page.waitForEvent("download"),
+      page.locator("#download-draft").click()
+    ]);
+    assert.equal(download.suggestedFilename(),"amp-julia-lab-lesson-01-transfer-a.jl");
+    page.once("dialog",dialog=>dialog.accept());
+    await page.locator("#import-file").setInputFiles({
+      name:"independent-a.jl",mimeType:"text/plain",buffer:Buffer.from("println(:imported_transfer_a)")
+    });
+    await page.getByText(/Imported independent-a\.jl/).waitFor();
+    assert.equal(await page.locator("#scratch-code").inputValue(),"println(:imported_transfer_a)");
+    await page.locator("#practice-mode").selectOption("original");
+    assert.equal(await page.locator("#scratch-code").inputValue(),original);
+    await page.locator("#practice-mode").selectOption("b");
+    assert.match(await page.locator("#starter-code").innerText(),/temperatures/);
+    await page.locator("#practice-mode").selectOption("a");
+    assert.equal(await page.locator("#scratch-code").inputValue(),"println(:imported_transfer_a)");
+    await page.reload();
+    await page.locator("#practice-mode").selectOption("a");
+    assert.equal(await page.locator("#scratch-code").inputValue(),"println(:imported_transfer_a)");
+    await page.locator("#practice-mode").selectOption("original");
+    assert.equal(await page.locator("#scratch-code").inputValue(),original);
+  });
   await check("provided JDoodle embed is configured on all lessons without claiming Julia execution",async()=>{
     const slot = page.locator(".jdoodle-embed");
     await slot.waitFor();
@@ -607,6 +691,15 @@ try {
     assert.equal(await mobile.locator("#continue-lesson").isVisible(),true);
     assert.equal(await mobile.locator("#concept-brief").isVisible(),true);
     assert.equal(await mobile.locator("#repair-editor").count(),1);
+    await mobile.goto("http://127.0.0.1:"+port+"/#lesson/08");
+    await mobile.getByRole("heading",{name:"Functions & algorithms"}).waitFor();
+    await mobile.locator("#practice-mode").selectOption("b");
+    assert.match(await mobile.locator("#challenge-text").innerText(),/product_or_one/);
+    await mobile.locator("#scratch-code").fill("println(27) # variant only");
+    await mobile.locator("#practice-mode").selectOption("original");
+    assert.doesNotMatch(await mobile.locator("#scratch-code").inputValue(),/variant only/);
+    const transferOverflow=await mobile.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+    assert.ok(transferOverflow<=2,"J17 transfer coding horizontal overflow: "+transferOverflow);
     await mobile.goto("http://127.0.0.1:"+port+"/#lesson/16");
     await mobile.getByRole("heading",{name:"Conditioning capstone"}).waitFor();
     assert.equal(await mobile.locator("#sensitivity-lab").isVisible(),true);

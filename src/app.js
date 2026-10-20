@@ -14,10 +14,14 @@ import {initFittingLab,showFittingLab} from "./fitting-view.js";
 import {initProgramTrace,showProgramTrace} from "./program-trace-view.js";
 import {initFactorLab,showFactorLab} from "./factor-view.js";
 import {initSensitivityLab,showSensitivityLab} from "./sensitivity-view.js";
+import {transferForLesson} from "./transfer-cases.js";
+import {readTransferDraft,writeTransferDraft,clearTransferDraft} from "./transfer-drafts.js";
 
 const $ = (selector) => document.querySelector(selector);
 const progress = readProgress();
 let currentIndex = 0;
+let practiceVariant = "original";
+let unsavedPractice = false;
 // Diagnostics are opt-in and ephemeral. No provider code/output is retained.
 let diagnosticCount = 0;
 let diagnosticLast = null;
@@ -144,7 +148,46 @@ function renderRepair() {
   $("#repair-reference-code").textContent=r.reference;
   $("#repair-cause").textContent=r.cause;
 }
+function activePractice(){
+  const original=current();
+  return practiceVariant==="original"?{
+    title:"Original lesson",task:original.challenge,starter:original.starter,checks:original.checks
+  }:transferForLesson(original.id,practiceVariant);
+}
+function writePracticeCode(lesson,variant,code){
+  return variant==="original"?writeDraft(lesson,code):writeTransferDraft(lesson,variant,code);
+}
+function clearPracticeCode(lesson,variant){
+  return variant==="original"?clearDraft(lesson):clearTransferDraft(lesson,variant);
+}
+function renderPractice(){
+  const lesson=current(),item=activePractice(),transfer=practiceVariant!=="original";
+  $("#practice-mode").value=practiceVariant;
+  for(const variant of ["a","b"]){
+    $("#practice-mode").querySelector('[value="'+variant+'"]').textContent=
+      "Transfer "+variant.toUpperCase()+" · "+transferForLesson(lesson.id,variant).title;
+  }
+  $("#challenge-text").textContent=item.task;
+  $("#starter-code").textContent=item.starter;
+  $("#challenge-checks").textContent=item.checks;
+  $("#scratch-code").value=transfer?
+    readTransferDraft(lesson.id,practiceVariant,item.starter):readDraft(lesson.id,item.starter);
+  $("#transfer-plan").hidden=!transfer;
+  $("#transfer-tests").hidden=!transfer;
+  $("#transfer-plan").open=false;
+  $("#transfer-tests").open=false;
+  if(transfer){
+    $("#transfer-plan").querySelector("p").textContent=item.plan;
+    $("#transfer-tests").querySelector("p").textContent=item.verify;
+  }
+  [1,2,3].forEach(i=>$("#hint-"+i).hidden=transfer);
+  unsavedPractice=false;
+  $("#draft-feedback").textContent=transfer
+    ?"Independent "+practiceVariant.toUpperCase()+" draft saved separately in this browser; not executed or graded."
+    :"Saved only in this browser; not executed or automatically graded.";
+}
 function render() {
+  practiceVariant="original";
   currentIndex = lessonIndexFromHash();
   const l = current();
   $("#lesson-meta").innerHTML = '<span class="eyebrow">LESSON '+l.id+' / 16</span><span>' +
@@ -161,16 +204,12 @@ function render() {
   $("#repair-section-number").textContent=["03","05","06","07","08","09","10","11","12","13","14","15","16"].includes(l.id)?"05":"04";
   $("#lesson-theory").textContent = l.theory;
   $("#example-code").textContent = l.example;
-  $("#challenge-text").textContent = l.challenge;
-  $("#starter-code").textContent = l.starter;
-  $("#scratch-code").value = readDraft(l.id, l.starter);
-  $("#draft-feedback").textContent = "Saved only in this browser; not executed or automatically graded.";
-  $("#challenge-checks").textContent = l.checks;
   renderRepair();
   [1,2,3].forEach(i => {
     const el = $("#hint-"+i); el.open = false;
     el.querySelector("p").textContent = l.hints[i-1];
   });
+  renderPractice();
   $("#previous").disabled = currentIndex===0;
   $("#next").disabled = currentIndex===lessons.length-1;
   $("#output-input").value = "";
@@ -258,16 +297,26 @@ $("#continue-lesson").addEventListener("click",()=>{
 });
 $("#previous").addEventListener("click", () => navigate(currentIndex-1));
 $("#next").addEventListener("click", () => navigate(currentIndex+1));
+$("#practice-mode").addEventListener("change",()=>{
+  if(unsavedPractice){
+    $("#practice-mode").value=practiceVariant;
+    $("#draft-feedback").textContent="Cannot switch tasks because this draft was not saved. Copy your work first.";
+    return;
+  }
+  practiceVariant=$("#practice-mode").value;
+  renderPractice();
+});
 $("#copy-starter").addEventListener("click", async () => {
   try {
-    await navigator.clipboard.writeText(current().starter);
+    await navigator.clipboard.writeText(activePractice().starter);
     $("#output-feedback").textContent = "Starter code copied. Paste it into Julia or the embedded editor.";
   } catch {
     $("#output-feedback").textContent = "Clipboard unavailable. Select and copy the starter code shown above.";
   }
 });
 $("#scratch-code").addEventListener("input", () => {
-  const saved = writeDraft(current().id, $("#scratch-code").value);
+  const saved = writePracticeCode(current().id, practiceVariant, $("#scratch-code").value);
+  unsavedPractice=!saved;
   $("#draft-feedback").textContent = saved
     ? "Draft saved locally. Execution and correctness are not verified."
     : "Could not save draft (storage unavailable or draft too large). Copy your work elsewhere.";
@@ -284,6 +333,7 @@ $("#download-draft").addEventListener("click", () => {
   let script;
   try {
     script = exportJuliaScript(current().id, $("#scratch-code").value);
+    if(practiceVariant!=="original") script.filename=script.filename.replace(/\.jl$/,"-transfer-"+practiceVariant+".jl");
   } catch {
     $("#draft-feedback").textContent = "Cannot export this draft. Check its size.";
     return;
@@ -304,6 +354,7 @@ $("#import-file").addEventListener("change", async () => {
   const input = $("#import-file");
   const file = input.files?.[0];
   const selectedLesson = current().id; // capture BEFORE asynchronous file reading
+  const selectedVariant = practiceVariant;
   input.value = ""; // selecting the same file again should still trigger change
   if (!file) return;
   if (file.size > MAX_IMPORT_BYTES) {
@@ -321,25 +372,27 @@ $("#import-file").addEventListener("change", async () => {
     $("#draft-feedback").textContent = validation.message + " Your current work is unchanged.";
     return;
   }
-  if (current().id !== selectedLesson) {
-    $("#draft-feedback").textContent = "Lesson changed while reading the file. Import cancelled to protect both drafts.";
+  if (current().id !== selectedLesson || practiceVariant !== selectedVariant) {
+    $("#draft-feedback").textContent = "Lesson or practice task changed while reading. Import cancelled to protect drafts.";
     return;
   }
   const originalLesson = selectedLesson;
-  if (!window.confirm("Replace the code draft for lesson " + originalLesson + " with the selected .jl file?")) {
+  if (!window.confirm("Replace the "+(selectedVariant==="original"?"original":"transfer "+selectedVariant.toUpperCase())+
+    " code draft for lesson " + originalLesson + " with the selected .jl file?")) {
     $("#draft-feedback").textContent = "Import cancelled; your draft is unchanged.";
     return;
   }
   // Protect against a lesson navigation occurring during the asynchronous read/confirmation.
-  if (current().id !== originalLesson) {
-    $("#draft-feedback").textContent = "Lesson changed. Import cancelled to protect both drafts.";
+  if (current().id !== originalLesson || practiceVariant!==selectedVariant) {
+    $("#draft-feedback").textContent = "Lesson or practice task changed. Import cancelled to protect drafts.";
     return;
   }
-  if (!writeDraft(originalLesson, validation.code)) {
+  if (!writePracticeCode(originalLesson,selectedVariant, validation.code)) {
     $("#draft-feedback").textContent = "Could not save imported code. Your existing draft is unchanged.";
     return;
   }
   $("#scratch-code").value = validation.code;
+  unsavedPractice=false;
   $("#draft-feedback").textContent = "Imported " + file.name +
     " for this lesson. Source was saved locally but not executed or graded.";
 });
@@ -351,15 +404,22 @@ $("#back-to-draft").addEventListener("click",()=>{
   $("#scratch-code").focus();
 });
 $("#reset-draft").addEventListener("click", () => {
-  if (!window.confirm("Discard your current code for this lesson and restore its starter?")) return;
-  if (!clearDraft(current().id)) {
+  if (!window.confirm("Discard the "+(practiceVariant==="original"?"original":"transfer "+practiceVariant.toUpperCase())+
+    " code draft for this lesson and restore its starter?")) return;
+  if (!clearPracticeCode(current().id,practiceVariant)) {
     $("#draft-feedback").textContent = "Could not reset the saved draft; no changes were made.";
     return;
   }
-  $("#scratch-code").value = current().starter;
-  $("#draft-feedback").textContent = "Starter restored. This does not affect other lessons.";
+  $("#scratch-code").value = activePractice().starter;
+  unsavedPractice=false;
+  $("#draft-feedback").textContent = "Starter restored for this task. Other drafts are unchanged.";
 });
 $("#check-output").addEventListener("click", () => {
+  if(practiceVariant!=="original"){
+    $("#output-feedback").textContent="Pasted-output comparison applies only to the original task. Run this transfer code in Julia and check its test cases.";
+    $("#output-feedback").dataset.status="unverified";
+    return;
+  }
   const result = checkPastedOutput(current().expected, $("#output-input").value);
   const feedback = $("#output-feedback");
   feedback.textContent = result.message;
