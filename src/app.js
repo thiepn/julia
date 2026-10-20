@@ -21,6 +21,7 @@ import {inspectJuliaReport} from "./julia-report.js";
 import {propertiesForTask,buildPropertyFile} from "./property-transfer.js";
 import {contractForTask,designScaffold} from "./algorithm-design.js";
 import {missionForLesson} from "./numerical-missions.js";
+import {integrationForLesson,buildIntegrationTestFile} from "./integration-task.js";
 
 const $ = (selector) => document.querySelector(selector);
 const progress = readProgress();
@@ -157,7 +158,7 @@ function activePractice(){
   const original=current();
   return practiceVariant==="original"?{
     title:"Original lesson",task:original.challenge,starter:original.starter,checks:original.checks
-  }:practiceVariant==="mission"?missionForLesson(original.id):transferForLesson(original.id,practiceVariant);
+  }:practiceVariant==="mission"?missionForLesson(original.id):practiceVariant==="integration"?integrationForLesson(original.id):transferForLesson(original.id,practiceVariant);
 }
 function writePracticeCode(lesson,variant,code){
   return variant==="original"?writeDraft(lesson,code):writeTransferDraft(lesson,variant,code);
@@ -274,11 +275,43 @@ function renderAlgorithmDesign(){
   $("#algorithm-scaffold-details").open=false;
   $("#algorithm-design-feedback").textContent="";
 }
+function integrationSourceBundle(){
+  const solverSaved=readTransferDraft("12","mission",null);
+  const sensitivitySaved=readTransferDraft("16","mission",null);
+  return {
+    solver:solverSaved===null?missionForLesson("12").starter:solverSaved,
+    sensitivity:sensitivitySaved===null?missionForLesson("16").starter:sensitivitySaved,
+    solverSaved:solverSaved!==null,sensitivitySaved:sensitivitySaved!==null
+  };
+}
+function renderIntegrationTask(){
+  const active=current().id==="16"&&practiceVariant==="integration";
+  $("#integration-handoff").hidden=!active;
+  if(!active)return;
+  const dep=integrationSourceBundle();
+  $("#integration-solver-state").textContent=dep.solverSaved?"Saved local draft":"Starter only — no saved draft";
+  $("#integration-sensitivity-state").textContent=dep.sensitivitySaved?"Saved local draft":"Starter only — no saved draft";
+  $("#integration-feedback").textContent="";
+  try{
+    const script=buildIntegrationTestFile($("#scratch-code").value,dep.solver,dep.sensitivity);
+    $("#integration-preview").textContent=script.content;
+    $("#integration-download").disabled=false;
+    $("#integration-copy").disabled=false;
+  }catch{
+    $("#integration-preview").textContent="";
+    $("#integration-download").disabled=true;
+    $("#integration-copy").disabled=true;
+    $("#integration-feedback").textContent="Cannot combine drafts; check source lengths.";
+  }
+}
 function renderPractice(){
   const lesson=current(),item=activePractice(),transfer=practiceVariant!=="original";
   const mission=missionForLesson(lesson.id);
   $("#practice-mode").querySelector('[value="mission"]').hidden=!mission;
   $("#practice-mode").querySelector('[value="mission"]').disabled=!mission;
+  const integration=integrationForLesson(lesson.id);
+  $("#practice-mode").querySelector('[value="integration"]').hidden=!integration;
+  $("#practice-mode").querySelector('[value="integration"]').disabled=!integration;
   $("#practice-mode").value=practiceVariant;
   for(const variant of ["a","b"]){
     $("#practice-mode").querySelector('[value="'+variant+'"]').textContent=
@@ -316,6 +349,7 @@ function renderPractice(){
   $("#external-report-details").open=false;
   renderExternalTestHandoff();
   renderAlgorithmDesign();
+  renderIntegrationTask();
 }
 function render() {
   practiceVariant="original";
@@ -453,6 +487,7 @@ $("#scratch-code").addEventListener("input", () => {
   $("#external-focus-feedback").textContent="";
   $("#property-feedback").textContent="";
   renderExternalTestHandoff();
+  renderIntegrationTask();
   $("#draft-feedback").textContent = saved
     ? "Draft saved locally. Execution and correctness are not verified."
     : "Could not save draft (storage unavailable or draft too large). Copy your work elsewhere.";
@@ -501,6 +536,24 @@ $("#algorithm-scaffold-use").addEventListener("click",()=>{
   renderExternalTestHandoff();
   $("#algorithm-design-feedback").textContent="Current task draft replaced by the incomplete scaffold. Implement TODO steps, then run the Julia tests.";
   $("#draft-feedback").textContent="Scaffold saved in this task's local draft. Code has not run.";
+});
+$("#integration-download").addEventListener("click",()=>{
+  if(practiceVariant!=="integration"||current().id!=="16")return;
+  try{
+    const dep=integrationSourceBundle();
+    const script=buildIntegrationTestFile($("#scratch-code").value,dep.solver,dep.sensitivity);
+    downloadLocalJulia(script);
+    $("#integration-feedback").textContent="Combined Julia Test file downloaded; execution remains unverified.";
+  }catch{$("#integration-feedback").textContent="Cannot combine drafts; check source lengths.";}
+});
+$("#integration-copy").addEventListener("click",async()=>{
+  if(practiceVariant!=="integration"||current().id!=="16")return;
+  try{
+    const dep=integrationSourceBundle();
+    const script=buildIntegrationTestFile($("#scratch-code").value,dep.solver,dep.sensitivity);
+    await navigator.clipboard.writeText(script.content);
+    $("#integration-feedback").textContent="Combined Julia Test file copied; not executed or graded.";
+  }catch{$("#integration-feedback").textContent="Clipboard or source unavailable. View the generated file instead.";}
 });
 $("#property-choice").addEventListener("change",()=>{
   $("#property-feedback").textContent="";

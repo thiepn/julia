@@ -326,3 +326,15 @@
 #algorithm-design-stages details p{font-size:14px!important;line-height:1.55;margin:6px 0}
 #algorithm-scaffold-details pre{max-height:340px;overflow:auto;margin:10px 0}
 @media(max-width:520px){.algorithm-contract>div{grid-template-columns:1fr;gap:3px}}
+
+/* Cross-lesson export reads existing browser-local drafts at export time. */
+.integration-handoff[hidden]{display:none}
+.integration-handoff{border-top:1px solid var(--line);margin-top:18px;padding-top:16px}
+.integration-handoff h3{font-size:17px;margin:0 0 12px}
+.integration-source-status{font-size:14px;margin:12px 0}
+.integration-source-status>div{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.integration-source-status dt{font-weight:650}
+.integration-source-status dd{margin:0}
+.integration-instruction{font-size:14px!important;line-height:1.5}
+#integration-preview-details pre{max-height:350px;overflow:auto;margin:10px 0}
+@media(max-width:560px){.integration-source-status>div{grid-template-columns:1fr;gap:4px}}

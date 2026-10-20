@@ -45,6 +45,7 @@
             <option value="a">Transfer A</option>
             <option value="b">Transfer B</option>
             <option value="mission" hidden disabled>Numerical function mission</option>
+            <option value="integration" hidden disabled>Cross-lesson integration</option>
           </select>
         </div>
         <p id="challenge-text"></p>
@@ -66,6 +67,23 @@
         <p class="section-intro" id="draft-help">Your work is saved per lesson. Copy it to an online Julia compiler or download a .jl file for VS Code. Importing a .jl file replaces only the current lesson's draft after confirmation. None of these actions executes or grades code.</p>
         <p class="feedback" id="draft-feedback" role="status" aria-live="polite"></p>
         <p class="section-intro"><strong>Success criteria:</strong> <span id="challenge-checks"></span></p>
+        <section id="integration-handoff" class="integration-handoff" aria-labelledby="integration-heading" hidden>
+          <h3 id="integration-heading">Combine your saved Julia functions</h3>
+          <dl class="integration-source-status">
+            <div><dt>Lesson 12 · solve_checked</dt><dd id="integration-solver-state"></dd></div>
+            <div><dt>Lesson 16 · solution_sensitivity</dt><dd id="integration-sensitivity-state"></dd></div>
+          </dl>
+          <p class="integration-instruction">The file includes your current integration code and the two saved mission drafts. If a draft is missing, its incomplete starter is used. Export never changes existing drafts.</p>
+          <div class="external-test-actions">
+            <button id="integration-download" class="secondary" type="button">Download combined Julia tests</button>
+            <button id="integration-copy" class="secondary" type="button">Copy combined Julia tests</button>
+          </div>
+          <details id="integration-preview-details">
+            <summary>View combined source and tests</summary>
+            <pre class="code"><code id="integration-preview"></code></pre>
+          </details>
+          <p class="feedback" role="status" aria-live="polite" id="integration-feedback"></p>
+        </section>
         <div id="external-tests" class="external-tests" hidden>
           <h3 id="external-test-heading"></h3>
           <ol id="external-test-cases"></ol>

@@ -864,6 +864,72 @@ try {
     await page.goto("http://127.0.0.1:"+port+"/#lesson/01");
     await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
   });
+  await check("J24 cross-lesson composition exports current independent drafts without mutating them",async()=>{
+    const prefix="http://127.0.0.1:"+port+"/#lesson/";
+    const saved=await page.evaluate(()=>{
+      const ids=["12:mission","16:mission","16:integration"];
+      return Object.fromEntries(ids.map(x=>[x,localStorage.getItem("amp-julia-lab:transfer-draft:v1:"+x)]));
+    });
+    const solve="function solve_checked(A,b)\n  x=A\\b\n  return (x=x, residual=norm(A*x-b))\nend\n";
+    const sensitivity="function solution_sensitivity(A,b,db)\n  x=A\\b\n  xp=A\\(b+db)\n  return (change=norm(xp-x), original_residual=norm(A*x-b), perturbed_residual=norm(A*xp-(b+db)))\nend\n";
+    const composition="function analyze_perturbation(A,b,db)\n  a=solve_checked(A,b)\n  s=solution_sensitivity(A,b,db)\n  return (base_residual=a.residual, change=s.change, perturbed_residual=s.perturbed_residual)\nend\n";
+    try{
+      await page.goto(prefix+"16");
+      await page.getByRole("heading",{name:"Conditioning capstone"}).waitFor();
+      assert.equal(await page.locator("#practice-mode option[value=integration]").isEnabled(),true);
+      await page.locator("#practice-mode").selectOption("integration");
+      assert.match(await page.locator("#challenge-text").innerText(),/solve_checked/);
+      assert.equal(await page.locator("#external-tests").isVisible(),false);
+      assert.equal(await page.locator("#integration-handoff").isVisible(),true);
+      assert.match(await page.locator("#integration-preview").textContent(),/TODO: implement solve_checked/);
+      await page.goto(prefix+"12");
+      await page.getByRole("heading",{name:"Solve linear systems"}).waitFor();
+      assert.equal(await page.locator("#practice-mode option[value=integration]").isDisabled(),true);
+      await page.locator("#practice-mode").selectOption("mission");
+      await page.locator("#scratch-code").fill(solve);
+      await page.goto(prefix+"16");
+      await page.locator("#practice-mode").selectOption("mission");
+      await page.locator("#scratch-code").fill(sensitivity);
+      await page.locator("#practice-mode").selectOption("integration");
+      await page.locator("#scratch-code").fill(composition);
+      assert.match(await page.locator("#integration-solver-state").innerText(),/Saved local draft/);
+      assert.match(await page.locator("#integration-sensitivity-state").innerText(),/Saved local draft/);
+      await page.locator("#integration-preview-details summary").click();
+      const preview=await page.locator("#integration-preview").innerText();
+      assert.ok(preview.includes(solve));
+      assert.ok(preview.includes(sensitivity));
+      assert.ok(preview.includes(composition));
+      const [file]=await Promise.all([page.waitForEvent("download"),page.locator("#integration-download").click()]);
+      assert.equal(file.suggestedFilename(),"amp-julia-lab-12-16-integration-tests.jl");
+      const downloaded=await readFile(await file.path(),"utf8");
+      assert.equal((downloaded.match(/@testset /g)||[]).length,6);
+      for(const part of [solve,sensitivity,composition])assert.ok(downloaded.includes(part));
+      assert.match(downloaded,/Three-dimensional transfer/);
+      assert.match(await page.locator("#integration-feedback").innerText(),/execution remains unverified/);
+      await page.reload();
+      await page.locator("#practice-mode").selectOption("integration");
+      assert.equal(await page.locator("#scratch-code").inputValue(),composition);
+      assert.match(await page.locator("#integration-preview").textContent(),/function solve_checked/);
+      await page.locator("#practice-mode").selectOption("mission");
+      assert.equal(await page.locator("#scratch-code").inputValue(),sensitivity);
+      await page.goto(prefix+"12");
+      await page.locator("#practice-mode").selectOption("mission");
+      assert.equal(await page.locator("#scratch-code").inputValue(),solve);
+      await page.goto(prefix+"11");
+      await page.getByRole("heading",{name:"Linear algebra in Julia"}).waitFor();
+      assert.equal(await page.locator("#practice-mode option[value=integration]").isDisabled(),true);
+      assert.equal(await page.locator("#progress-label").innerText(),"1 of 16 concept sets reviewed");
+    }finally{
+      await page.evaluate(data=>{
+        for(const [id,value] of Object.entries(data)){
+          const key="amp-julia-lab:transfer-draft:v1:"+id;
+          if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value);
+        }
+      },saved);
+      await page.goto(prefix+"01");
+      await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
+    }
+  });
   await check("provided JDoodle embed is configured on all lessons without claiming Julia execution",async()=>{
     const slot = page.locator(".jdoodle-embed");
     await slot.waitFor();
@@ -973,6 +1039,15 @@ try {
     assert.equal(await mobile.locator("#continue-lesson").isVisible(),true);
     assert.equal(await mobile.locator("#concept-brief").isVisible(),true);
     assert.equal(await mobile.locator("#repair-editor").count(),1);
+    await mobile.goto("http://127.0.0.1:"+port+"/#lesson/16");
+    await mobile.getByRole("heading",{name:"Conditioning capstone"}).waitFor();
+    await mobile.locator("#practice-mode").selectOption("integration");
+    assert.equal(await mobile.locator("#integration-handoff").isVisible(),true);
+    assert.equal(await mobile.locator("#integration-download").isEnabled(),true);
+    await mobile.locator("#integration-preview-details summary").click();
+    assert.match(await mobile.locator("#integration-preview").innerText(),/analyze_perturbation/);
+    const integrationOverflow=await mobile.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+    assert.ok(integrationOverflow<=2,"J24 integration caused mobile overflow: "+integrationOverflow);
     await mobile.goto("http://127.0.0.1:"+port+"/#lesson/16");
     await mobile.getByRole("heading",{name:"Conditioning capstone"}).waitFor();
     await mobile.locator("#practice-mode").selectOption("mission");

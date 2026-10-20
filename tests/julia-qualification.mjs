@@ -9,6 +9,7 @@ import {spawnSync} from "node:child_process";
 import {EXTERNAL_TEST_SUITES,buildExternalTestFile} from "../src/external-tests.js";
 import {propertiesForTask,buildPropertyFile} from "../src/property-transfer.js";
 import {contractForTask,designScaffold} from "../src/algorithm-design.js";
+import {buildIntegrationTestFile,integrationCases} from "../src/integration-task.js";
 const examples={
   "08":{
     original:"sum_of_squares(v) = sum((x^2 for x in v); init=0)",
@@ -130,6 +131,36 @@ try{
     }
   }
   assert.equal(count,13,"Expected nine canonical and four numerical-function mission variants");
+  const solver=examples["12"].mission;
+  const sensitivity=examples["16"].mission;
+  const composition="function analyze_perturbation(A,b,db)\n"+
+    "    base=solve_checked(A,b)\n"+
+    "    pert=solution_sensitivity(A,b,db)\n"+
+    "    return (base_residual=base.residual,change=pert.change,perturbed_residual=pert.perturbed_residual)\n"+
+    "end";
+  assert.equal(integrationCases().length,5);
+  const goodBundle=buildIntegrationTestFile(composition,solver,sensitivity);
+  const goodPath=join(dir,goodBundle.filename);
+  await writeFile(goodPath,goodBundle.content,"utf8");
+  const goodResult=julia(goodPath);
+  assert.equal(goodResult.error,undefined);
+  if(goodResult.status!==0)
+    throw Error("JULIA INTEGRATION FAIL exit "+goodResult.status+"\n"+goodResult.stdout+"\n"+goodResult.stderr);
+  assert.match(goodResult.stdout+goodResult.stderr,/Test Summary:/);
+  console.log("JULIA INTEGRATION PASS 1/1 real combined script (5 cases)");
+  for(const [reason,body,s12,s16] of [
+    ["hardcoded analysis","analyze_perturbation(A,b,db)=(base_residual=0.0,change=0.0,perturbed_residual=0.0)",solver,sensitivity],
+    ["broken solver",composition,'solve_checked(A,b)=error("missing solver")',sensitivity]
+  ]){
+    const generated=buildIntegrationTestFile(body,s12,s16);
+    const file=join(dir,"integration-negative-"+reason.replaceAll(" ","-")+".jl");
+    await writeFile(file,generated.content,"utf8");
+    const actual=julia(file);
+    assert.equal(actual.error,undefined);
+    assert.notEqual(actual.status,0,"Incorrect integration source must fail: "+reason);
+    assert.match(actual.stdout+actual.stderr,/Test Failed|Some tests did not pass|Error During Test/);
+    console.log("JULIA INTEGRATION EXPECTED FAIL "+reason);
+  }
   const wrongNumerical=buildExternalTestFile("12","mission",
     "solve_checked(A,b) = (x=zeros(length(b)),residual=0.0)");
   const wrongNumericalFile=join(dir,"wrong-numerical-solve.jl");
@@ -167,7 +198,7 @@ try{
   assert.notEqual(badPropertyResult.status,0,"Sign-incorrect sum must fail its Julia metamorphic test");
   assert.match(badPropertyResult.stdout+badPropertyResult.stderr,/Test Failed|Some tests did not pass/);
   console.log("JULIA PROPERTY EXPECTED FAIL 08/original sign symmetry");
-  console.log("JULIA QUALIFICATION PASS "+count+"/13 real generated suites (9 original + 4 numerical missions), 13 focused, 9 property pairs, 9 single properties, 9 scaffold checks and 4 expected negative cases");
+  console.log("JULIA QUALIFICATION PASS "+count+"/13 real generated suites (9 original + 4 numerical missions), 13 focused, 9 property pairs, 9 single properties, 9 scaffold checks and 4 expected negative cases, 1 qualified integration bundle and 2 expected integration failures");
 }finally{
   await rm(dir,{recursive:true,force:true});
 }
