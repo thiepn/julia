@@ -274,3 +274,15 @@
 .practice-switch label{font-size:14px;font-weight:650;min-width:90px}
 .practice-switch select{flex:1;min-width:185px;max-width:470px;background:var(--surface);color:var(--ink);font-size:15px;padding:10px;border:1px solid var(--line)}
 #transfer-plan[hidden],#transfer-tests[hidden],#hint-1[hidden],#hint-2[hidden],#hint-3[hidden]{display:none}
+
+/* J18 Julia stdlib Test handoff shares the lesson editor and file export. */
+#external-tests[hidden]{display:none}
+.external-tests{border-top:1px solid var(--line);margin-top:18px;padding-top:16px}
+.external-tests h3{font-size:17px;margin:0 0 12px}
+.external-tests ol{font-size:14px;line-height:1.55;padding-left:24px;overflow-wrap:anywhere}
+.external-tests ol li{margin:5px 0}
+.external-test-actions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.external-test-actions button{flex:0 1 auto}
+.external-tests details pre{max-height:350px;overflow:auto;margin-top:10px}
+.external-test-run{font-size:14px!important;line-height:1.55;color:var(--muted);margin:12px 0}
+@media(max-width:510px){.external-test-actions button{width:100%;flex:1 1 100%}}

@@ -16,6 +16,7 @@ import {initFactorLab,showFactorLab} from "./factor-view.js";
 import {initSensitivityLab,showSensitivityLab} from "./sensitivity-view.js";
 import {transferForLesson} from "./transfer-cases.js";
 import {readTransferDraft,writeTransferDraft,clearTransferDraft} from "./transfer-drafts.js";
+import {externalTestSuite,buildExternalTestFile} from "./external-tests.js";
 
 const $ = (selector) => document.querySelector(selector);
 const progress = readProgress();
@@ -160,6 +161,39 @@ function writePracticeCode(lesson,variant,code){
 function clearPracticeCode(lesson,variant){
   return variant==="original"?clearDraft(lesson):clearTransferDraft(lesson,variant);
 }
+function renderExternalTestHandoff(){
+  const suite=externalTestSuite(current().id,practiceVariant);
+  $("#external-tests").hidden=!suite;
+  if(!suite)return;
+  $("#external-test-heading").textContent="Run Julia tests for "+suite.title;
+  const list=$("#external-test-cases");
+  list.replaceChildren();
+  for(const item of suite.cases){
+    const li=document.createElement("li");
+    li.textContent=item.name+": "+item.assertion;
+    list.append(li);
+  }
+  try{
+    const file=buildExternalTestFile(current().id,practiceVariant,$("#scratch-code").value);
+    $("#external-test-preview").textContent=file.content;
+    $("#external-test-download").disabled=false;
+    $("#external-test-copy").disabled=false;
+  }catch{
+    $("#external-test-preview").textContent="";
+    $("#external-test-download").disabled=true;
+    $("#external-test-copy").disabled=true;
+  }
+}
+function downloadLocalJulia(script){
+  const url=URL.createObjectURL(new Blob([script.content],{type:script.mime}));
+  const link=document.createElement("a");
+  link.href=url;
+  link.download=script.filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
 function renderPractice(){
   const lesson=current(),item=activePractice(),transfer=practiceVariant!=="original";
   $("#practice-mode").value=practiceVariant;
@@ -185,6 +219,9 @@ function renderPractice(){
   $("#draft-feedback").textContent=transfer
     ?"Independent "+practiceVariant.toUpperCase()+" draft saved separately in this browser; not executed or graded."
     :"Saved only in this browser; not executed or automatically graded.";
+  $("#external-test-feedback").textContent="";
+  $("#external-test-details").open=false;
+  renderExternalTestHandoff();
 }
 function render() {
   practiceVariant="original";
@@ -317,9 +354,28 @@ $("#copy-starter").addEventListener("click", async () => {
 $("#scratch-code").addEventListener("input", () => {
   const saved = writePracticeCode(current().id, practiceVariant, $("#scratch-code").value);
   unsavedPractice=!saved;
+  renderExternalTestHandoff();
   $("#draft-feedback").textContent = saved
     ? "Draft saved locally. Execution and correctness are not verified."
     : "Could not save draft (storage unavailable or draft too large). Copy your work elsewhere.";
+});
+$("#external-test-download").addEventListener("click",()=>{
+  try{
+    const file=buildExternalTestFile(current().id,practiceVariant,$("#scratch-code").value);
+    downloadLocalJulia(file);
+    $("#external-test-feedback").textContent="Downloaded "+file.filename+". Run with Julia; tests have not run in this browser.";
+  }catch{
+    $("#external-test-feedback").textContent="Cannot prepare the external test file; check your source length and selected task.";
+  }
+});
+$("#external-test-copy").addEventListener("click",async()=>{
+  try{
+    const file=buildExternalTestFile(current().id,practiceVariant,$("#scratch-code").value);
+    await navigator.clipboard.writeText(file.content);
+    $("#external-test-feedback").textContent="Julia test script copied. It has not been executed or graded.";
+  }catch{
+    $("#external-test-feedback").textContent="Clipboard or test script unavailable. Use the displayed script if possible.";
+  }
 });
 $("#copy-draft").addEventListener("click", async () => {
   try {
@@ -338,14 +394,7 @@ $("#download-draft").addEventListener("click", () => {
     $("#draft-feedback").textContent = "Cannot export this draft. Check its size.";
     return;
   }
-  const url = URL.createObjectURL(new Blob([script.content],{type:script.mime}));
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = script.filename;
-  document.body.append(link);
-  link.click();
-  link.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  downloadLocalJulia(script);
   $("#draft-feedback").textContent = "Downloaded " + script.filename +
     ". Open it in Julia or VS Code; downloading does not execute or grade the program.";
 });
@@ -393,6 +442,7 @@ $("#import-file").addEventListener("change", async () => {
   }
   $("#scratch-code").value = validation.code;
   unsavedPractice=false;
+  renderExternalTestHandoff();
   $("#draft-feedback").textContent = "Imported " + file.name +
     " for this lesson. Source was saved locally but not executed or graded.";
 });
@@ -412,6 +462,7 @@ $("#reset-draft").addEventListener("click", () => {
   }
   $("#scratch-code").value = activePractice().starter;
   unsavedPractice=false;
+  renderExternalTestHandoff();
   $("#draft-feedback").textContent = "Starter restored for this task. Other drafts are unchanged.";
 });
 $("#check-output").addEventListener("click", () => {

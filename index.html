@@ -65,6 +65,20 @@
         <p class="section-intro" id="draft-help">Your work is saved per lesson. Copy it to an online Julia compiler or download a .jl file for VS Code. Importing a .jl file replaces only the current lesson's draft after confirmation. None of these actions executes or grades code.</p>
         <p class="feedback" id="draft-feedback" role="status" aria-live="polite"></p>
         <p class="section-intro"><strong>Success criteria:</strong> <span id="challenge-checks"></span></p>
+        <div id="external-tests" class="external-tests" hidden>
+          <h3 id="external-test-heading"></h3>
+          <ol id="external-test-cases"></ol>
+          <div class="external-test-actions" role="group" aria-label="External Julia test script">
+            <button id="external-test-download" type="button" class="secondary">Download Julia test file</button>
+            <button id="external-test-copy" type="button" class="secondary">Copy Julia test file</button>
+          </div>
+          <details id="external-test-details">
+            <summary>View generated Julia tests</summary>
+            <pre class="code"><code id="external-test-preview"></code></pre>
+          </details>
+          <p class="external-test-run">Open the downloaded .jl file with Julia to run its Test assertions. This app only prepares the file; it does not execute your code, receive the results, or award mastery. A test failure identifies a case to investigate, not the only possible defect.</p>
+          <p id="external-test-feedback" class="feedback" role="status" aria-live="polite"></p>
+        </div>
         <details id="transfer-plan" hidden><summary>Planning cue</summary><p></p></details>
         <details id="transfer-tests" hidden><summary>Additional case to test</summary><p></p></details>
         <details id="hint-1"><summary>Hint 1 · Concept</summary><p></p></details>
