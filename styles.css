@@ -236,3 +236,35 @@
 .factor-reset{margin-top:16px}
 .factor-scope{font-size:14px!important;color:var(--muted);line-height:1.6;margin-top:16px}
 @media(max-width:520px){.factor-controls{grid-template-columns:1fr;gap:7px}.factor-matrices{gap:12px}.factor-matrix td{padding:8px 6px;min-width:39px}}
+
+/* J16 condition-number learning: matrix/solution metrics and comparable data. */
+.sensitivity-lab[hidden]{display:none}
+.sensitivity-controls{display:grid;grid-template-columns:minmax(170px,auto) minmax(150px,1fr);align-items:center;gap:10px 14px}
+.sensitivity-controls label{font-size:14px;font-weight:650}
+.sensitivity-controls select{background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:10px;font-size:14px;min-width:0}
+.sensitivity-equations{display:flex;gap:8px 24px;flex-wrap:wrap;margin:18px 0}
+.sensitivity-equations p{font:15px/1.4 "Cascadia Code",Consolas,monospace!important;margin:0}
+.sensitivity-metrics{margin:16px 0;font-size:14px;line-height:1.45}
+.sensitivity-metrics>div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:8px 0}
+.sensitivity-metrics dt{font-weight:650}
+.sensitivity-metrics dd{margin:0;min-width:78px;text-align:right;font-variant-numeric:tabular-nums}
+.sensitivity-direction{font-size:14px!important;line-height:1.55;border-left:3px solid var(--accent);padding:9px 12px;background:var(--washed)}
+#sensitivity-chart{display:block;width:100%;height:auto;background:var(--surface);border:1px solid var(--line);margin:16px 0 8px}
+.sensitivity-grid{stroke:var(--line);stroke-width:1}
+.sensitivity-chart-label{fill:var(--muted);font:12px system-ui,sans-serif}
+.sensitivity-line{stroke:#298c62;stroke-width:2.5;fill:none}
+.sensitivity-point{fill:#298c62}
+.sensitivity-point.selected{fill:#b7733a;stroke:var(--surface);stroke-width:2}
+.sensitivity-chart-note,.sensitivity-scope{font-size:14px!important;line-height:1.55;color:var(--muted)}
+.sensitivity-table-scroll{max-width:100%;overflow-x:auto;border:1px solid var(--line);margin:16px 0}
+.sensitivity-table{border-collapse:collapse;width:100%;min-width:610px;font-size:14px;font-variant-numeric:tabular-nums}
+.sensitivity-table caption{text-align:left;font-weight:650;padding:11px}
+.sensitivity-table th,.sensitivity-table td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line)}
+.sensitivity-table th:first-child{text-align:left}
+.sensitivity-table tr:last-child>*{border-bottom:0}
+.sensitivity-table tr.sensitivity-selected>*{background:var(--active)}
+.sensitivity-code{margin-top:16px}
+.sensitivity-code pre{margin-top:12px}
+.sensitivity-reset{margin-top:16px}
+.sensitivity-scope{margin-top:14px}
+@media(max-width:520px){.sensitivity-controls{grid-template-columns:1fr;gap:7px}.sensitivity-metrics>div{flex-wrap:wrap}.sensitivity-metrics dd{text-align:left}}

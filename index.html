@@ -347,6 +347,71 @@
         <p id="factor-save-status" class="feedback" role="status"></p>
         <p class="factor-scope">Calculations use JavaScript binary64 on fixed 2×2 matrices. Norms and failure classifications are numerical examples, not Julia execution, general factorization proofs or coding grades.</p>
       </section>
+      <section class="paper sensitivity-lab" id="sensitivity-lab" aria-labelledby="sensitivity-heading" hidden>
+        <div class="section-title"><span class="section-num">04</span><h2 id="sensitivity-heading">Explore conditioning and solution sensitivity</h2></div>
+        <div class="sensitivity-controls">
+          <label for="sensitivity-scale">Second diagonal entry a₂₂</label>
+          <select id="sensitivity-scale">
+            <option value="1">1 (identity matrix)</option>
+            <option value="0.1">0.1</option>
+            <option value="0.01">0.01</option>
+            <option value="0.001">0.001</option>
+            <option value="0.000001">0.000001 (AMP comparison)</option>
+          </select>
+          <label for="sensitivity-delta">Right-hand-side change δb₂</label>
+          <select id="sensitivity-delta">
+            <option value="0">0 (no perturbation)</option>
+            <option value="0.000001">0.000001 (AMP comparison)</option>
+            <option value="0.00001">0.00001</option>
+            <option value="0.0001">0.0001</option>
+          </select>
+          <label for="sensitivity-rhs">Right-hand side b</label>
+          <select id="sensitivity-rhs">
+            <option value="exercise">AMP exercise b = [1, 2]</option>
+            <option value="direction">Direction comparison b = [1, 0]</option>
+          </select>
+        </div>
+        <div class="sensitivity-equations">
+          <p id="sensitivity-matrix"></p>
+          <p id="sensitivity-b"></p>
+          <p id="sensitivity-deltab"></p>
+        </div>
+        <dl class="sensitivity-metrics">
+          <div><dt>Original solution x</dt><dd id="sensitivity-x"></dd></div>
+          <div><dt>Perturbed solution x̃</dt><dd id="sensitivity-xnew"></dd></div>
+          <div><dt>Solution difference x̃ − x</dt><dd id="sensitivity-dx"></dd></div>
+          <div><dt>Absolute solution change ||x̃ − x||₂</dt><dd id="sensitivity-absolute"></dd></div>
+          <div><dt>Residual against original b: ||Ax̃ − b||₂</dt><dd id="sensitivity-residual"></dd></div>
+          <div><dt>Residual against perturbed b + δb</dt><dd id="sensitivity-residual-perturbed"></dd></div>
+          <div><dt>Relative data change ||δb||₂ / ||b||₂</dt><dd id="sensitivity-relb"></dd></div>
+          <div><dt>Relative solution change ||x̃−x||₂ / ||x||₂</dt><dd id="sensitivity-relx"></dd></div>
+          <div><dt>Condition number κ₂(A)</dt><dd id="sensitivity-cond"></dd></div>
+          <div><dt>Relative-error upper bound κ₂ · relative data change</dt><dd id="sensitivity-bound"></dd></div>
+          <div><dt>Observed relative amplification</dt><dd id="sensitivity-amplification"></dd></div>
+        </dl>
+        <p id="sensitivity-direction" class="sensitivity-direction" aria-live="polite"></p>
+        <svg id="sensitivity-chart" role="img" viewBox="0 0 600 234" aria-label="Absolute solution change across five diagonal matrix scales on a logarithmic axis">
+          <title>Solution sensitivity across matrices</title>
+          <g id="sensitivity-plot"></g>
+        </svg>
+        <p id="sensitivity-chart-note" class="sensitivity-chart-note"></p>
+        <div class="sensitivity-table-scroll">
+          <table class="sensitivity-table">
+            <caption>Compare all five matrices at the selected b and δb</caption>
+            <thead><tr><th scope="col">a₂₂</th><th scope="col">κ₂(A)</th><th scope="col">||x̃−x||₂</th><th scope="col">Relative solution change</th><th scope="col">Observed amplification</th></tr></thead>
+            <tbody id="sensitivity-comparison"></tbody>
+          </table>
+        </div>
+        <details class="sensitivity-code">
+          <summary>Julia code for this system</summary>
+          <pre class="code"><code id="sensitivity-julia"></code></pre>
+          <button type="button" class="secondary" id="sensitivity-copy">Copy Julia code</button>
+          <p id="sensitivity-copy-result" class="feedback" role="status"></p>
+        </details>
+        <button type="button" class="secondary sensitivity-reset" id="sensitivity-reset">Reset experiment</button>
+        <p id="sensitivity-storage" class="feedback" role="status"></p>
+        <p class="sensitivity-scope">The condition number is a worst-case relative-sensitivity bound, not an observed error for every b. Solutions use the diagonal formula evaluated in JavaScript binary64; tiny roundoff differences may occur. This is not Julia execution, a solver-stability test, or coding mastery.</p>
+      </section>
       <section class="paper repair-lab" aria-labelledby="repair-section-title">
         <div class="section-title"><span class="section-num" id="repair-section-number">04</span><h2 id="repair-section-title">Debug a Julia program</h2></div>
         <h3 id="repair-title"></h3>
