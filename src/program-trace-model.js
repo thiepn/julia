@@ -38,7 +38,7 @@ export function traceForCase(caseId){
       caseId==="squares"?
         "Square "+entry+" to get "+term+"; add this to total "+before+".":
       caseId==="range"?
-        "Add i = "+entry+" to total "+before+".":
+        "Add i = "+entry+" to total "+before+", yielding "+state+".":
         branch?"Since "+entry+" > 0 is true, count increases from "+before+" to "+state+".":
           "Since "+entry+" > 0 is false, count remains "+before+".";
     return Object.freeze({index,before,after:state,term,branch,context,explanation});
