@@ -465,7 +465,7 @@ try {
     assert.equal(await page.locator("#sensitivity-scale").inputValue(),"0.000001");
     assert.equal(await page.locator("#sensitivity-delta").inputValue(),"0.000001");
     assert.equal(await page.locator("#sensitivity-rhs").inputValue(),"exercise");
-    assert.equal(await page.locator("#sensitivity-cond").innerText(),"1000000");
+    assert.equal(Number(await page.locator("#sensitivity-cond").innerText()),1000000);
     assert.equal(await page.locator("#sensitivity-absolute").innerText(),"1");
     assert.equal(await page.locator("#sensitivity-comparison tr").count(),5);
     assert.equal(await page.locator("#sensitivity-chart .sensitivity-point").count(),5);
@@ -475,7 +475,7 @@ try {
     assert.match(await page.locator("#sensitivity-absolute").innerText(),/e-6/);
     await page.locator("#sensitivity-scale").selectOption("0.000001");
     await page.locator("#sensitivity-rhs").selectOption("direction");
-    assert.equal(await page.locator("#sensitivity-amplification").innerText(),"1000000");
+    assert.equal(Number(await page.locator("#sensitivity-amplification").innerText()),1000000);
     assert.equal(await page.locator("#sensitivity-relx").innerText(),"1");
     assert.match(await page.locator("#sensitivity-direction").innerText(),/reaches κ₂/);
     await page.locator("#sensitivity-delta").selectOption("0");
@@ -611,7 +611,7 @@ try {
     await mobile.getByRole("heading",{name:"Conditioning capstone"}).waitFor();
     assert.equal(await mobile.locator("#sensitivity-lab").isVisible(),true);
     await mobile.locator("#sensitivity-rhs").selectOption("direction");
-    assert.equal(await mobile.locator("#sensitivity-amplification").innerText(),"1000000");
+    assert.equal(Number(await mobile.locator("#sensitivity-amplification").innerText()),1000000);
     const sensitivityOverflow=await mobile.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
     assert.ok(sensitivityOverflow<=2,"J16 sensitivity lab horizontal overflow: "+sensitivityOverflow);
     await mobile.goto("http://127.0.0.1:"+port+"/#lesson/14");
