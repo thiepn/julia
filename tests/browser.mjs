@@ -623,6 +623,8 @@ try {
     await page.locator("#practice-mode").selectOption("b");
     assert.equal(await page.locator("#external-tests").isVisible(),false);
     assert.equal(await page.locator("#progress-label").innerText(),"1 of 16 concept sets reviewed");
+    await page.goto("http://127.0.0.1:"+port+"/#lesson/01");
+    await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
   });
   await check("provided JDoodle embed is configured on all lessons without claiming Julia execution",async()=>{
     const slot = page.locator(".jdoodle-embed");
