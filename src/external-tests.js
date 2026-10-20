@@ -71,26 +71,38 @@ export function externalTestSuite(lessonId,variant){
   if(typeof lessonId!=="string"||!variants.includes(variant)||!Object.hasOwn(EXTERNAL_TEST_SUITES,lessonId))return null;
   return EXTERNAL_TEST_SUITES[lessonId][variant]??null;
 }
+// Single source export path for fixed regression and original property checks.
+// The caller supplies only source-authored assertions; this does not execute code.
+export function buildJuliaTestFile(lessonId,variant,code,tests,suffix="",scopeNote="Source-aligned tests"){
+  const suite=externalTestSuite(lessonId,variant);
+  if(!suite)throw new RangeError("No qualified Julia function interface for this task.");
+  if(typeof code!=="string"||code.length>MAX_DRAFT_LENGTH)
+    throw new RangeError("Source exceeds the editor limit.");
+  if(!Array.isArray(tests)||tests.length===0||tests.some(t=>typeof t.name!=="string"||typeof t.assertion!=="string"||!t.assertion.startsWith("@test ")))
+    throw new RangeError("Unsupported test cases.");
+  if(typeof suffix!=="string"||!/^(?:|-case-\d{2}|-properties|-property-p[12])$/.test(suffix))
+    throw new RangeError("Unsupported test file suffix.");
+  const filename="amp-julia-lab-lesson-"+lessonId+
+    (variant==="original"?"":"-transfer-"+variant)+suffix+"-tests.jl";
+  const assertions=tests.map(c=>"    @testset "+JSON.stringify(c.name)+" begin\n        "+c.assertion+"\n    end").join("\n");
+  const content="using Test\nusing LinearAlgebra\n\n"+
+    "# Learner's Julia source. This file will run it when opened in Julia.\n"+
+    code+"\n\n"+
+    "# "+scopeNote+"; generated in-browser, NOT run or graded by Julia Lab.\n"+
+    (suffix.startsWith("-case-")?"# Focused reproduction only; rerun the full suite after repair.\n":"")+
+    '@testset "AMP '+lessonId+" "+suite.title+'" begin\n'+assertions+"\nend\n";
+  return {filename,content,mime:"text/plain;charset=utf-8"};
+}
 export function buildExternalTestFile(lessonId,variant,code,caseName=null){
   const suite=externalTestSuite(lessonId,variant);
   if(!suite)throw new RangeError("No external Julia test suite for this task.");
   if(typeof code!=="string"||code.length>MAX_DRAFT_LENGTH)throw new RangeError("Source exceeds the editor limit.");
-  // Never rewrite or validate arbitrary Julia source. It will only run after the
-  // learner explicitly opens this file with their own Julia installation.
   const index=caseName===null?-1:suite.cases.findIndex(c=>c.name===caseName);
   if(caseName!==null&&(typeof caseName!=="string"||index===-1))
     throw new RangeError("Unknown test case for selected lesson and task.");
   const focused=index>=0;
-  const filename="amp-julia-lab-lesson-"+lessonId+
-    (variant==="original"?"":"-transfer-"+variant)+
-    (focused?"-case-"+String(index+1).padStart(2,"0"):"")+"-tests.jl";
-  const selected=focused?[suite.cases[index]]:suite.cases;
-  const assertions=selected.map(c=>"    @testset "+JSON.stringify(c.name)+" begin\n        "+c.assertion+"\n    end").join("\n");
-  const content="using Test\nusing LinearAlgebra\n\n"+
-    "# Learner's Julia source. This file will run it when opened in Julia.\n"+
-    code+"\n\n"+
-    "# Source-aligned tests: generated in-browser, NOT run or graded by Julia Lab.\n"+
-    (focused?"# Focused reproduction only; rerun the full suite after repair.\n":"")+
-    '@testset "AMP '+lessonId+" "+suite.title+'" begin\n'+assertions+"\nend\n";
-  return {filename,content,mime:"text/plain;charset=utf-8"};
+  return buildJuliaTestFile(lessonId,variant,code,
+    focused?[suite.cases[index]]:suite.cases,
+    focused?"-case-"+String(index+1).padStart(2,"0"):"",
+    "Source-aligned tests");
 }

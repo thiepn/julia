@@ -92,6 +92,25 @@
             <p id="external-focus-feedback" class="feedback" role="status" aria-live="polite"></p>
             <p class="external-focus-instruction">Run the selected case in Julia to reproduce a failure. After editing your code, run the full test file to check for regressions.</p>
           </div>
+          <section id="property-lab" class="property-lab" aria-labelledby="property-heading" hidden>
+            <h3 id="property-heading">Test an algorithm property</h3>
+            <label for="property-choice">Relationship to test</label>
+            <select id="property-choice"><option value="">Choose a property</option></select>
+            <p id="property-question"></p>
+            <details id="property-reason" hidden>
+              <summary>Explain the expected relationship</summary>
+              <p id="property-reason-text"></p>
+            </details>
+            <div class="external-test-actions">
+              <button id="property-one-download" type="button" class="secondary" disabled>Download selected property</button>
+              <button id="property-all-download" type="button" class="secondary" disabled>Download both properties</button>
+            </div>
+            <details id="property-code-details" hidden>
+              <summary>View property test source</summary>
+              <pre class="code"><code id="property-source"></code></pre>
+            </details>
+            <p id="property-feedback" class="feedback" role="status" aria-live="polite"></p>
+          </section>
           <details id="external-report-details">
             <summary>Inspect Julia terminal errors</summary>
             <label for="external-report-input">Pasted Julia Test output (not verified)</label>

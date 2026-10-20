@@ -301,3 +301,13 @@
 .external-focus select{padding:10px;max-width:420px;width:100%;font-size:15px;background:var(--surface);color:var(--ink);border:1px solid var(--line)}
 .external-focus-instruction{font-size:14px!important;line-height:1.5;margin:12px 0}
 #external-focus-details pre{max-height:350px;overflow:auto;margin:10px 0}
+
+/* Source-authored metamorphic relations on the original code editor. */
+.property-lab[hidden],#property-reason[hidden],#property-code-details[hidden]{display:none}
+.property-lab{border-top:1px solid var(--line);margin-top:18px;padding-top:16px}
+.property-lab h3{font-size:17px;margin:0 0 12px}
+.property-lab label{font-size:14px;font-weight:650;display:block;margin:8px 0}
+.property-lab select{background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:10px;font-size:15px;max-width:420px;width:100%}
+#property-question{font-size:15px!important;line-height:1.55;margin:14px 0}
+#property-reason p{font-size:14px!important;line-height:1.55;margin:8px 0}
+#property-code-details pre{max-height:350px;overflow:auto;margin:10px 0}

@@ -18,6 +18,7 @@ import {transferForLesson} from "./transfer-cases.js";
 import {readTransferDraft,writeTransferDraft,clearTransferDraft} from "./transfer-drafts.js";
 import {externalTestSuite,buildExternalTestFile} from "./external-tests.js";
 import {inspectJuliaReport} from "./julia-report.js";
+import {propertiesForTask,buildPropertyFile} from "./property-transfer.js";
 
 const $ = (selector) => document.querySelector(selector);
 const progress = readProgress();
@@ -162,6 +163,37 @@ function writePracticeCode(lesson,variant,code){
 function clearPracticeCode(lesson,variant){
   return variant==="original"?clearDraft(lesson):clearTransferDraft(lesson,variant);
 }
+function renderPropertyTransfer(){
+  const props=propertiesForTask(current().id,practiceVariant);
+  $("#property-lab").hidden=props.length===0;
+  if(!props.length)return;
+  const select=$("#property-choice");
+  const prior=select.value;
+  select.replaceChildren();
+  const none=document.createElement("option");none.value="";none.textContent="Choose a property";select.append(none);
+  for(const p of props){
+    const option=document.createElement("option");option.value=p.id;option.textContent=p.name;select.append(option);
+  }
+  select.value=props.some(p=>p.id===prior)?prior:"";
+  const selected=props.find(p=>p.id===select.value);
+  $("#property-question").textContent=selected?.question??"";
+  $("#property-reason-text").textContent=selected?.reason??"";
+  $("#property-reason").hidden=!selected;
+  $("#property-code-details").hidden=!selected;
+  $("#property-source").textContent="";
+  $("#property-one-download").disabled=true;
+  $("#property-all-download").disabled=true;
+  try{
+    buildPropertyFile(current().id,practiceVariant,$("#scratch-code").value);
+    $("#property-all-download").disabled=false;
+    if(selected){
+      $("#property-source").textContent=buildPropertyFile(current().id,practiceVariant,$("#scratch-code").value,selected.id).content;
+      $("#property-one-download").disabled=false;
+    }
+  }catch{
+    $("#property-feedback").textContent="Could not prepare the property file. Check the current source length.";
+  }
+}
 function renderFocusedCase(){
   const name=$("#external-focus-case").value;
   const suite=externalTestSuite(current().id,practiceVariant);
@@ -174,7 +206,7 @@ function renderFocusedCase(){
 function renderExternalTestHandoff(){
   const suite=externalTestSuite(current().id,practiceVariant);
   $("#external-tests").hidden=!suite;
-  if(!suite)return;
+  if(!suite){renderPropertyTransfer();return;}
   const previous=$("#external-focus-case").value;
   const select=$("#external-focus-case");
   select.replaceChildren();
@@ -204,6 +236,7 @@ function renderExternalTestHandoff(){
     $("#external-test-copy").disabled=true;
   }
   renderFocusedCase();
+  renderPropertyTransfer();
 }
 function downloadLocalJulia(script){
   const url=URL.createObjectURL(new Blob([script.content],{type:script.mime}));
@@ -243,6 +276,10 @@ function renderPractice(){
   $("#external-test-feedback").textContent="";
   $("#external-test-details").open=false;
   $("#external-focus-case").value="";
+  $("#property-choice").value="";
+  $("#property-reason").open=false;
+  $("#property-code-details").open=false;
+  $("#property-feedback").textContent="";
   $("#external-focus-details").open=false;
   $("#external-focus-feedback").textContent="";
   $("#external-report-input").value="";
@@ -384,6 +421,7 @@ $("#scratch-code").addEventListener("input", () => {
   $("#external-report-results").replaceChildren();
   $("#external-report-input").value="";
   $("#external-focus-feedback").textContent="";
+  $("#property-feedback").textContent="";
   renderExternalTestHandoff();
   $("#draft-feedback").textContent = saved
     ? "Draft saved locally. Execution and correctness are not verified."
@@ -408,6 +446,30 @@ $("#external-report-inspect").addEventListener("click",()=>{
   const provenance=document.createElement("p");
   provenance.textContent="This is user-pasted text, not authenticated Julia output or a coding grade.";
   container.append(provenance);
+});
+$("#property-choice").addEventListener("change",()=>{
+  $("#property-feedback").textContent="";
+  $("#property-reason").open=false;
+  $("#property-code-details").open=false;
+  renderPropertyTransfer();
+});
+$("#property-one-download").addEventListener("click",()=>{
+  try{
+    const file=buildPropertyFile(current().id,practiceVariant,$("#scratch-code").value,$("#property-choice").value);
+    downloadLocalJulia(file);
+    $("#property-feedback").textContent="Downloaded "+file.filename+". Run in Julia to test your program against this relation.";
+  }catch{
+    $("#property-feedback").textContent="Select a valid property and check your current source length.";
+  }
+});
+$("#property-all-download").addEventListener("click",()=>{
+  try{
+    const file=buildPropertyFile(current().id,practiceVariant,$("#scratch-code").value);
+    downloadLocalJulia(file);
+    $("#property-feedback").textContent="Downloaded "+file.filename+". Run in Julia to check all two relations.";
+  }catch{
+    $("#property-feedback").textContent="Could not prepare the property suite. Check the current source length.";
+  }
 });
 $("#external-focus-case").addEventListener("change",()=>{
   $("#external-focus-feedback").textContent="";

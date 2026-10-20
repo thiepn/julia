@@ -7,6 +7,7 @@ import {tmpdir} from "node:os";
 import {join} from "node:path";
 import {spawnSync} from "node:child_process";
 import {EXTERNAL_TEST_SUITES,buildExternalTestFile} from "../src/external-tests.js";
+import {propertiesForTask,buildPropertyFile} from "../src/property-transfer.js";
 const examples={
   "08":{
     original:"sum_of_squares(v) = sum((x^2 for x in v); init=0)",
@@ -79,6 +80,20 @@ try{
       assert.match(focusedActual.stdout+focusedActual.stderr,/Test Summary:/,
         "Real focused Julia Test summary missing for "+lesson+"/"+variant);
       console.log("JULIA FOCUSED PASS "+lesson+"/"+variant+" ["+focusedCase.name+"]");
+      const relations=propertiesForTask(lesson,variant);
+      assert.equal(relations.length,2,"Expected two source-authored input relations per supported task");
+      for(const propertyId of [null,relations[1].id]){
+        const script=buildPropertyFile(lesson,variant,source,propertyId);
+        const file=join(dir,script.filename);
+        await writeFile(file,script.content,"utf8");
+        const result=julia(file);
+        assert.equal(result.error,undefined,"Julia runtime unavailable: "+result.error);
+        if(result.status!==0)
+          throw Error("JULIA PROPERTY FAIL "+lesson+"/"+variant+" "+(propertyId??"both")+
+            " exit "+result.status+"\n"+result.stdout+"\n"+result.stderr);
+        assert.match(result.stdout+result.stderr,/Test Summary:/);
+        console.log("JULIA PROPERTY PASS "+lesson+"/"+variant+" ["+(propertyId??"both")+"]");
+      }
     }
   }
   assert.equal(count,9,"Expected all nine function task variants");
@@ -101,6 +116,14 @@ try{
     "Incorrect implementation must fail the specifically selected boundary regression");
   assert.match(failedFocusedActual.stdout+failedFocusedActual.stderr,/Test Failed|Some tests did not pass/);
   console.log("JULIA FOCUSED EXPECTED FAIL 08/a strict boundary");
+  const badProperty=buildPropertyFile("08","original","sum_of_squares(v) = sum(v)","p1");
+  const badPropertyPath=join(dir,"julia-bad-property.jl");
+  await writeFile(badPropertyPath,badProperty.content,"utf8");
+  const badPropertyResult=julia(badPropertyPath);
+  assert.equal(badPropertyResult.error,undefined);
+  assert.notEqual(badPropertyResult.status,0,"Sign-incorrect sum must fail its Julia metamorphic test");
+  assert.match(badPropertyResult.stdout+badPropertyResult.stderr,/Test Failed|Some tests did not pass/);
+  console.log("JULIA PROPERTY EXPECTED FAIL 08/original sign symmetry");
   console.log("JULIA QUALIFICATION PASS "+count+"/9 real generated suites + 2 expected failures (full and focused)");
 }finally{
   await rm(dir,{recursive:true,force:true});
