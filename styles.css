@@ -150,3 +150,42 @@
 .precision-reset{margin-top:16px}
 .precision-scope{margin-top:16px}
 @media(max-width:500px){.precision-controls{grid-template-columns:1fr;gap:6px}.precision-legend{gap:8px}}
+
+/* J13: interactive least-squares data, with readable controls and numerics. */
+.fitting-lab[hidden]{display:none}
+.fit-controls{display:grid;grid-template-columns:minmax(160px,auto) minmax(180px,1fr);align-items:center;gap:10px 16px}
+.fit-controls label{font-size:14px;font-weight:650}
+.fit-controls select{background:var(--surface);border:1px solid var(--line);padding:10px;color:var(--ink);font-size:14px;min-width:0}
+.fit-controls input[type=range]{width:100%;min-width:0;accent-color:var(--accent)}
+.fit-controls input[type=checkbox]{justify-self:start;width:22px;height:22px;accent-color:var(--accent)}
+#fit-chart{width:100%;display:block;margin:16px 0 10px;height:auto;border:1px solid var(--line);background:var(--surface)}
+.fit-grid{stroke:var(--line);stroke-width:1}
+.fit-tick{font:13px system-ui,sans-serif;fill:var(--muted)}
+.fit-reference-line{stroke:#6189c2;stroke-width:2;stroke-dasharray:8 5}
+.fit-candidate-line{stroke:#ce7d40;stroke-width:3}
+.fit-observation{fill:#298c62;stroke:var(--surface);stroke-width:1}
+.fit-residual{stroke:#9e768b;stroke-width:2;stroke-dasharray:3 3}
+.fit-legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px}
+.fit-legend span{display:inline-flex;align-items:center;gap:7px}
+.fit-legend span:before{content:"";width:15px;height:3px;background:currentColor;display:inline-block}
+.fit-legend-points{color:#298c62}
+.fit-legend-candidate{color:#ce7d40}
+.fit-legend-reference{color:#6189c2}
+.fit-legend-residual{color:#9e768b}
+.fit-values{font-size:14px;margin:20px 0}
+.fit-values>div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.fit-values dt{font-weight:650}
+.fit-values dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.fit-reference{border-left:3px solid var(--accent);padding:12px 14px;background:var(--washed)}
+.fit-reference strong{font-size:15px}
+.fit-reference p{font-size:14px!important}
+.fit-data-scroll{max-width:100%;overflow-x:auto;border:1px solid var(--line);margin:16px 0}
+.fit-data-table{border-collapse:collapse;width:100%;min-width:400px;font-size:14px;font-variant-numeric:tabular-nums}
+.fit-data-table caption{text-align:left;font-weight:650;padding:12px}
+.fit-data-table th,.fit-data-table td{text-align:right;padding:10px;border-bottom:1px solid var(--line)}
+.fit-data-table tbody tr:last-child td{border-bottom:0}
+.fit-code-details{margin-top:14px}
+.fit-code-details pre{margin-top:10px}
+.fit-reset{margin-top:16px}
+.fit-scope{font-size:14px!important;color:var(--muted);line-height:1.6;margin-top:16px}
+@media(max-width:500px){.fit-controls{grid-template-columns:1fr;gap:6px}.fit-values>div{flex-wrap:wrap}.fit-values dd{text-align:left}}

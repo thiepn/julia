@@ -10,6 +10,7 @@ import {readRepair, writeRepair, clearRepair, compareRepairText} from "./repair-
 import {initNumericalExplorer,showNumericalExplorer} from "./numerical-view.js";
 import {initEliminationLab,showEliminationLab} from "./elimination-view.js";
 import {initPrecisionLab,showPrecisionLab} from "./precision-view.js";
+import {initFittingLab,showFittingLab} from "./fitting-view.js";
 
 const $ = (selector) => document.querySelector(selector);
 const progress = readProgress();
@@ -150,7 +151,8 @@ function render() {
   showNumericalExplorer(l.id);
   showEliminationLab(l.id);
   showPrecisionLab(l.id);
-  $("#repair-section-number").textContent=["05","06","09","10","12","13"].includes(l.id)?"05":"04";
+  showFittingLab(l.id);
+  $("#repair-section-number").textContent=["05","06","09","10","12","13","15"].includes(l.id)?"05":"04";
   $("#lesson-theory").textContent = l.theory;
   $("#example-code").textContent = l.example;
   $("#challenge-text").textContent = l.challenge;
@@ -408,5 +410,6 @@ if (!location.hash) location.hash = "#lesson/01";
 initNumericalExplorer();
 initEliminationLab();
 initPrecisionLab();
+initFittingLab();
 render();
 setupEmbed();

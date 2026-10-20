@@ -197,6 +197,63 @@
         <p class="feedback" id="precision-save-status" role="status"></p>
         <p class="precision-scope">Calculated with JavaScript Float64-like binary64 arithmetic, using cos(x) as a floating-point reference. These measurements are not Julia execution, an exact-error oracle, convergence proof, or coding mastery.</p>
       </section>
+      <section class="paper fitting-lab" id="fitting-lab" aria-labelledby="fit-heading" hidden>
+        <div class="section-title"><span class="section-num">04</span><h2 id="fit-heading">Explore linear least squares</h2></div>
+        <div class="fit-controls">
+          <label for="fit-dataset">Measurements</label>
+          <select id="fit-dataset">
+            <option value="exact">Exact line</option>
+            <option value="noisy">Noisy measurements</option>
+            <option value="outlier">With an outlier</option>
+            <option value="singular">Repeated x values</option>
+          </select>
+          <label for="fit-intercept">Intercept a: <output id="fit-intercept-value">0</output></label>
+          <input id="fit-intercept" type="range" min="-3" max="6" step="0.01" value="0"/>
+          <label for="fit-slope">Slope b: <output id="fit-slope-value">1</output></label>
+          <input id="fit-slope" type="range" min="-1" max="5" step="0.01" value="1"/>
+          <label for="fit-residuals">Show residuals</label>
+          <input id="fit-residuals" type="checkbox" checked/>
+        </div>
+        <svg id="fit-chart" role="img" viewBox="0 0 620 335" aria-label="Measurements, selected line, least-squares reference and residuals">
+          <title>Linear least-squares fit</title>
+          <g id="fit-chart-content"></g>
+        </svg>
+        <div class="fit-legend">
+          <span class="fit-legend-points">Measurements</span>
+          <span class="fit-legend-candidate">Your line</span>
+          <span class="fit-legend-reference">Least-squares comparison</span>
+          <span class="fit-legend-residual">Residuals</span>
+        </div>
+        <dl class="fit-values">
+          <div><dt>Sum of squared residuals (SSE)</dt><dd id="fit-sse"></dd></div>
+          <div><dt>Residual 2-norm</dt><dd id="fit-norm"></dd></div>
+          <div><dt>Gradient (∂SSE/∂a, ∂SSE/∂b)</dt><dd id="fit-gradient"></dd></div>
+          <div><dt>Minimum SSE</dt><dd id="fit-optimum-sse"></dd></div>
+          <div><dt>SSE above minimum</dt><dd id="fit-gap"></dd></div>
+        </dl>
+        <div class="fit-reference">
+          <strong id="fit-reference-title"></strong>
+          <p id="fit-reference-text"></p>
+          <button class="secondary" id="fit-apply" type="button">Use least-squares fit</button>
+          <p id="fit-apply-feedback" class="feedback" role="status"></p>
+        </div>
+        <div class="fit-data-scroll">
+          <table class="fit-data-table">
+            <caption>Residuals for the selected line: observed − predicted</caption>
+            <thead><tr><th scope="col">x</th><th scope="col">Observed y</th><th scope="col">Predicted y</th><th scope="col">Residual</th></tr></thead>
+            <tbody id="fit-data-rows"></tbody>
+          </table>
+        </div>
+        <details class="fit-code-details">
+          <summary>Julia least-squares example</summary>
+          <pre class="code"><code id="fit-julia"></code></pre>
+          <button type="button" class="secondary" id="fit-copy">Copy Julia code</button>
+          <p class="feedback" id="fit-copy-status" role="status"></p>
+        </details>
+        <button type="button" class="secondary fit-reset" id="fit-reset">Reset experiment</button>
+        <p class="feedback" id="fit-storage-status" role="status"></p>
+        <p class="fit-scope">Fitted parameters and errors are calculated in the browser using JavaScript binary64. This is not Julia execution, a proof of numerical stability, or coding mastery.</p>
+      </section>
       <section class="paper repair-lab" aria-labelledby="repair-section-title">
         <div class="section-title"><span class="section-num" id="repair-section-number">04</span><h2 id="repair-section-title">Debug a Julia program</h2></div>
         <h3 id="repair-title"></h3>
