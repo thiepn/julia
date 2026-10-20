@@ -286,3 +286,11 @@
 .external-tests details pre{max-height:350px;overflow:auto;margin-top:10px}
 .external-test-run{font-size:14px!important;line-height:1.55;color:var(--muted);margin:12px 0}
 @media(max-width:510px){.external-test-actions button{width:100%;flex:1 1 100%}}
+
+/* J19: local and ephemeral interpretation of pasted Julia Test messages. */
+#external-report-details{margin-top:16px}
+#external-report-details label{display:block;font-size:14px;font-weight:650;margin:10px 0 6px}
+#external-report-input{display:block;box-sizing:border-box;width:100%;min-height:126px;max-width:100%;background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:12px;font:14px/1.5 "Cascadia Code",Consolas,monospace}
+#external-report-inspect{margin:10px 0}
+#external-report-results{font-size:14px;line-height:1.55;overflow-wrap:anywhere}
+#external-report-results p{font-size:14px!important;margin:8px 0}

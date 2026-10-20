@@ -70,7 +70,7 @@ export function buildExternalTestFile(lessonId,variant,code){
   // learner explicitly opens this file with their own Julia installation.
   const filename="amp-julia-lab-lesson-"+lessonId+
     (variant==="original"?"":"-transfer-"+variant)+"-tests.jl";
-  const assertions=suite.cases.map(c=>"    # "+c.name+"\n    "+c.assertion).join("\n");
+  const assertions=suite.cases.map(c=>"    @testset "+JSON.stringify(c.name)+" begin\n        "+c.assertion+"\n    end").join("\n");
   const content="using Test\nusing LinearAlgebra\n\n"+
     "# Learner's Julia source. This file will run it when opened in Julia.\n"+
     code+"\n\n"+

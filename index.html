@@ -78,6 +78,13 @@
           </details>
           <p class="external-test-run">Open the downloaded .jl file with Julia to run its Test assertions. This app only prepares the file; it does not execute your code, receive the results, or award mastery. A test failure identifies a case to investigate, not the only possible defect.</p>
           <p id="external-test-feedback" class="feedback" role="status" aria-live="polite"></p>
+          <details id="external-report-details">
+            <summary>Inspect Julia terminal errors</summary>
+            <label for="external-report-input">Pasted Julia Test output (not verified)</label>
+            <textarea id="external-report-input" rows="6" maxlength="12000" spellcheck="false" placeholder="Paste a Test Summary or first Julia error block. Do not paste secrets."></textarea>
+            <button id="external-report-inspect" class="secondary" type="button">Inspect pasted output</button>
+            <div id="external-report-results" role="status" aria-live="polite"></div>
+          </details>
         </div>
         <details id="transfer-plan" hidden><summary>Planning cue</summary><p></p></details>
         <details id="transfer-tests" hidden><summary>Additional case to test</summary><p></p></details>

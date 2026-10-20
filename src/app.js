@@ -17,6 +17,7 @@ import {initSensitivityLab,showSensitivityLab} from "./sensitivity-view.js";
 import {transferForLesson} from "./transfer-cases.js";
 import {readTransferDraft,writeTransferDraft,clearTransferDraft} from "./transfer-drafts.js";
 import {externalTestSuite,buildExternalTestFile} from "./external-tests.js";
+import {inspectJuliaReport} from "./julia-report.js";
 
 const $ = (selector) => document.querySelector(selector);
 const progress = readProgress();
@@ -221,6 +222,9 @@ function renderPractice(){
     :"Saved only in this browser; not executed or automatically graded.";
   $("#external-test-feedback").textContent="";
   $("#external-test-details").open=false;
+  $("#external-report-input").value="";
+  $("#external-report-results").replaceChildren();
+  $("#external-report-details").open=false;
   renderExternalTestHandoff();
 }
 function render() {
@@ -354,10 +358,27 @@ $("#copy-starter").addEventListener("click", async () => {
 $("#scratch-code").addEventListener("input", () => {
   const saved = writePracticeCode(current().id, practiceVariant, $("#scratch-code").value);
   unsavedPractice=!saved;
+  $("#external-report-results").replaceChildren();
+  $("#external-report-input").value="";
   renderExternalTestHandoff();
   $("#draft-feedback").textContent = saved
     ? "Draft saved locally. Execution and correctness are not verified."
     : "Could not save draft (storage unavailable or draft too large). Copy your work elsewhere.";
+});
+$("#external-report-inspect").addEventListener("click",()=>{
+  const result=inspectJuliaReport($("#external-report-input").value,current().id,practiceVariant);
+  const container=$("#external-report-results");
+  container.replaceChildren();
+  const heading=document.createElement("strong");heading.textContent=result.title;container.append(heading);
+  const message=document.createElement("p");message.textContent=result.advice;container.append(message);
+  if(result.cases.length){
+    const detail=document.createElement("p");
+    detail.textContent="Named test cases found in pasted text: "+result.cases.join(", ")+".";
+    container.append(detail);
+  }
+  const provenance=document.createElement("p");
+  provenance.textContent="This is user-pasted text, not authenticated Julia output or a coding grade.";
+  container.append(provenance);
 });
 $("#external-test-download").addEventListener("click",()=>{
   try{
@@ -442,6 +463,8 @@ $("#import-file").addEventListener("change", async () => {
   }
   $("#scratch-code").value = validation.code;
   unsavedPractice=false;
+  $("#external-report-results").replaceChildren();
+  $("#external-report-input").value="";
   renderExternalTestHandoff();
   $("#draft-feedback").textContent = "Imported " + file.name +
     " for this lesson. Source was saved locally but not executed or graded.";

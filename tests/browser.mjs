@@ -626,6 +626,42 @@ try {
     await page.goto("http://127.0.0.1:"+port+"/#lesson/01");
     await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
   });
+  await check("J19 local Julia report reader interprets pasted errors without grading or storing",async()=>{
+    await page.goto("http://127.0.0.1:"+port+"/#lesson/08");
+    await page.getByRole("heading",{name:"Functions & algorithms"}).waitFor();
+    await page.locator("#practice-mode").selectOption("a");
+    await page.locator("#external-report-details summary").click();
+    await page.locator("#external-report-inspect").click();
+    assert.match(await page.locator("#external-report-results").innerText(),/No Julia report pasted/);
+    const failure="AMP 08 count_above: Test Failed at testfile.jl:14\n"+
+      "  Expression: count_above(Int[], 3) == 0\n"+
+      "Test Summary: | Pass  Fail  Total\nEmpty input | 0 1 1";
+    await page.locator("#external-report-input").fill(failure);
+    await page.locator("#external-report-inspect").click();
+    const out=await page.locator("#external-report-results").innerText();
+    assert.match(out,/reports failed assertions/);
+    assert.match(out,/Empty input/);
+    assert.match(out,/user-pasted text, not authenticated Julia output/);
+    const good="Test Summary: | Pass  Total\nAMP 08 count_above | 3 3";
+    await page.locator("#external-report-input").fill(good);
+    await page.locator("#external-report-inspect").click();
+    assert.match(await page.locator("#external-report-results").innerText(),/does not verify the output's origin/);
+    await page.locator("#external-report-input").fill("UndefVarError: count_above not defined in Main");
+    await page.locator("#external-report-inspect").click();
+    assert.match(await page.locator("#external-report-results").innerText(),/Compare the function name/);
+    await page.locator("#scratch-code").fill("function count_above(v,t)\n    return 0\nend");
+    assert.equal(await page.locator("#external-report-input").inputValue(),"");
+    assert.equal(await page.locator("#external-report-results").innerText(),"");
+    await page.locator("#external-report-input").fill("MethodError: no method matching count_above()");
+    await page.locator("#practice-mode").selectOption("b");
+    assert.equal(await page.locator("#external-report-input").inputValue(),"");
+    await page.goto("http://127.0.0.1:"+port+"/#lesson/16");
+    await page.getByRole("heading",{name:"Conditioning capstone"}).waitFor();
+    assert.equal(await page.locator("#external-tests").isVisible(),false);
+    assert.equal(await page.locator("#progress-label").innerText(),"1 of 16 concept sets reviewed");
+    await page.goto("http://127.0.0.1:"+port+"/#lesson/01");
+    await page.getByRole("heading",{name:"Variables & numbers"}).waitFor();
+  });
   await check("provided JDoodle embed is configured on all lessons without claiming Julia execution",async()=>{
     const slot = page.locator(".jdoodle-embed");
     await slot.waitFor();
@@ -735,6 +771,15 @@ try {
     assert.equal(await mobile.locator("#continue-lesson").isVisible(),true);
     assert.equal(await mobile.locator("#concept-brief").isVisible(),true);
     assert.equal(await mobile.locator("#repair-editor").count(),1);
+    await mobile.goto("http://127.0.0.1:"+port+"/#lesson/09");
+    await mobile.getByRole("heading",{name:"Floating-point numbers"}).waitFor();
+    await mobile.locator("#practice-mode").selectOption("b");
+    await mobile.locator("#external-report-details summary").click();
+    await mobile.locator("#external-report-input").fill("MethodError: no method matching near_relative(::Int64)");
+    await mobile.locator("#external-report-inspect").click();
+    assert.match(await mobile.locator("#external-report-results").innerText(),/argument count and accepted types/);
+    const reportOverflow=await mobile.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+    assert.ok(reportOverflow<=2,"J19 report triage caused mobile overflow: "+reportOverflow);
     await mobile.goto("http://127.0.0.1:"+port+"/#lesson/13");
     await mobile.getByRole("heading",{name:"Elimination & triangular systems"}).waitFor();
     await mobile.locator("#practice-mode").selectOption("b");

@@ -26,6 +26,12 @@ jobs:
           node --check src/checks.js
           node --check src/lessons.js
           npm test
+      - name: Install Julia 1.11 for authentic generated-test qualification
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.11'
+      - name: Execute generated Julia Test suites with fixed reference code
+        run: node tests/julia-qualification.mjs
       - name: Install Playwright runner for browser acceptance
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
