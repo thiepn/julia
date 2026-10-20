@@ -9,7 +9,7 @@ import {spawnSync} from "node:child_process";
 import {EXTERNAL_TEST_SUITES,buildExternalTestFile} from "../src/external-tests.js";
 const examples={
   "08":{
-    original:"sum_of_squares(v) = sum(x^2 for x in v)",
+    original:"sum_of_squares(v) = sum((x^2 for x in v); init=0)",
     a:"count_above(v, t) = count(x -> x > t, v)",
     b:"product_or_one(v) = prod(v)"
   },
