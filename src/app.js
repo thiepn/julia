@@ -162,10 +162,29 @@ function writePracticeCode(lesson,variant,code){
 function clearPracticeCode(lesson,variant){
   return variant==="original"?clearDraft(lesson):clearTransferDraft(lesson,variant);
 }
+function renderFocusedCase(){
+  const name=$("#external-focus-case").value;
+  const suite=externalTestSuite(current().id,practiceVariant);
+  const valid=!!name&&!!suite?.cases.some(c=>c.name===name);
+  $("#external-focus-download").disabled=!valid;
+  $("#external-focus-copy").disabled=!valid;
+  $("#external-focus-preview").textContent=valid?
+    buildExternalTestFile(current().id,practiceVariant,$("#scratch-code").value,name).content:"";
+}
 function renderExternalTestHandoff(){
   const suite=externalTestSuite(current().id,practiceVariant);
   $("#external-tests").hidden=!suite;
   if(!suite)return;
+  const previous=$("#external-focus-case").value;
+  const select=$("#external-focus-case");
+  select.replaceChildren();
+  const placeholder=document.createElement("option");
+  placeholder.value="";placeholder.textContent="Choose a case";select.append(placeholder);
+  for(const item of suite.cases){
+    const option=document.createElement("option");
+    option.value=item.name;option.textContent=item.name;select.append(option);
+  }
+  select.value=suite.cases.some(c=>c.name===previous)?previous:"";
   $("#external-test-heading").textContent="Run Julia tests for "+suite.title;
   const list=$("#external-test-cases");
   list.replaceChildren();
@@ -184,6 +203,7 @@ function renderExternalTestHandoff(){
     $("#external-test-download").disabled=true;
     $("#external-test-copy").disabled=true;
   }
+  renderFocusedCase();
 }
 function downloadLocalJulia(script){
   const url=URL.createObjectURL(new Blob([script.content],{type:script.mime}));
@@ -222,6 +242,9 @@ function renderPractice(){
     :"Saved only in this browser; not executed or automatically graded.";
   $("#external-test-feedback").textContent="";
   $("#external-test-details").open=false;
+  $("#external-focus-case").value="";
+  $("#external-focus-details").open=false;
+  $("#external-focus-feedback").textContent="";
   $("#external-report-input").value="";
   $("#external-report-results").replaceChildren();
   $("#external-report-details").open=false;
@@ -360,6 +383,7 @@ $("#scratch-code").addEventListener("input", () => {
   unsavedPractice=!saved;
   $("#external-report-results").replaceChildren();
   $("#external-report-input").value="";
+  $("#external-focus-feedback").textContent="";
   renderExternalTestHandoff();
   $("#draft-feedback").textContent = saved
     ? "Draft saved locally. Execution and correctness are not verified."
@@ -376,9 +400,40 @@ $("#external-report-inspect").addEventListener("click",()=>{
     detail.textContent="Named test cases found in pasted text: "+result.cases.join(", ")+".";
     container.append(detail);
   }
+  if(result.cases.length===1&&["failed","syntax","undefined","method"].includes(result.kind)){
+    $("#external-focus-case").value=result.cases[0];
+    $("#external-focus-feedback").textContent="Selected the named case from pasted text; execution remains unverified.";
+    renderFocusedCase();
+  }
   const provenance=document.createElement("p");
   provenance.textContent="This is user-pasted text, not authenticated Julia output or a coding grade.";
   container.append(provenance);
+});
+$("#external-focus-case").addEventListener("change",()=>{
+  $("#external-focus-feedback").textContent="";
+  renderFocusedCase();
+});
+$("#external-focus-download").addEventListener("click",()=>{
+  const name=$("#external-focus-case").value;
+  if(!name)return;
+  try{
+    const file=buildExternalTestFile(current().id,practiceVariant,$("#scratch-code").value,name);
+    downloadLocalJulia(file);
+    $("#external-focus-feedback").textContent="Downloaded "+file.filename+". After repair, rerun the full suite using Download Julia test file.";
+  }catch{
+    $("#external-focus-feedback").textContent="Could not prepare this case. Check the selected task and source size.";
+  }
+});
+$("#external-focus-copy").addEventListener("click",async()=>{
+  const name=$("#external-focus-case").value;
+  if(!name)return;
+  try{
+    const file=buildExternalTestFile(current().id,practiceVariant,$("#scratch-code").value,name);
+    await navigator.clipboard.writeText(file.content);
+    $("#external-focus-feedback").textContent="Focused Julia test copied. Run it externally, then rerun the full suite after repair.";
+  }catch{
+    $("#external-focus-feedback").textContent="Clipboard or selected case unavailable. Use the file preview.";
+  }
 });
 $("#external-test-download").addEventListener("click",()=>{
   try{

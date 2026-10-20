@@ -78,6 +78,20 @@
           </details>
           <p class="external-test-run">Open the downloaded .jl file with Julia to run its Test assertions. This app only prepares the file; it does not execute your code, receive the results, or award mastery. A test failure identifies a case to investigate, not the only possible defect.</p>
           <p id="external-test-feedback" class="feedback" role="status" aria-live="polite"></p>
+          <div class="external-focus">
+            <label for="external-focus-case">Reproduce one test case</label>
+            <select id="external-focus-case"><option value="">Choose a case</option></select>
+            <div class="external-test-actions">
+              <button id="external-focus-download" type="button" class="secondary" disabled>Download focused .jl</button>
+              <button id="external-focus-copy" type="button" class="secondary" disabled>Copy focused .jl</button>
+            </div>
+            <details id="external-focus-details">
+              <summary>View focused Julia test</summary>
+              <pre class="code"><code id="external-focus-preview"></code></pre>
+            </details>
+            <p id="external-focus-feedback" class="feedback" role="status" aria-live="polite"></p>
+            <p class="external-focus-instruction">Run the selected case in Julia to reproduce a failure. After editing your code, run the full test file to check for regressions.</p>
+          </div>
           <details id="external-report-details">
             <summary>Inspect Julia terminal errors</summary>
             <label for="external-report-input">Pasted Julia Test output (not verified)</label>

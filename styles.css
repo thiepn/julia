@@ -294,3 +294,10 @@
 #external-report-inspect{margin:10px 0}
 #external-report-results{font-size:14px;line-height:1.55;overflow-wrap:anywhere}
 #external-report-results p{font-size:14px!important;margin:8px 0}
+
+/* Focused regression reproduction reuses original editor and Julia stdlib Test. */
+.external-focus{border-top:1px solid var(--line);margin-top:18px;padding-top:14px}
+.external-focus label{font-size:14px;font-weight:650;display:block;margin-bottom:8px}
+.external-focus select{padding:10px;max-width:420px;width:100%;font-size:15px;background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.external-focus-instruction{font-size:14px!important;line-height:1.5;margin:12px 0}
+#external-focus-details pre{max-height:350px;overflow:auto;margin:10px 0}

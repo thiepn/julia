@@ -65,6 +65,20 @@ try{
       assert.match(actual.stdout+actual.stderr,/Test Summary:/,"Real Julia Test summary missing for "+lesson+"/"+variant);
       count++;
       console.log("JULIA PASS "+lesson+"/"+variant+" ("+variants[variant].cases.length+" cases)");
+      const focusedCase=variants[variant].cases.at(-1);
+      const focused=buildExternalTestFile(lesson,variant,source,focusedCase.name);
+      assert.equal((focused.content.match(/@testset /g)||[]).length,2,
+        "Focused export must contain exactly one nested Test case");
+      const focusedPath=join(dir,focused.filename);
+      await writeFile(focusedPath,focused.content,"utf8");
+      const focusedActual=julia(focusedPath);
+      assert.equal(focusedActual.error,undefined,"Julia runtime unavailable: "+focusedActual.error);
+      if(focusedActual.status!==0)
+        throw Error("JULIA FOCUSED FAIL "+lesson+"/"+variant+" ["+focusedCase.name+"]\n"+
+          focusedActual.stdout+"\n"+focusedActual.stderr);
+      assert.match(focusedActual.stdout+focusedActual.stderr,/Test Summary:/,
+        "Real focused Julia Test summary missing for "+lesson+"/"+variant);
+      console.log("JULIA FOCUSED PASS "+lesson+"/"+variant+" ["+focusedCase.name+"]");
     }
   }
   assert.equal(count,9,"Expected all nine function task variants");
@@ -78,7 +92,16 @@ try{
   assert.match(actual.stdout+actual.stderr,/Test Failed|Some tests did not pass|Test Summary/,
     "Authentic negative test output missing");
   console.log("JULIA EXPECTED FAIL 08/a: deliberately wrong source rejected by Julia Test");
-  console.log("JULIA QUALIFICATION PASS "+count+"/9 real generated suites + 1 expected failure");
+  const failingFocused=buildExternalTestFile("08","a","count_above(v,t) = length(v)","Strict inequality boundary");
+  const failingFocusedPath=join(dir,"julia-expected-focused-failure.jl");
+  await writeFile(failingFocusedPath,failingFocused.content,"utf8");
+  const failedFocusedActual=julia(failingFocusedPath);
+  assert.equal(failedFocusedActual.error,undefined);
+  assert.notEqual(failedFocusedActual.status,0,
+    "Incorrect implementation must fail the specifically selected boundary regression");
+  assert.match(failedFocusedActual.stdout+failedFocusedActual.stderr,/Test Failed|Some tests did not pass/);
+  console.log("JULIA FOCUSED EXPECTED FAIL 08/a strict boundary");
+  console.log("JULIA QUALIFICATION PASS "+count+"/9 real generated suites + 2 expected failures (full and focused)");
 }finally{
   await rm(dir,{recursive:true,force:true});
 }
