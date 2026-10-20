@@ -696,11 +696,13 @@ try {
     assert.equal(await page.locator("#external-focus-case").inputValue(),"");
     assert.equal(await page.locator("#external-focus-download").isDisabled(),true);
     await page.locator("#external-focus-case").selectOption("Zero factor");
+    await page.locator("#external-focus-details summary").click();
     assert.match(await page.locator("#external-focus-preview").innerText(),/product_or_one/);
     await page.goto("http://127.0.0.1:"+port+"/#lesson/13");
     await page.getByRole("heading",{name:"Elimination & triangular systems"}).waitFor();
     await page.locator("#practice-mode").selectOption("a");
     await page.locator("#external-focus-case").selectOption("Negative upper entry");
+    await page.locator("#external-focus-details summary").click();
     assert.match(await page.locator("#external-focus-preview").innerText(),/backward_substitution/);
     await page.goto("http://127.0.0.1:"+port+"/#lesson/16");
     await page.getByRole("heading",{name:"Conditioning capstone"}).waitFor();
@@ -823,6 +825,7 @@ try {
     await mobile.locator("#practice-mode").selectOption("b");
     await mobile.locator("#external-focus-case").selectOption("Zero factor");
     assert.equal(await mobile.locator("#external-focus-download").isEnabled(),true);
+    await mobile.locator("#external-focus-details summary").click();
     assert.match(await mobile.locator("#external-focus-preview").innerText(),/product_or_one/);
     const focusOverflow=await mobile.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
     assert.ok(focusOverflow<=2,"J20 focused Julia tests caused mobile overflow: "+focusOverflow);
