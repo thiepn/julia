@@ -92,6 +92,23 @@
             <p id="external-focus-feedback" class="feedback" role="status" aria-live="polite"></p>
             <p class="external-focus-instruction">Run the selected case in Julia to reproduce a failure. After editing your code, run the full test file to check for regressions.</p>
           </div>
+          <section id="algorithm-design" class="algorithm-design" aria-labelledby="algorithm-design-heading" hidden>
+            <h3 id="algorithm-design-heading">Design the function</h3>
+            <dl class="algorithm-contract">
+              <div><dt>Inputs</dt><dd id="algorithm-contract-input"></dd></div>
+              <div><dt>Return value</dt><dd id="algorithm-contract-output"></dd></div>
+            </dl>
+            <ol id="algorithm-design-stages"></ol>
+            <details id="algorithm-scaffold-details">
+              <summary>View incomplete Julia scaffold</summary>
+              <pre class="code"><code id="algorithm-scaffold"></code></pre>
+            </details>
+            <div class="external-test-actions">
+              <button id="algorithm-scaffold-copy" type="button" class="secondary">Copy scaffold</button>
+              <button id="algorithm-scaffold-use" type="button" class="secondary">Use scaffold in current draft</button>
+            </div>
+            <p id="algorithm-design-feedback" class="feedback" role="status" aria-live="polite"></p>
+          </section>
           <section id="property-lab" class="property-lab" aria-labelledby="property-heading" hidden>
             <h3 id="property-heading">Test an algorithm property</h3>
             <label for="property-choice">Relationship to test</label>

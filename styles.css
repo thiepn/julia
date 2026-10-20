@@ -311,3 +311,18 @@
 #property-question{font-size:15px!important;line-height:1.55;margin:14px 0}
 #property-reason p{font-size:14px!important;line-height:1.55;margin:8px 0}
 #property-code-details pre{max-height:350px;overflow:auto;margin:10px 0}
+
+/* J22 function decomposition uses one existing Julia editor and source-backed contracts. */
+.algorithm-design[hidden]{display:none}
+.algorithm-design{border-top:1px solid var(--line);margin-top:18px;padding-top:16px}
+.algorithm-design h3{font-size:17px;margin:0 0 12px}
+.algorithm-contract{margin:12px 0 18px;font-size:14px}
+.algorithm-contract>div{display:grid;grid-template-columns:100px minmax(0,1fr);gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.algorithm-contract dt{font-weight:650}
+.algorithm-contract dd{margin:0}
+#algorithm-design-stages{padding-left:22px;margin:12px 0}
+#algorithm-design-stages li{font-size:14px;line-height:1.55;margin:12px 0;overflow-wrap:anywhere}
+#algorithm-design-stages li>p{font-size:14px!important;line-height:1.55;margin:4px 0 8px}
+#algorithm-design-stages details p{font-size:14px!important;line-height:1.55;margin:6px 0}
+#algorithm-scaffold-details pre{max-height:340px;overflow:auto;margin:10px 0}
+@media(max-width:520px){.algorithm-contract>div{grid-template-columns:1fr;gap:3px}}

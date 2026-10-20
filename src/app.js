@@ -19,6 +19,7 @@ import {readTransferDraft,writeTransferDraft,clearTransferDraft} from "./transfe
 import {externalTestSuite,buildExternalTestFile} from "./external-tests.js";
 import {inspectJuliaReport} from "./julia-report.js";
 import {propertiesForTask,buildPropertyFile} from "./property-transfer.js";
+import {contractForTask,designScaffold} from "./algorithm-design.js";
 
 const $ = (selector) => document.querySelector(selector);
 const progress = readProgress();
@@ -248,6 +249,30 @@ function downloadLocalJulia(script){
   link.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
+function renderAlgorithmDesign(){
+  const contract=contractForTask(current().id,practiceVariant);
+  $("#algorithm-design").hidden=!contract;
+  if(!contract)return;
+  $("#algorithm-contract-input").textContent=contract.inputs;
+  $("#algorithm-contract-output").textContent=contract.output;
+  const stages=$("#algorithm-design-stages");
+  stages.replaceChildren();
+  for(const [i,step] of contract.steps.entries()){
+    const item=document.createElement("li");
+    const heading=document.createElement("strong");
+    heading.textContent=(i+1)+". "+step.label;
+    const question=document.createElement("p");question.textContent=step.question;
+    const detail=document.createElement("details");
+    const summary=document.createElement("summary");summary.textContent="Design guidance";
+    const explanation=document.createElement("p");explanation.textContent=step.guide;
+    detail.append(summary,explanation);
+    item.append(heading,question,detail);
+    stages.append(item);
+  }
+  $("#algorithm-scaffold").textContent=designScaffold(current().id,practiceVariant);
+  $("#algorithm-scaffold-details").open=false;
+  $("#algorithm-design-feedback").textContent="";
+}
 function renderPractice(){
   const lesson=current(),item=activePractice(),transfer=practiceVariant!=="original";
   $("#practice-mode").value=practiceVariant;
@@ -286,6 +311,7 @@ function renderPractice(){
   $("#external-report-results").replaceChildren();
   $("#external-report-details").open=false;
   renderExternalTestHandoff();
+  renderAlgorithmDesign();
 }
 function render() {
   practiceVariant="original";
@@ -446,6 +472,31 @@ $("#external-report-inspect").addEventListener("click",()=>{
   const provenance=document.createElement("p");
   provenance.textContent="This is user-pasted text, not authenticated Julia output or a coding grade.";
   container.append(provenance);
+});
+$("#algorithm-scaffold-copy").addEventListener("click",async()=>{
+  try{
+    await navigator.clipboard.writeText(designScaffold(current().id,practiceVariant));
+    $("#algorithm-design-feedback").textContent="Julia function scaffold copied. It contains TODO steps, not a solution.";
+  }catch{
+    $("#algorithm-design-feedback").textContent="Clipboard unavailable. Select the displayed scaffold to copy.";
+  }
+});
+$("#algorithm-scaffold-use").addEventListener("click",()=>{
+  const source=designScaffold(current().id,practiceVariant);
+  if(!window.confirm("Replace only this task's saved Julia draft with its incomplete function scaffold?"))return;
+  if(!writePracticeCode(current().id,practiceVariant,source)){
+    $("#algorithm-design-feedback").textContent="Draft storage unavailable. Your existing source was not replaced.";
+    return;
+  }
+  $("#scratch-code").value=source;
+  unsavedPractice=false;
+  $("#external-report-input").value="";
+  $("#external-report-results").replaceChildren();
+  $("#external-focus-feedback").textContent="";
+  $("#property-feedback").textContent="";
+  renderExternalTestHandoff();
+  $("#algorithm-design-feedback").textContent="Current task draft replaced by the incomplete scaffold. Implement TODO steps, then run the Julia tests.";
+  $("#draft-feedback").textContent="Scaffold saved in this task's local draft. Code has not run.";
 });
 $("#property-choice").addEventListener("change",()=>{
   $("#property-feedback").textContent="";

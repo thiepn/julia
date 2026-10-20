@@ -8,6 +8,7 @@ import {join} from "node:path";
 import {spawnSync} from "node:child_process";
 import {EXTERNAL_TEST_SUITES,buildExternalTestFile} from "../src/external-tests.js";
 import {propertiesForTask,buildPropertyFile} from "../src/property-transfer.js";
+import {contractForTask,designScaffold} from "../src/algorithm-design.js";
 const examples={
   "08":{
     original:"sum_of_squares(v) = sum((x^2 for x in v); init=0)",
@@ -94,6 +95,30 @@ try{
         assert.match(result.stdout+result.stderr,/Test Summary:/);
         console.log("JULIA PROPERTY PASS "+lesson+"/"+variant+" ["+(propertyId??"both")+"]");
       }
+      const design=contractForTask(lesson,variant);
+      assert.equal(design.name,variants[variant].title);
+      const scaffold=designScaffold(lesson,variant);
+      const parseFile=join(dir,"design-parse-"+lesson+"-"+variant+".jl");
+      await writeFile(parseFile,
+        "source = "+JSON.stringify(scaffold)+"\n"+
+        "parsed = Meta.parseall(source)\n"+
+        "parsed isa Expr || error(\"Julia Meta.parseall rejected scaffold\")\n"+
+        "println(\"DESIGN PARSE PASS\")\n","utf8");
+      const parsed=julia(parseFile);
+      assert.equal(parsed.error,undefined);
+      if(parsed.status!==0)throw Error("JULIA SCAFFOLD SYNTAX FAIL "+lesson+"/"+variant+
+        "\n"+parsed.stdout+"\n"+parsed.stderr);
+      assert.match(parsed.stdout,/DESIGN PARSE PASS/);
+      const incomplete=buildExternalTestFile(lesson,variant,scaffold,variants[variant].cases[0].name);
+      const incompletePath=join(dir,"design-incomplete-"+lesson+"-"+variant+".jl");
+      await writeFile(incompletePath,incomplete.content,"utf8");
+      const notImplemented=julia(incompletePath);
+      assert.equal(notImplemented.error,undefined);
+      assert.notEqual(notImplemented.status,0,
+        "Incomplete learner scaffold cannot pass a real Julia case");
+      assert.match(notImplemented.stdout+notImplemented.stderr,/TODO: implement /);
+      assert.match(notImplemented.stdout+notImplemented.stderr,/Error During Test|Some tests did not pass/);
+      console.log("JULIA DESIGN PASS "+lesson+"/"+variant+" (valid syntax; expected incomplete failure)");
     }
   }
   assert.equal(count,9,"Expected all nine function task variants");
