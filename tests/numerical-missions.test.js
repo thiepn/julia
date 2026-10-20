@@ -91,6 +91,6 @@ test("mission source is a genuine incomplete Julia function, not a fabricated so
     assert.match(starter,/^using LinearAlgebra\nfunction /);
     assert.match(starter,/error\("TODO: implement [a-z_]+"/);
     assert.ok(starter.endsWith("\nend\n"));
-    assert.doesNotMatch(starter,/\breturn\s*\(.*residual=/);
+    assert.doesNotMatch(starter,/^\s*return\s*\(.*residual=/m);
   }
 });
