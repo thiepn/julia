@@ -167,7 +167,7 @@ try{
   assert.notEqual(badPropertyResult.status,0,"Sign-incorrect sum must fail its Julia metamorphic test");
   assert.match(badPropertyResult.stdout+badPropertyResult.stderr,/Test Failed|Some tests did not pass/);
   console.log("JULIA PROPERTY EXPECTED FAIL 08/original sign symmetry");
-  console.log("JULIA QUALIFICATION PASS "+count+"/9 real generated suites + 2 expected failures (full and focused)");
+  console.log("JULIA QUALIFICATION PASS "+count+"/13 real generated suites (9 original + 4 numerical missions), 13 focused, 9 property pairs, 9 single properties, 9 scaffold checks and 4 expected negative cases");
 }finally{
   await rm(dir,{recursive:true,force:true});
 }
