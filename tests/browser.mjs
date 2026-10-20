@@ -168,11 +168,13 @@ try {
       name:"invalid.txt",mimeType:"text/plain",buffer:Buffer.from("println(999)")
     });
     assert.equal(await page.locator("#scratch-code").inputValue(),"println(123)");
+    await page.getByText(/Select a \.jl Julia source file/).waitFor();
     assert.match(await page.locator("#draft-feedback").innerText(),/Select a \.jl/);
     page.once("dialog",dialog=>dialog.dismiss());
     await page.locator("#import-file").setInputFiles({
       name:"verified.jl",mimeType:"text/plain",buffer:Buffer.from("println(456)")
     });
+    await page.getByText(/Import cancelled; your draft is unchanged/).waitFor();
     assert.equal(await page.locator("#scratch-code").inputValue(),"println(123)");
     page.once("dialog",dialog=>dialog.accept());
     await page.locator("#import-file").setInputFiles({
