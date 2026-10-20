@@ -1,9 +1,10 @@
 import {MAX_DRAFT_LENGTH} from "./workspace.js";
 import {transferForLesson} from "./transfer-cases.js";
+import {missionForLesson} from "./numerical-missions.js";
 // Per-transfer code belongs to its own browser-local key; canonical lesson drafts are untouched.
 const PREFIX="amp-julia-lab:transfer-draft:v1:";
 function key(lesson,variant){
-  return transferForLesson(lesson,variant)?PREFIX+lesson+":"+variant:null;
+  return (variant==="mission"?missionForLesson(lesson):transferForLesson(lesson,variant))?PREFIX+lesson+":"+variant:null;
 }
 export function readTransferDraft(lesson,variant,starter="",storage=globalThis.localStorage){
   const k=key(lesson,variant);

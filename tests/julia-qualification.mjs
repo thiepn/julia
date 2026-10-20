@@ -20,6 +20,10 @@ const examples={
     a:"approxzero(x, tol) = abs(x) <= tol",
     b:"near_relative(a, b, rtol) = abs(a-b) <= rtol*max(abs(a),abs(b))"
   },
+  "12":{mission:"function solve_checked(A,b)\n    x=A\\b\n    return (x=x,residual=norm(A*x-b))\nend"},
+  "14":{mission:"function factorization_errors(A)\n    F=qr(A)\n    Q=Matrix(F.Q)\n    C=cholesky(A)\n    L=C.L\n    return (qr_error=norm(A-Q*F.R),chol_error=norm(A-L*L'))\nend"},
+  "15":{mission:"function fit_line(t,y)\n    A=hcat(ones(length(t)),t)\n    coefficients=A\\y\n    return (coefficients=coefficients,residual=norm(A*coefficients-y))\nend"},
+  "16":{mission:"function solution_sensitivity(A,b,db)\n    x=A\\b\n    xp=A\\(b+db)\n    return (change=norm(xp-x),original_residual=norm(A*x-b),perturbed_residual=norm(A*xp-(b+db)))\nend"},
   "13":{
     original: "function forward_substitution(L, b)\n" +
       "    x = Vector{Float64}(undef, length(b))\n" +
@@ -81,6 +85,7 @@ try{
       assert.match(focusedActual.stdout+focusedActual.stderr,/Test Summary:/,
         "Real focused Julia Test summary missing for "+lesson+"/"+variant);
       console.log("JULIA FOCUSED PASS "+lesson+"/"+variant+" ["+focusedCase.name+"]");
+      if(variant!=="mission"){
       const relations=propertiesForTask(lesson,variant);
       assert.equal(relations.length,2,"Expected two source-authored input relations per supported task");
       for(const propertyId of [null,relations[1].id]){
@@ -119,9 +124,22 @@ try{
       assert.match(notImplemented.stdout+notImplemented.stderr,/TODO: implement /);
       assert.match(notImplemented.stdout+notImplemented.stderr,/Error During Test|Some tests did not pass/);
       console.log("JULIA DESIGN PASS "+lesson+"/"+variant+" (valid syntax; expected incomplete failure)");
+      }else{
+        console.log("JULIA NUMERICAL MISSION PASS "+lesson+" (full and focused real Julia tests)");
+      }
     }
   }
-  assert.equal(count,9,"Expected all nine function task variants");
+  assert.equal(count,13,"Expected nine canonical and four numerical-function mission variants");
+  const wrongNumerical=buildExternalTestFile("12","mission",
+    "solve_checked(A,b) = (x=zeros(length(b)),residual=0.0)");
+  const wrongNumericalFile=join(dir,"wrong-numerical-solve.jl");
+  await writeFile(wrongNumericalFile,wrongNumerical.content,"utf8");
+  const wrongNumericalResult=julia(wrongNumericalFile);
+  assert.equal(wrongNumericalResult.error,undefined);
+  assert.notEqual(wrongNumericalResult.status,0,
+    "Hardcoded zero solution must fail authentic numerical mission tests");
+  assert.match(wrongNumericalResult.stdout+wrongNumericalResult.stderr,/Test Failed|Some tests did not pass/);
+  console.log("JULIA NUMERICAL EXPECTED FAIL 12/mission hardcoded zero solution");
   // A deliberately wrong implementation MUST fail genuinely in Julia.
   const negative=buildExternalTestFile("08","a","count_above(v,t) = length(v)");
   const negativePath=join(dir,"julia-expected-failure.jl");

@@ -20,6 +20,7 @@ import {externalTestSuite,buildExternalTestFile} from "./external-tests.js";
 import {inspectJuliaReport} from "./julia-report.js";
 import {propertiesForTask,buildPropertyFile} from "./property-transfer.js";
 import {contractForTask,designScaffold} from "./algorithm-design.js";
+import {missionForLesson} from "./numerical-missions.js";
 
 const $ = (selector) => document.querySelector(selector);
 const progress = readProgress();
@@ -156,7 +157,7 @@ function activePractice(){
   const original=current();
   return practiceVariant==="original"?{
     title:"Original lesson",task:original.challenge,starter:original.starter,checks:original.checks
-  }:transferForLesson(original.id,practiceVariant);
+  }:practiceVariant==="mission"?missionForLesson(original.id):transferForLesson(original.id,practiceVariant);
 }
 function writePracticeCode(lesson,variant,code){
   return variant==="original"?writeDraft(lesson,code):writeTransferDraft(lesson,variant,code);
@@ -275,6 +276,9 @@ function renderAlgorithmDesign(){
 }
 function renderPractice(){
   const lesson=current(),item=activePractice(),transfer=practiceVariant!=="original";
+  const mission=missionForLesson(lesson.id);
+  $("#practice-mode").querySelector('[value="mission"]').hidden=!mission;
+  $("#practice-mode").querySelector('[value="mission"]').disabled=!mission;
   $("#practice-mode").value=practiceVariant;
   for(const variant of ["a","b"]){
     $("#practice-mode").querySelector('[value="'+variant+'"]').textContent=

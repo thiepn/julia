@@ -45,6 +45,30 @@ export const EXTERNAL_TEST_SUITES=Object.freeze({
       ["Negative scaled inputs","@test near_relative(-100, -101, 0.02) === true"]
     ])
   }),
+  "12":Object.freeze({mission:suite("solve_checked",[
+    ["Diagonal system","@test isapprox(solve_checked([3.0 0; 0 2.0], [9.0, 8.0]).x, [3.0, 4.0]; atol=1e-10)"],
+    ["Non-diagonal system","@test isapprox(solve_checked([2.0 1; 1 3], [4.0, 7.0]).x, [1.0, 2.0]; atol=1e-10)"],
+    ["Three-dimensional system","@test isapprox(solve_checked([2.0 0 0; 0 3 0; 0 0 4], [4.0, 9.0, 16.0]).x, [2.0, 3.0, 4.0]; atol=1e-10)"],
+    ["Residual check","@test solve_checked([2.0 1; 1 3], [4.0, 7.0]).residual < 1e-10"]
+  ])}),
+  "14":Object.freeze({mission:suite("factorization_errors",[
+    ["QR reconstruction","@test factorization_errors([4.0 1; 1 3]).qr_error < 1e-10"],
+    ["Cholesky reconstruction","@test factorization_errors([4.0 1; 1 3]).chol_error < 1e-10"],
+    ["Another SPD matrix","@test factorization_errors([9.0 3; 3 5]).chol_error < 1e-10"],
+    ["Three-dimensional SPD matrix","@test factorization_errors([4.0 1 0; 1 3 0; 0 0 2]).qr_error < 1e-10"]
+  ])}),
+  "15":Object.freeze({mission:suite("fit_line",[
+    ["Exact line","@test isapprox(fit_line([0.0,1,2,3], [2.0,5,8,11]).coefficients, [2.0,3.0]; atol=1e-10)"],
+    ["Constant observations","@test isapprox(fit_line([0.0,1,2], [4.0,4,4]).coefficients, [4.0,0.0]; atol=1e-10)"],
+    ["Noisy data coefficients","@test isapprox(fit_line([0.0,1,2], [1.0,3,6]).coefficients, [5/6,2.5]; atol=1e-10)"],
+    ["Noisy residual","@test isapprox(fit_line([0.0,1,2], [1.0,3,6]).residual, sqrt(1/6); atol=1e-10)"]
+  ])}),
+  "16":Object.freeze({mission:suite("solution_sensitivity",[
+    ["Identity matrix","@test isapprox(solution_sensitivity([1.0 0; 0 1], [1.0,1], [0.0,1e-4]).change, 1e-4; atol=1e-10)"],
+    ["Ill-conditioned direction","@test isapprox(solution_sensitivity([1.0 0; 0 1e-4], [1.0,1], [0.0,1e-4]).change, 1.0; atol=1e-10)"],
+    ["Zero perturbation","@test solution_sensitivity([1.0 0; 0 1e-4], [1.0,1], [0.0,0]).change == 0"],
+    ["Perturbed residual","@test solution_sensitivity([1.0 0; 0 1e-4], [1.0,1], [0.0,1e-4]).perturbed_residual < 1e-10"]
+  ])}),
   "13":Object.freeze({
     original:suite("forward_substitution",[
       ["Triangular example","@test isapprox(forward_substitution([2.0 0; 1 3], [4.0, 7.0]), [2.0, 5/3]; atol=1e-10)"],
@@ -66,10 +90,10 @@ export const EXTERNAL_TEST_SUITES=Object.freeze({
     ])
   })
 });
-const variants=Object.freeze(["original","a","b"]);
+const variants=Object.freeze(["original","a","b","mission"]);
 export function externalTestSuite(lessonId,variant){
   if(typeof lessonId!=="string"||!variants.includes(variant)||!Object.hasOwn(EXTERNAL_TEST_SUITES,lessonId))return null;
-  return EXTERNAL_TEST_SUITES[lessonId][variant]??null;
+  return Object.hasOwn(EXTERNAL_TEST_SUITES[lessonId],variant)?EXTERNAL_TEST_SUITES[lessonId][variant]:null;
 }
 // Single source export path for fixed regression and original property checks.
 // The caller supplies only source-authored assertions; this does not execute code.
