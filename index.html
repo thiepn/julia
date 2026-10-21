@@ -541,6 +541,64 @@
         <button class="secondary" type="button" id="ue02-copy">Copy Julia example</button>
         <p class="feedback" id="ue02-feedback" role="status"></p>
       </section>
+      <section class="paper amp-workshop" id="amp-root-workshop" aria-labelledby="amp-root-title" hidden>
+        <h2 id="amp-root-title">Quadratic roots: conditioning and cancellation</h2>
+        <p>For x² − 2ax + b = 0 with a &gt; 0 and 0 &lt; b ≤ a², compare direct subtraction with the algebraically equivalent rationalized smaller root. Nearly coincident roots are inherently sensitive; subtracting nearly equal numbers can also cause avoidable numerical error.</p>
+        <div class="amp-controls">
+          <div><label for="amp-root-case">Coefficient experiment</label><select id="amp-root-case"></select></div>
+          <div><label for="amp-root-mode">Parameter sweep</label><select id="amp-root-mode"></select></div>
+        </div>
+        <table class="amp-table amp-summary"><caption>Calculated in browser JavaScript binary64</caption><tbody id="amp-root-summary"></tbody></table>
+        <h3>Parameter sweep</h3>
+        <svg id="amp-root-chart" viewBox="0 0 600 235" role="img" aria-label="Relative conditioning or cancellation across perturbation scales"></svg>
+        <p id="amp-root-chart-label"></p>
+        <div class="amp-table-scroll">
+          <table class="amp-table"><caption>Browser-calculated numerical comparison</caption>
+            <thead><tr><th scope="col">δ</th><th scope="col">Direct</th><th scope="col">Stable</th><th scope="col">Relative discrepancy</th><th scope="col">Condition</th></tr></thead>
+            <tbody id="amp-root-sweep-table"></tbody>
+          </table>
+        </div>
+        <details class="amp-source"><summary>Julia/PrettyTables source for this experiment</summary><pre class="code"><code id="amp-root-julia"></code></pre></details>
+        <div class="amp-actions">
+          <button type="button" class="secondary" id="amp-root-download-julia">Download Julia experiment</button>
+          <button type="button" class="secondary" id="amp-root-download-csv">Export CSV comparison</button>
+        </div>
+        <p id="amp-root-status" class="feedback" role="status"></p>
+      </section>
+      <section class="paper amp-workshop" id="amp-condition-workshop" aria-labelledby="amp-condition-title" hidden>
+        <h2 id="amp-condition-title">Relative condition: finite perturbations</h2>
+        <p>For differentiable f and x ≠ 0, f(x) ≠ 0, compare |xf′(x)/f(x)| with finite relative input perturbations. A finite difference approximates this limiting quantity but does not prove it.</p>
+        <div class="amp-controls">
+          <div><label for="amp-condition-case">Function</label><select id="amp-condition-case"></select></div>
+          <div><label for="amp-condition-x">Input x</label><select id="amp-condition-x"></select></div>
+        </div>
+        <p id="amp-condition-formula"></p>
+        <p><strong>Analytic relative condition:</strong> <span id="amp-condition-kappa"></span></p>
+        <div class="amp-table-scroll">
+          <table class="amp-table"><caption>Calculated in browser JavaScript binary64</caption>
+            <thead><tr><th scope="col">ε</th><th scope="col">Finite observed amplification</th><th scope="col">Difference from analytic condition</th></tr></thead>
+            <tbody id="amp-condition-table"></tbody>
+          </table>
+        </div>
+        <details class="amp-source"><summary>Julia source for this comparison</summary><pre class="code"><code id="amp-condition-julia"></code></pre></details>
+        <button type="button" class="secondary" id="amp-condition-download">Download Julia experiment</button>
+        <p class="feedback" role="status" id="amp-condition-status"></p>
+      </section>
+      <section class="paper amp-workshop" id="amp-mission-workshop" aria-labelledby="amp-mission-title" hidden>
+        <h2 id="amp-mission-title">Independent numerical programming</h2>
+        <label for="amp-mission-choice">Julia function challenge</label>
+        <select id="amp-mission-choice"></select>
+        <p id="amp-mission-task"></p>
+        <pre class="code"><code id="amp-mission-starter"></code></pre>
+        <h3>Julia Test cases</h3>
+        <ul id="amp-mission-cases"></ul>
+        <p>Copy the starter into the existing lesson code editor. Implement it, then download a Julia Test file for the source currently in that editor. The browser does not grade your code.</p>
+        <div class="amp-actions">
+          <button type="button" class="secondary" id="amp-mission-copy">Copy starter</button>
+          <button type="button" class="secondary" id="amp-mission-tests">Download Julia tests for current draft</button>
+        </div>
+        <p id="amp-mission-status" class="feedback" role="status"></p>
+      </section>
       <section class="paper repair-lab" aria-labelledby="repair-section-title">
         <div class="section-title"><span class="section-num" id="repair-section-number">04</span><h2 id="repair-section-title">Debug a Julia program</h2></div>
         <h3 id="repair-title"></h3>

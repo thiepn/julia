@@ -3,6 +3,7 @@ import {initLocalRunner} from "./local-runner-client.js";
 import {initPlotPreview} from "./plot-preview.js";
 import {initPlottingPractice} from "./plotting-practice.js";
 import {initUe02Practice} from "./ue02-practice.js";
+import {initAmpWorkshops} from "./amp-workshops.js";
 import {readProgress, writeProgress, readEmbedUrl, writeEmbedUrl,
   validateEmbedUrl, checkChoice, countCorrect, readyForChallenge, checkPastedOutput} from "./checks.js";
 import {readDraft, writeDraft, clearDraft} from "./workspace.js";
@@ -33,6 +34,7 @@ const localRunner=initLocalRunner({getDraft:()=>$("#scratch-code").value,
 const plotPreview = initPlotPreview();
 const plottingPractice = initPlottingPractice();
 const ue02Practice = initUe02Practice();
+const ampWorkshops = initAmpWorkshops({download:downloadLocalJulia,getDraft:()=>$("#scratch-code").value});
 const progress = readProgress();
 let currentIndex = 0;
 let practiceVariant = "original";
@@ -380,6 +382,7 @@ function render() {
   plotPreview.showForLesson(l.id);
   plottingPractice.showForLesson(l.id);
   ue02Practice.showForLesson(l.id);
+  ampWorkshops.showForLesson(l.id);
   $("#repair-section-number").textContent=["03","05","06","07","08","09","10","11","12","13","14","15","16"].includes(l.id)?"05":"04";
   $("#lesson-theory").textContent = l.theory;
   $("#example-code").textContent = l.example;
