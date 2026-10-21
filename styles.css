@@ -401,3 +401,33 @@
 .amp-actions button{min-height:42px}
 .amp-workshop .feedback{font-size:14px;overflow-wrap:anywhere}
 @media(max-width:760px){.amp-actions button{width:100%}.amp-controls{grid-template-columns:1fr}}
+
+/* Document export controls and native text-selectable browser PDF printing */
+.submission-workflow{margin:18px 0}
+.submission-workflow summary{cursor:pointer;font-size:18px;line-height:1.35;font-weight:700}
+.submission-content{padding-top:16px}
+.submission-content p,.submission-content label,.submission-content li{font-size:14px;line-height:1.55}
+.submission-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:13px;margin:14px 0}
+.submission-fields label,.submission-content>label:not(.submission-check){display:block;font-weight:650;margin:0 0 7px}
+.submission-fields input{width:100%;max-width:100%;min-height:44px;padding:9px;font-size:16px;background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.submission-content input[type=file]{font-size:14px;width:100%;max-width:100%;padding:11px 0}
+.submission-check{display:flex;align-items:start;gap:9px;margin:14px 0}
+.submission-check input{margin-top:5px;flex:0 0 auto}
+.submission-actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+.submission-actions button,.submission-content>button{min-height:42px}
+#submission-items{list-style:none;padding:0;margin:7px 0}
+#submission-items li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+#submission-items button{min-height:38px;flex:0 0 auto}
+.submission-caveat{margin-top:18px}
+#submission-print{display:none}
+@media(max-width:760px){.submission-fields{grid-template-columns:1fr}.submission-actions button{flex:1}}
+@media print{
+  @page{size:A4;margin:18mm}
+  body{background:white!important;color:#111!important;display:block!important}
+  body > *:not(#submission-print){display:none!important}
+  #submission-print{display:block!important;color:#111!important;max-width:none!important;font-family:Arial,sans-serif}
+  #submission-print-title{font-size:15pt;font-weight:700;overflow-wrap:anywhere;margin:0 0 5mm}
+  #submission-print-meta{font-size:10pt;margin:0 0 8mm}
+  #submission-print-source{font-family:Consolas,"DejaVu Sans Mono",monospace;font-size:9.5pt;line-height:1.45;
+    white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;color:#111!important;margin:0}
+}

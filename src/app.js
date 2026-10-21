@@ -1,5 +1,6 @@
 import {lessons, stages} from "./lessons.js";
 import {initLocalRunner} from "./local-runner-client.js";
+import {initSubmissionWorkflow} from "./submission-workflow.js";
 import {initPlotPreview} from "./plot-preview.js";
 import {initPlottingPractice} from "./plotting-practice.js";
 import {initUe02Practice} from "./ue02-practice.js";
@@ -30,7 +31,13 @@ import {integrationForLesson,buildIntegrationTestFile} from "./integration-task.
 
 const $ = (selector) => document.querySelector(selector);
 const localRunner=initLocalRunner({getDraft:()=>$("#scratch-code").value,
-  getIdentity:()=>current().id+":"+practiceVariant,embedActive:()=>Boolean(readEmbedUrl())});
+  getIdentity:()=>current().id+":"+practiceVariant,embedActive:()=>Boolean(readEmbedUrl()),
+  onResult:data=>submission.onRun(data),onClear:()=>submission.invalidateRun()});
+const submission=initSubmissionWorkflow({download:downloadLocalJulia,
+  getDraft:()=>$("#scratch-code").value,
+  getIdentity:()=>current().id+":"+practiceVariant,
+  embedActive:()=>Boolean(readEmbedUrl()),
+  disableEmbed:()=>$("#local-runner-disable-embed").click()});
 const plotPreview = initPlotPreview();
 const plottingPractice = initPlottingPractice();
 const ue02Practice = initUe02Practice();
@@ -317,6 +324,7 @@ function renderIntegrationTask(){
 }
 function renderPractice(){
   localRunner.clear();
+  submission.onSourceChange();
   const lesson=current(),item=activePractice(),transfer=practiceVariant!=="original";
   const mission=missionForLesson(lesson.id);
   $("#practice-mode").querySelector('[value="mission"]').hidden=!mission;
@@ -365,6 +373,7 @@ function renderPractice(){
 }
 function render() {
   localRunner.clear();
+  submission.onSourceChange();
   practiceVariant="original";
   currentIndex = lessonIndexFromHash();
   const l = current();
@@ -498,6 +507,7 @@ $("#copy-starter").addEventListener("click", async () => {
 });
 $("#scratch-code").addEventListener("input", () => {
   localRunner.clear();
+  submission.onSourceChange();
   const saved = writePracticeCode(current().id, practiceVariant, $("#scratch-code").value);
   unsavedPractice=!saved;
   $("#external-report-results").replaceChildren();

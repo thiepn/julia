@@ -1,5 +1,6 @@
 import {filenameStem,verifyPdf,bundleEntries,makeZip} from "./submission-package.js";
-export function initSubmissionWorkflow({doc=document,download,getDraft,getIdentity}={}){
+export function initSubmissionWorkflow({doc=document,download,getDraft,getIdentity,
+  embedActive=()=>true,disableEmbed=()=>{}}={}){
   if(typeof download!=="function"||typeof getDraft!=="function"||typeof getIdentity!=="function")
     throw Error("Submission needs the existing download and draft actions.");
   const el=id=>doc.getElementById(id),form=el("submission-workflow");
@@ -7,6 +8,16 @@ export function initSubmissionWorkflow({doc=document,download,getDraft,getIdenti
   const pdfInput=el("submission-pdf"),confirm=el("submission-confirm");
   const status=el("submission-status"),list=el("submission-items");
   const includeResults=el("submission-include-results"),runStatus=el("submission-run-state");
+  const restricted=embedActive();
+  const privateStatus=el("submission-private-state");
+  privateStatus.textContent=restricted
+    ?"Disable JDoodle and reload before entering your name or matriculation number."
+    :"Submission fields stay in this browser session; no automatic upload.";
+  form.querySelectorAll("input,select,button").forEach(control=>{
+    if(control.id!=="submission-disable-embed")control.disabled=restricted;
+  });
+  el("submission-disable-embed").hidden=!restricted;
+  el("submission-disable-embed").addEventListener("click",disableEmbed);
   const printSheet=el("submission-print"),printTitle=el("submission-print-title");
   const printSource=el("submission-print-source"),printMeta=el("submission-print-meta");
   let prepared=null,lastRun=null,staged=[],beforePrintTitle=null;
@@ -113,5 +124,6 @@ export function initSubmissionWorkflow({doc=document,download,getDraft,getIdenti
     staged=[];resetPending();showItems();status.textContent="In-memory submission bundle cleared.";
   });
   showItems();refreshRun();
+  if(restricted)el("submission-download-zip").disabled=true;
   return {onSourceChange,onRun,invalidateRun,stagedCount:()=>staged.length};
 }

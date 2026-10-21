@@ -170,6 +170,41 @@
         <button class="secondary" type="button" id="plotting-recipe-copy">Copy Julia example</button>
         <p class="feedback" id="plotting-recipe-feedback" role="status"></p>
       </section>
+      <details class="paper submission-workflow" id="submission-workflow">
+        <summary>Prepare AMP submission (.jl, code PDF and ZIP)</summary>
+        <div class="submission-content">
+          <p id="submission-private-state" role="status"></p>
+          <button type="button" class="secondary" id="submission-disable-embed">Disable JDoodle and reload</button>
+          <div class="submission-fields">
+            <div><label for="submission-name">Filename name</label>
+              <input id="submission-name" type="text" autocomplete="off" maxlength="40" placeholder="Nachname"></div>
+            <div><label for="submission-number">Matrikelnummer</label>
+              <input id="submission-number" type="text" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="123456"></div>
+            <div><label for="submission-task">Aufgabe</label>
+              <input id="submission-task" type="text" autocomplete="off" maxlength="5" placeholder="2.2b"></div>
+          </div>
+          <div class="submission-actions">
+            <button type="button" class="secondary" id="submission-print-button">Print code → Save as PDF</button>
+          </div>
+          <label for="submission-pdf">Select the saved code PDF</label>
+          <input type="file" id="submission-pdf" accept=".pdf,application/pdf">
+          <label class="submission-check"><input type="checkbox" id="submission-confirm">
+            I checked that this PDF contains the exact code in the current Julia editor.</label>
+          <label class="submission-check"><input type="checkbox" id="submission-include-results">
+            Include results from a successful local Julia run (optional)</label>
+          <p id="submission-run-state"></p>
+          <button type="button" class="secondary" id="submission-stage">Add code/PDF pair to ZIP</button>
+          <h3>ZIP contents</h3>
+          <p id="submission-count"></p>
+          <ul id="submission-items"></ul>
+          <div class="submission-actions">
+            <button type="button" id="submission-download-zip" class="primary" disabled>Download ZIP</button>
+            <button type="button" id="submission-clear" class="secondary">Clear bundle</button>
+          </div>
+          <p class="feedback" id="submission-status" role="status" aria-live="polite"></p>
+          <p class="submission-caveat">Both AMP Übung 1 and Übung 2 require a .jl file and a PDF of its code per program, bundled as a ZIP for ILIAS. Use your actual name and matriculation number. ZIP assembly does not verify program correctness, PDF/source identity or ILIAS submission. No identity, selected PDF or ZIP is stored by Julia Lab.</p>
+        </div>
+      </details>
       <section class="paper numerical-explorer" id="numerical-explorer" aria-labelledby="numerical-heading" hidden>
         <div class="section-title"><span class="section-num">04</span><h2 id="numerical-heading">Explore norms and transformations</h2></div>
         <div class="numerical-controls">
@@ -692,6 +727,11 @@
       <div class="privacy-note">No Julia code runs in the hosted browser. The optional local runner executes a chosen draft on your computer only after you explicitly press Run and disable JDoodle. If enabled, the embedded JDoodle service loads from a third party and executes code under JDoodle's terms. Lesson choices and drafts remain in this browser. A successful iframe or script load is not evidence of an executed Julia program.</div>
     </aside>
   </div>
+  <section id="submission-print" aria-label="Printable Julia code">
+    <h1 id="submission-print-title"></h1>
+    <p id="submission-print-meta"></p>
+    <pre id="submission-print-source"></pre>
+  </section>
   <script type="module" src="./src/app.js"></script>
 </body>
 </html>
