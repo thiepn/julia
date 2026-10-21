@@ -33,6 +33,7 @@ const $ = (selector) => document.querySelector(selector);
 let currentIndex = 0;
 let practiceVariant = "original";
 let unsavedPractice = false;
+const current = () => lessons[currentIndex];
 const localRunner=initLocalRunner({getDraft:()=>$("#scratch-code").value,
   getIdentity:()=>current().id+":"+practiceVariant,embedActive:()=>Boolean(readEmbedUrl()),
   onResult:data=>submission.onRun(data),onClear:()=>submission.invalidateRun()});
@@ -80,7 +81,7 @@ window.addEventListener("message", (event) => {
 });
 const safe = (value) => String(value).replace(/[&<>"']/g, char =>
   ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
-const current = () => lessons[currentIndex];
+
 function nextConceptIndex() {
   const index = lessons.findIndex(lesson => !readyForChallenge(lesson, progress));
   return index === -1 ? lessons.length - 1 : index;
