@@ -44,6 +44,7 @@ jobs:
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install --with-deps chromium
+          sudo apt-get install -y poppler-utils
       - name: Chromium desktop/mobile acceptance
         run: node tests/browser.mjs
       - name: AMP workshops Chromium desktop/mobile
@@ -77,6 +78,7 @@ jobs:
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install --with-deps chromium
+          sudo apt-get install -y poppler-utils
       - name: Chromium desktop/mobile loads real exported Julia figures
         run: node tests/real-julia-plot-browser.mjs
       - name: Local runner executes real plot source in desktop/mobile Chromium

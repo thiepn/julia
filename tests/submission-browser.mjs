@@ -80,21 +80,21 @@ try{
     assert.equal(pdf.subarray(0,5).toString("ascii"),"%PDF-");
     assert.ok(pdf.length>3000);
     const pdftotext=spawnSync("pdftotext",["-layout","-","-"],{input:pdf,encoding:"utf8"});
-    if(!pdftotext.error){
+    {
+      if(pdftotext.error)throw Error("Poppler pdftotext unavailable: "+pdftotext.error.message);
       assert.equal(pdftotext.status,0,pdftotext.stderr);
       assert.match(pdftotext.stdout,/Mustermann_123456_Aufgabe-1-2/);
       assert.match(pdftotext.stdout,/AMP-REAL-(PLOT|CODE)-OK/);
       if(!withPlots)assert.match(pdftotext.stdout,/α|ε|π/);
       console.log("SUBMISSION PRINT PASS",device.name,"searchable browser PDF",pdf.length);
-    }else{
-      console.log("SUBMISSION PRINT NOT_TESTED",device.name,"pdftotext unavailable; PDF header/size verified");
     }
     await page.locator("#submission-pdf").setInputFiles({name:"code.pdf",mimeType:"application/pdf",buffer:pdf});
     await page.locator("#submission-stage").click();
     assert.match(await page.locator("#submission-status").innerText(),/Confirm/);
     await page.locator("#submission-confirm").check();
     await page.locator("#submission-stage").click();
-    assert.match(await page.locator("#submission-count").innerText(),/1 code\/PDF pair/);
+    await page.waitForFunction(()=>document.getElementById("submission-count").textContent.includes("1 code/PDF pair"),null,{timeout:15000});
+    assert.match(await page.locator("#submission-status").innerText(),/Pair staged locally/);
     await page.goto(origin+"/#lesson/09");
     await page.getByRole("heading",{name:"Floating-point numbers"}).waitFor();
     await page.locator("#submission-workflow").evaluate(el=>el.open=true);
@@ -109,7 +109,8 @@ try{
     await page.locator("#submission-pdf").setInputFiles({name:"second.pdf",mimeType:"application/pdf",buffer:pdfTwo});
     await page.locator("#submission-confirm").check();
     await page.locator("#submission-stage").click();
-    assert.match(await page.locator("#submission-count").innerText(),/2 code\/PDF pairs/);
+    await page.waitForFunction(()=>document.getElementById("submission-count").textContent.includes("2 code/PDF pairs"),null,{timeout:15000});
+    assert.match(await page.locator("#submission-status").innerText(),/Pair staged locally/);
     const before=await page.evaluate(()=>Object.entries(localStorage));
     assert.ok(!JSON.stringify(before).includes("Mustermann")&&!JSON.stringify(before).includes("123456"));
     const [archive]=await Promise.all([
