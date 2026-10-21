@@ -115,3 +115,32 @@ Only run code you trust. Loopback restrictions in some browsers may prevent a
 remote HTTPS page from connecting; use the included localhost site in that
 case. Explicitly allow other trusted origins via `JULIA_LAB_ORIGINS`.
 Running code and rendering graphics never award coding mastery or change drafts.
+
+## Substantial AMP Übung 2 learning upgrade (new draft branch)
+
+Lessons 09 and 16 now contain three new source-grounded capabilities:
+
+1. **Quadratic root conditioning:** Direct versus rationalized smaller roots
+   of x² - 2ax + b. Independent presets and a=3 parameter sweeps contrast
+   inherent sensitivity near a double root with cancellation of a tiny root.
+   Inspect a plot and numerical table, export browser-calculated CSV, or
+   download independent Julia/PrettyTables source for execution.
+2. **Relative condition by finite perturbations:** Explore cosine, shifted
+   square and a nontrivial composition. Compare analytic |x f'(x)/f(x)|
+   with finite perturbations of x; Julia source can reproduce the samples.
+3. **Independent Julia programming missions:** Practice a cancellation-resistant
+   difference, relative response, or stable quadratic root. Copy source into
+   the original lesson editor, then generate a Julia `Test` script from its
+   *current existing draft*. The app does not execute or grade the exported test.
+
+These exercises are original learning transfers informed by AMP Übung 2 and
+are NOT the university homework answer key. They deliberately use independent
+coefficient values and input grids rather than supplying the assigned result
+table for Aufgabe 2.2(b). Source lives in AMP root/condition/mission modules.
+All browser numerical values are computed with JavaScript Number (binary64).
+No new progress engine, saved draft store, grader, backend or compiler was added.
+Local user Julia execution continues through the existing optional companion;
+the real Julia/PrettyTables source and Julia Test suites are exercised in CI.
+
+**Release boundary:** New development branch / draft PR only. Do not merge
+or deploy until the full multi-upgrade batch is accepted.

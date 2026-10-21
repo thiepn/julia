@@ -53,7 +53,7 @@ try{
     assert.equal(csvText.trim().split("\n").length,8);
     const [jl]=await Promise.all([
       page.waitForEvent("download"),
-      page.getByRole("button",{name:"Download Julia experiment",exact:true}).click()
+      page.getByRole("button",{name:"Download Julia experiment",exact:true}).first().click()
     ]);
     assert.equal(jl.suggestedFilename(),"amp-root-cancellation.jl");
     assert.match(await readFile(await jl.path(),"utf8"),/using PrettyTables/);
