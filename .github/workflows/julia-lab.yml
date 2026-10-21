@@ -32,6 +32,8 @@ jobs:
           version: '1.11'
       - name: Execute generated Julia Test suites with fixed reference code
         run: node tests/julia-qualification.mjs
+      - name: Run Julia UE02 numeric and syntax qualifications
+        run: node tests/ue02-qualification.mjs
       - name: Install Playwright runner for browser acceptance
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1

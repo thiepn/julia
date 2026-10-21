@@ -1,4 +1,7 @@
 import {lessons, stages} from "./lessons.js";
+import {initPlotPreview} from "./plot-preview.js";
+import {initPlottingPractice} from "./plotting-practice.js";
+import {initUe02Practice} from "./ue02-practice.js";
 import {readProgress, writeProgress, readEmbedUrl, writeEmbedUrl,
   validateEmbedUrl, checkChoice, countCorrect, readyForChallenge, checkPastedOutput} from "./checks.js";
 import {readDraft, writeDraft, clearDraft} from "./workspace.js";
@@ -24,6 +27,9 @@ import {missionForLesson} from "./numerical-missions.js";
 import {integrationForLesson,buildIntegrationTestFile} from "./integration-task.js";
 
 const $ = (selector) => document.querySelector(selector);
+const plotPreview = initPlotPreview();
+const plottingPractice = initPlottingPractice();
+const ue02Practice = initUe02Practice();
 const progress = readProgress();
 let currentIndex = 0;
 let practiceVariant = "original";
@@ -366,6 +372,9 @@ function render() {
   showProgramTrace(l.id);
   showFactorLab(l.id);
   showSensitivityLab(l.id);
+  plotPreview.showForLesson(l.id);
+  plottingPractice.showForLesson(l.id);
+  ue02Practice.showForLesson(l.id);
   $("#repair-section-number").textContent=["03","05","06","07","08","09","10","11","12","13","14","15","16"].includes(l.id)?"05":"04";
   $("#lesson-theory").textContent = l.theory;
   $("#example-code").textContent = l.example;
