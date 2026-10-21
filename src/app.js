@@ -1,4 +1,5 @@
 import {lessons, stages} from "./lessons.js";
+import {initLocalRunner} from "./local-runner-client.js";
 import {initPlotPreview} from "./plot-preview.js";
 import {initPlottingPractice} from "./plotting-practice.js";
 import {initUe02Practice} from "./ue02-practice.js";
@@ -27,6 +28,8 @@ import {missionForLesson} from "./numerical-missions.js";
 import {integrationForLesson,buildIntegrationTestFile} from "./integration-task.js";
 
 const $ = (selector) => document.querySelector(selector);
+const localRunner=initLocalRunner({getDraft:()=>$("#scratch-code").value,
+  getIdentity:()=>current().id+":"+practiceVariant,embedActive:()=>Boolean(readEmbedUrl())});
 const plotPreview = initPlotPreview();
 const plottingPractice = initPlottingPractice();
 const ue02Practice = initUe02Practice();
@@ -311,6 +314,7 @@ function renderIntegrationTask(){
   }
 }
 function renderPractice(){
+  localRunner.clear();
   const lesson=current(),item=activePractice(),transfer=practiceVariant!=="original";
   const mission=missionForLesson(lesson.id);
   $("#practice-mode").querySelector('[value="mission"]').hidden=!mission;
@@ -358,6 +362,7 @@ function renderPractice(){
   renderIntegrationTask();
 }
 function render() {
+  localRunner.clear();
   practiceVariant="original";
   currentIndex = lessonIndexFromHash();
   const l = current();
@@ -489,6 +494,7 @@ $("#copy-starter").addEventListener("click", async () => {
   }
 });
 $("#scratch-code").addEventListener("input", () => {
+  localRunner.clear();
   const saved = writePracticeCode(current().id, practiceVariant, $("#scratch-code").value);
   unsavedPractice=!saved;
   $("#external-report-results").replaceChildren();
@@ -754,6 +760,11 @@ $("#copy-diag").addEventListener("click", async () => {
   } catch {
     $("#bridge-feedback").textContent = "Clipboard unavailable. Select the summary text instead.";
   }
+});
+$("#local-runner-disable-embed").addEventListener("click",()=>{
+  if(!readEmbedUrl())return;
+  if(writeEmbedUrl(""))location.reload();
+  else $("#local-runner-status").textContent="Could not disable JDoodle; use Compiler settings.";
 });
 $("#settings-toggle").addEventListener("click", () => {
   $("#settings-panel").hidden = !$("#settings-panel").hidden;

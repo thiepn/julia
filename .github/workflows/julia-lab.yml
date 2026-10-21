@@ -6,6 +6,7 @@ on:
       - "index.html"
       - "styles.css"
       - "src/**"
+      - "local-runner/**"
       - "tests/**"
       - "package.json"
       - "README.md"
@@ -35,6 +36,8 @@ jobs:
         run: node tests/julia-qualification.mjs
       - name: Run Julia UE02 numeric and syntax qualifications
         run: node tests/ue02-qualification.mjs
+      - name: Execute genuine Julia local runner protocol regressions
+        run: node tests/local-runner-qualification.mjs
       - name: Install Playwright runner for browser acceptance
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
@@ -68,3 +71,5 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Chromium desktop/mobile loads real exported Julia figures
         run: node tests/real-julia-plot-browser.mjs
+      - name: Local runner executes real plot source in desktop/mobile Chromium
+        run: node tests/local-runner-browser.mjs

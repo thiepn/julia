@@ -569,6 +569,20 @@
     </main>
     <aside class="compiler" aria-label="Julia code execution" id="compiler-panel">
       <div class="compiler-heading"><div><span class="eyebrow">WORKSPACE</span><h2 id="compiler-title" tabindex="-1">Run your Julia code</h2></div><span class="runtime-tag" id="runtime-state">Checking editor…</span></div>
+      <section class="local-runner" aria-labelledby="local-runner-heading">
+        <h3 id="local-runner-heading">Run locally with Julia</h3>
+        <p>Install Julia and Node.js, then run <code>node local-runner/server.mjs</code> from the Julia Lab repository. The terminal prints a session code. Your program runs with your computer account's permissions, not in a sandbox.</p>
+        <button type="button" class="secondary" id="local-runner-disable-embed">Disable JDoodle and reload for local execution</button>
+        <label for="local-runner-token">Runner session code</label>
+        <input type="password" id="local-runner-token" autocomplete="off" spellcheck="false">
+        <div class="local-runner-actions">
+          <button type="button" class="primary" id="local-runner-run">Run current Julia draft</button>
+          <button type="button" class="secondary" id="local-runner-clear">Clear results</button>
+        </div>
+        <p id="local-runner-status" class="feedback" role="status" aria-live="polite">No execution in this task.</p>
+        <pre class="local-runner-console" aria-label="Julia standard output and errors"><code id="local-runner-output"></code></pre>
+        <div id="local-runner-images" class="local-runner-images" aria-label="Locally generated Julia plots"></div>
+      </section>
       <p class="compiler-explainer">Use the embedded editor when available. Copy your code draft into it. Execution happens at JDoodle, not on this page; iframe loading is not proof that Julia ran.</p>
       <div id="embed-slot">
         <div class="placeholder" id="embed-placeholder"><span class="placeholder-icon">{ }</span><strong>Loading course compiler</strong><p>The JDoodle editor is supplied for the course. If loading fails, use an external link below.</p></div>
@@ -617,7 +631,7 @@
         <p class="feedback" id="settings-feedback" role="status"></p>
         <a href="https://www.jdoodle.com/docs/embeds/create-an-embed" target="_blank" rel="noopener noreferrer">JDoodle embed setup guide ↗</a>
       </section>
-      <div class="privacy-note">No Julia code is executed by Julia Lab. If enabled, the embedded JDoodle service loads from a third party and executes code under JDoodle's terms. Lesson choices and drafts remain in this browser. A successful iframe or script load is not evidence of an executed Julia program.</div>
+      <div class="privacy-note">No Julia code runs in the hosted browser. The optional local runner executes a chosen draft on your computer only after you explicitly press Run and disable JDoodle. If enabled, the embedded JDoodle service loads from a third party and executes code under JDoodle's terms. Lesson choices and drafts remain in this browser. A successful iframe or script load is not evidence of an executed Julia program.</div>
     </aside>
   </div>
   <script type="module" src="./src/app.js"></script>
