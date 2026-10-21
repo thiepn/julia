@@ -43,7 +43,7 @@ test("relative conditioning finite differences approach analytic for original fu
       assert.match(example,/analytic relative condition/);
     }
   }
-  assert.ok(Math.abs(conditionSample("affine",1,1e-8).analytic-1)<1e-12);
+  assert.ok(Math.abs(conditionSample("affine",1.5,1e-8).analytic-1.2)<1e-12);
   assert.ok(Math.abs(conditionSample("composition",0.8,1e-6).observed-
                      conditionSample("composition",0.8,1e-6).analytic)<1e-4);
   assert.throws(()=>conditionSample("evil",1,1e-4));
