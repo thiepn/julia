@@ -30,6 +30,9 @@ import {missionForLesson} from "./numerical-missions.js";
 import {integrationForLesson,buildIntegrationTestFile} from "./integration-task.js";
 
 const $ = (selector) => document.querySelector(selector);
+let currentIndex = 0;
+let practiceVariant = "original";
+let unsavedPractice = false;
 const localRunner=initLocalRunner({getDraft:()=>$("#scratch-code").value,
   getIdentity:()=>current().id+":"+practiceVariant,embedActive:()=>Boolean(readEmbedUrl()),
   onResult:data=>submission.onRun(data),onClear:()=>submission.invalidateRun()});
@@ -43,9 +46,6 @@ const plottingPractice = initPlottingPractice();
 const ue02Practice = initUe02Practice();
 const ampWorkshops = initAmpWorkshops({download:downloadLocalJulia,getDraft:()=>$("#scratch-code").value});
 const progress = readProgress();
-let currentIndex = 0;
-let practiceVariant = "original";
-let unsavedPractice = false;
 // Diagnostics are opt-in and ephemeral. No provider code/output is retained.
 let diagnosticCount = 0;
 let diagnosticLast = null;
