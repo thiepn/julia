@@ -144,3 +144,40 @@ the real Julia/PrettyTables source and Julia Test suites are exercised in CI.
 
 **Release boundary:** New development branch / draft PR only. Do not merge
 or deploy until the full multi-upgrade batch is accepted.
+
+## AMP programming submission workflow (same PR #5)
+
+Source: AMP Übung 1 (22 October 2026, 08:00) and Übung 2 (29 October
+2026, 08:00). Both require: one `.jl` file per Julia programming task,
+a corresponding PDF **of the code**, filename containing the student's name
+and matriculation number, and a ZIP uploaded by the student to ILIAS.
+Programs should include meaningful comments. This app does not submit files.
+
+Expand **Prepare AMP submission (.jl, code PDF and ZIP)** inside any lesson.
+Disable JDoodle and reload before entering personal filename details so its
+third-party embed script cannot read them. Enter a filename name in safe
+Latin letters, your matriculation number, and an exercise identifier such
+as `1.2` or `2.2b`. The original code editor remains the source of truth.
+
+1. Write your own Julia code; optionally execute the current editor source
+   with the existing local Julia runner to obtain actual output and plots.
+2. Choose **Print code -> Save as PDF**, then use the browser's system
+   print dialog to save a **text-selectable PDF of that exact source**.
+   For accurate Unicode and pagination, printing uses native browser fonts.
+3. Select the saved PDF, check that it contains the exact code, and
+   optionally include the current **successful local Julia execution**
+   output plus up to three exported image files in the ZIP.
+4. Stage the `.jl`/PDF pair and repeat for up to eight programming tasks.
+   The staged files are kept only in this tab's memory, not in browser storage.
+5. Download the standards-compliant, uncompressed ZIP. Open it and check
+   the source/PDF pairs before uploading to ILIAS yourself.
+
+The browser cannot read the system print dialog, automatically capture the
+PDF it saves or independently prove that an imported PDF reproduces your
+source. The user confirms the PDF/source match before staging. The PDF
+must have a valid header/end marker, and entries have strict size/path limits
+and ZIP CRC checks. Local Julia execution **does not grade** correctness.
+The UI never requests or uses ILIAS credentials, does not store identity
+or PDFs in localStorage and does not send submission files to any provider.
+All ZIP assembly is inside the browser; without a successful verified
+local run, the optional result attachment remains disabled.

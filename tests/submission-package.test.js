@@ -48,7 +48,7 @@ test("self-contained ZIP is standards-aligned, reproducible, CRC-valid and UTF-8
   assert.equal(unpacked.size,4);
   assert.equal(decoder.decode(unpacked.get(stem+".jl")),code);
   assert.match(decoder.decode(unpacked.get(stem+".pdf")),/%PDF-1\.7/);
-  assert.match(decoder.decode(unpacked.get("results/"+stem+"-run.txt"))/Ergebnis/,/Ergebnis/);
+  assert.match(decoder.decode(unpacked.get("results/"+stem+"-run.txt")),/Ergebnis/);
   assert.deepEqual(Array.from(unpacked.get("results/"+stem+"-figure-1.png").slice(0,8)),[137,80,78,71,13,10,26,10]);
 });
 test("ZIP refuses duplicates, traversal, oversized blobs and invalid empty source",async()=>{

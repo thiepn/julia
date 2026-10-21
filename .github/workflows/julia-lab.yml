@@ -48,6 +48,8 @@ jobs:
         run: node tests/browser.mjs
       - name: AMP workshops Chromium desktop/mobile
         run: node tests/amp-browser.mjs
+      - name: AMP private PDF/ZIP submission and real Julia results in Chromium
+        run: node tests/submission-browser.mjs
 
   authentic-plotting:
     runs-on: ubuntu-24.04
@@ -79,3 +81,5 @@ jobs:
         run: node tests/real-julia-plot-browser.mjs
       - name: Local runner executes real plot source in desktop/mobile Chromium
         run: node tests/local-runner-browser.mjs
+      - name: Private AMP submission ZIP includes genuine local Plots.jl images
+        run: AMP_SUBMISSION_REAL_PLOTS=1 node tests/submission-browser.mjs
