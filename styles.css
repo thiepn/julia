@@ -358,3 +358,18 @@
 .practice-table caption{text-align:left;color:var(--muted);font-size:14px;padding:8px 0}
 .practice-table td,.practice-table th{text-align:right;border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
 .practice-table th{text-align:left}
+
+.local-runner{padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:16px 0}
+.local-runner h3{font-size:19px;line-height:1.3;margin:0 0 10px}
+.local-runner p,.local-runner label,.local-runner code{font-size:14px;line-height:1.55}
+.local-runner label{display:block;font-weight:650;margin:13px 0 7px}
+.local-runner input{min-height:42px;max-width:100%;width:100%;padding:8px 10px;font-size:16px;background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.local-runner-actions{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}
+.local-runner-actions button{min-height:42px}
+.local-runner .feedback{font-size:14px;overflow-wrap:anywhere}
+.local-runner-console{font:13px/1.6 Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:240px;overflow:auto;margin:10px 0;color:var(--ink);background:var(--washed);padding:12px}
+.local-runner-console:empty{display:none}
+.local-runner-images figure{margin:16px 0;max-width:100%}
+.local-runner-images img{display:block;max-width:100%;height:auto;max-height:450px;object-fit:contain;background:#fff}
+.local-runner-images figcaption{font-size:14px;color:var(--muted);margin-top:7px}
+@media(max-width:760px){.local-runner-actions button{flex:1;min-width:140px}}

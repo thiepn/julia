@@ -88,3 +88,30 @@ mean the browser executes Julia or grades code.
 
 This is a new draft PR and is not merged/deployed. Existing local drafts, lesson
 identities, review history, rights and the original app remain intact.
+
+## Optional local Julia execution — new development branch
+
+Julia Lab now provides an optional **loopback-only local Julia companion**. It is not
+a hosted execution service, not a security sandbox and not automatic grading.
+
+1. Install Julia 1.11+ and Node.js 22+ on the same computer as your browser.
+2. Check out this repository and run `node local-runner/server.mjs` from its root.
+   It binds to `127.0.0.1:8765` and prints a random access code for that session.
+3. In Julia Lab, choose **Disable JDoodle and reload for local execution**.
+   This avoids exposing your session code to JDoodle's third-party loader.
+4. Enter the session code, write Julia in any lesson draft and press
+   **Run current Julia draft**. Inspect the real stdout, stderr and saved
+   `.png`/`.svg` figures produced by your own code (for example via `savefig`).
+5. Stop the companion with Ctrl+C when finished.
+
+Requests are limited to approved browser origins, an unguessable temporary token,
+50 KB of source, 25 KB per output stream, up to three images totalling 5 MB,
+one execution at a time and 120 seconds per run. Each run uses a temporary
+directory which is removed afterwards. Neither the access token nor run outputs
+are stored in localStorage or sent to the hosted site.
+
+**Security:** Julia runs with your local OS account's filesystem/process rights.
+Only run code you trust. Loopback restrictions in some browsers may prevent a
+remote HTTPS page from connecting; use the included localhost site in that
+case. Explicitly allow other trusted origins via `JULIA_LAB_ORIGINS`.
+Running code and rendering graphics never award coding mastery or change drafts.
