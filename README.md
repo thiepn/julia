@@ -79,9 +79,12 @@ Lessons 09 and 16 offer independent cancellation and relative conditioning exper
 The tables on the webpage are calculated in JavaScript; the shown Julia source must
 be run in Julia. The cancellation script includes current PrettyTables.jl
 column_labels usage. Install the dependency locally via
-import Pkg; Pkg.add("PrettyTables"). The Julia 1.11 CI runs the exact original
-numeric snippets and parses the plotted source; third-party Plots.jl/PrettyTables.jl
-package runtime execution remains NOT_TESTED and is not falsely claimed.
+import Pkg; Pkg.add("PrettyTables"). PR #3 now executes the original
+Plots.jl source against Plots v1.41.7 and PrettyTables.jl against v3.5.0 under
+Julia 1.11. The generated figures (two PNGs and one SVG) and formatted text
+were verified with real package execution; all three files were imported in
+genuine Chromium desktop and mobile tests. See CI #39568500774. This does not
+mean the browser executes Julia or grades code.
 
 This is a new draft PR and is not merged/deployed. Existing local drafts, lesson
 identities, review history, rights and the original app remain intact.
