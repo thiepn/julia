@@ -8,6 +8,7 @@ on:
       - "src/**"
       - "tests/**"
       - "package.json"
+      - "README.md"
       - ".github/workflows/julia-lab.yml"
 permissions:
   contents: read
@@ -32,6 +33,8 @@ jobs:
           version: '1.11'
       - name: Execute generated Julia Test suites with fixed reference code
         run: node tests/julia-qualification.mjs
+      - name: Run Julia UE02 numeric and syntax qualifications
+        run: node tests/ue02-qualification.mjs
       - name: Install Playwright runner for browser acceptance
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
@@ -39,3 +42,29 @@ jobs:
       - name: Chromium desktop/mobile acceptance
         run: node tests/browser.mjs
 
+  authentic-plotting:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GKSwstype: "100"
+      JULIA_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: "1.11"
+      - uses: julia-actions/cache@v2
+      - name: Install real Plots.jl and PrettyTables.jl (isolated CI environment)
+        run: |
+          julia --startup-file=no --color=no -e 'using Pkg; Pkg.add([Pkg.PackageSpec(name="Plots",version="1.41.7"), Pkg.PackageSpec(name="PrettyTables",version="3.5.0")]); using Plots, PrettyTables; gr(); println("JULIA PACKAGES READY")'
+      - name: Execute actual learner Julia examples and verify generated outputs
+        run: node tests/julia-package-qualification.mjs
+      - name: Install Chromium for authentic figure preview acceptance
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Chromium desktop/mobile loads real exported Julia figures
+        run: node tests/real-julia-plot-browser.mjs

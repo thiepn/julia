@@ -338,3 +338,23 @@
 .integration-instruction{font-size:14px!important;line-height:1.5}
 #integration-preview-details pre{max-height:350px;overflow:auto;margin:10px 0}
 @media(max-width:560px){.integration-source-status>div{grid-template-columns:1fr;gap:4px}}
+
+.local-plot-preview{border-top:1px solid var(--line);padding:20px 0}
+.local-plot-preview h3,.course-practice h2{font-size:20px;line-height:1.25;margin:0 0 12px}
+.local-plot-preview p,.course-practice p,.course-practice label,.local-plot-preview label{font-size:14px;line-height:1.55}
+.local-plot-preview label,.course-practice label{display:block;font-weight:650;margin:8px 0}
+.local-plot-preview input{display:block;width:100%;max-width:100%;font-size:14px;padding:10px 0}
+.plot-image-holder{max-width:100%;overflow:auto}
+.plot-image-holder img{display:block;max-width:100%;height:auto;max-height:480px;object-fit:contain;margin:12px auto;border:1px solid var(--line);background:#fff}
+.plot-image-holder img[hidden],.local-plot-preview[hidden],.course-practice[hidden]{display:none}
+.local-plot-preview .feedback,.course-practice .feedback{font-size:14px;overflow-wrap:anywhere}
+.local-plot-preview button{margin-top:8px}
+.course-practice{border-top:1px solid var(--line);padding-top:22px}
+.course-practice h3{font-size:16px;line-height:1.4;margin:10px 0}
+.course-practice select{width:100%;max-width:450px;min-height:42px;font-size:14px;margin-bottom:12px}
+.practice-code{overflow:auto;max-width:100%;white-space:pre;max-height:400px;font-size:13px}
+.practice-table-wrap{overflow:auto;max-width:100%;margin:12px 0}
+.practice-table{border-collapse:collapse;width:100%;min-width:340px;font-variant-numeric:tabular-nums;font-size:13px}
+.practice-table caption{text-align:left;color:var(--muted);font-size:14px;padding:8px 0}
+.practice-table td,.practice-table th{text-align:right;border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+.practice-table th{text-align:left}

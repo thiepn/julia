@@ -161,6 +161,15 @@
         <details id="hint-2"><summary>Hint 2 · Approach</summary><p></p></details>
         <details id="hint-3"><summary>Hint 3 · Last step</summary><p></p></details>
       </section>
+      <section class="paper course-practice" id="plotting-workshop" aria-labelledby="plotting-workshop-heading" hidden>
+        <h2 id="plotting-workshop-heading">Plots.jl practice</h2>
+        <h3 id="plotting-recipe-title"></h3>
+        <p id="plotting-recipe-task"></p>
+        <pre class="code practice-code"><code id="plotting-recipe-code"></code></pre>
+        <p id="plotting-recipe-checks"></p>
+        <button class="secondary" type="button" id="plotting-recipe-copy">Copy Julia example</button>
+        <p class="feedback" id="plotting-recipe-feedback" role="status"></p>
+      </section>
       <section class="paper numerical-explorer" id="numerical-explorer" aria-labelledby="numerical-heading" hidden>
         <div class="section-title"><span class="section-num">04</span><h2 id="numerical-heading">Explore norms and transformations</h2></div>
         <div class="numerical-controls">
@@ -512,6 +521,26 @@
         <p id="sensitivity-storage" class="feedback" role="status"></p>
         <p class="sensitivity-scope">The condition number is a worst-case relative-sensitivity bound, not an observed error for every b. Solutions use the diagonal formula evaluated in JavaScript binary64; tiny roundoff differences may occur. This is not Julia execution, a solver-stability test, or coding mastery.</p>
       </section>
+      <section class="paper course-practice" id="ue02-lab" aria-labelledby="ue02-heading" hidden>
+        <h2 id="ue02-heading">Übung 2 · Numerical experiments</h2>
+        <label for="ue02-case">Experiment</label>
+        <select id="ue02-case">
+          <option value="cancellation">Cancellation and PrettyTables.jl</option>
+          <option value="condition">Relative condition of sin(x)</option>
+        </select>
+        <h3 id="ue02-question"></h3>
+        <p id="ue02-explanation"></p>
+        <div class="practice-table-wrap">
+          <table class="practice-table" aria-label="Browser-computed numerical comparison">
+            <caption>Calculated in browser JavaScript, not Julia</caption>
+            <thead><tr><th id="ue02-table-head" colspan="3"></th></tr></thead>
+            <tbody id="ue02-table-body"></tbody>
+          </table>
+        </div>
+        <pre class="code practice-code"><code id="ue02-code"></code></pre>
+        <button class="secondary" type="button" id="ue02-copy">Copy Julia example</button>
+        <p class="feedback" id="ue02-feedback" role="status"></p>
+      </section>
       <section class="paper repair-lab" aria-labelledby="repair-section-title">
         <div class="section-title"><span class="section-num" id="repair-section-number">04</span><h2 id="repair-section-title">Debug a Julia program</h2></div>
         <h3 id="repair-title"></h3>
@@ -553,6 +582,15 @@
         If you see “Unable to process your request,” copy or download your code and run it in OneCompiler or locally with Julia. A provider error is not a failed programming exercise.
         <button type="button" class="quiet" id="back-to-draft">Return to my code ↑</button>
       </div>
+      <section id="local-plot-preview" class="local-plot-preview" aria-labelledby="local-plot-heading" hidden>
+        <h3 id="local-plot-heading">Preview Julia plot file</h3>
+        <p>Run your .jl code locally with Plots.jl and savefig(p, "figure.png") or savefig(p, "figure.svg"). Select the saved file below. Preview stays on this device and does not execute code.</p>
+        <label for="plot-file">Open a PNG or SVG figure (up to 5 MB)</label>
+        <input id="plot-file" type="file" accept=".png,.svg,image/png,image/svg+xml">
+        <div class="plot-image-holder"><img id="plot-image" alt="" hidden></div>
+        <button id="plot-clear" class="secondary" type="button" hidden>Clear figure</button>
+        <p id="plot-status" class="feedback" role="status" aria-live="polite">No local figure selected.</p>
+      </section>
       <section class="result-panel" aria-labelledby="result-title">
         <h3 id="result-title">Check practice output</h3>
         <p>After running Julia, paste its printed output here. This compares text only; it cannot confirm code execution, test other inputs or award coding mastery.</p>
