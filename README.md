@@ -1,238 +1,66 @@
-# Julia Lab — AMP · Universität zu Köln
+# Julia Lab — AMP (v1.0)
 
-Minimal, static, course-aligned Julia practice for **Algorithmische Mathematik und Programmieren (WS 2026/27)**. No authentication, database, server-side code execution or paid services are included.
+A static, browser-based Julia learning companion for **Algorithmische Mathematik und Programmieren**, Universität zu Köln, WS 2026/27. It is independent study material, **not** an official course tool or homework submission system.
 
-This is a learning companion, **not** an official course application or submission system.
+## Start
 
-## Included
+The entire application is in this repository; no account, database, build step, paid API or server-side service is required.
 
-- 16 short lessons grouped into Übung 1 essentials, programming fluency, numerical AMP.
-- 48 concept questions with immediate feedback, three progressive coding hints per lesson.
-- 16 coding challenges, source descriptions, example and starter code.
-- Course-specific emphasis on \`Plots.jl\`, norms and transformations, numerical errors, LR/QR/Cholesky and least squares.
-- Local browser progress only; keyboard-accessible navigation and responsive layout.
-- JDoodle editor slot on every lesson, preconfigured with the account-owned embed URL supplied by the user (`https://www.jdoodle.com/embed/v1/d74ec9cf98a1b5b`), with an optional local override or disable action.
-- External JDoodle and OneCompiler fallback links always accessible.
-- Output text comparison for student-pasted output. **This is not code execution verification**.
+1. Start a local static server in the repository directory:
+   - **Windows:** `py -m http.server 5173`
+   - **macOS/Linux:** `python3 -m http.server 5173`
+2. Open **http://localhost:5173** in a browser.
+3. Select **Continue lesson**. The first six lessons cover the essentials for Übung 1.
+4. Write Julia in the lesson editor. Your drafts and multiple-choice answers are saved **in this browser only**.
+5. Run Julia code in an external compiler or install Julia and run exported `.jl` files locally. The website itself **does not execute or grade Julia code**.
 
-## Run locally
+## What is included
 
-Requires any HTTP static-file server and a modern browser:
+- **16 lessons**, 48 concept questions with explanations and 16 original coding challenges.
+- **32 independent transfer exercises**, 16 debugging tasks and numerical practice missions.
+- Interactive experiments for norms/matrices, Gaussian elimination, floating-point precision, least-squares fitting, algorithm traces, QR/Cholesky and numerical sensitivity.
+- One lesson code workspace, saved per task. Import/export local `.jl` files and explicitly confirm resets or scaffold replacements.
+- Julia `Test` script downloads for supported callable functions: complete suites, selected cases, algorithm properties and a cross-lesson integration exercise.
+- External JDoodle/OneCompiler access, with an account-owned embedded JDoodle editor configured by default. The embedded service's live Julia execution is **not reliable or verified**.
 
-\`\`\`bash
-python3 -m http.server 5173
-# Open http://localhost:5173
-\`\`\`
+The browser computes interactive mathematical illustrations in JavaScript, independently of the learner's Julia code. Correct multiple-choice answers are concept review, **not evidence of programming mastery**.
 
-Run independent curriculum/validator tests using Node.js 20+:
+## Run the Julia tests
 
-\`\`\`bash
-npm test
-\`\`\`
+For supported function tasks, select the exercise and download its **Julia test file**. Run it using a local Julia installation:
 
-No \`npm install\` is necessary for runtime or tests (Node built-ins only). Deployment can be static, for example to Cloudflare Pages. **No deployment is included in this change.**
+```sh
+julia amp-julia-lab-lesson-XX-tests.jl
+```
 
-## Connect a Julia JDoodle embed
+Use the **actual filename** downloaded by the app; the name above is illustrative. These generated scripts include your current code draft and run Julia's standard `Test` assertions. A successful local run is evidence for those specific test cases, not a mathematical proof or official course grade. For ordinary script/plot tasks without generated tests, execute the exported `.jl` file yourself and inspect the result.
 
-1. Sign into JDoodle and create a **Julia project** (not a Java or Python project).
-2. Create an embed connected to that Julia project, keeping an editable code editor, Execute button and output area.
-3. Copy the resulting URL in the exact format \`https://www.jdoodle.com/embed/v1/YOUR_KEY\`.
-4. In Julia Lab choose **Compiler settings**, paste the embed URL and save.
-5. The site loads the official JDoodle Pym script: \`https://www.jdoodle.com/assets/jdoodle-pym.min.js\`.
-6. On each lesson, use **Copy code** to paste starter code into the embed, then execute it. The same configured Julia editor stays available as lessons change.
-7. If the embed fails or doesn't support a package, use the **Open JDoodle** or **Open OneCompiler** fallback; VS Code + installed Julia is best for verified university submissions.
+Some plotting lessons require `Plots.jl`; install it in a local Julia environment with `import Pkg; Pkg.add("Plots")`. Whether it works in JDoodle depends on the external provider and is not guaranteed.
 
-**Important:** An embed is not preconfigured, because JDoodle requires an account-owned project/embed key. No live embedded Julia session or output-event contract has been exercised yet. Julia graphics inside the hosted editor also remain unverified.
+## Verification
 
-## Grading stages
+The exact J24 branch commit `1b86d20a2f8dc16200bcf2fa5a61d10a7d548ea2` passed [GitHub Actions #39511383531](https://github.com/thiepn/julia/actions/runs/39511383531):
 
-1. **Implemented now:** concept questions are automatically marked in the browser, with answers stored in local storage. 2/3 correct makes a lesson concept set "reviewed". This does **not** assert programming competence.
-2. **Implemented now:** optional comparison of pasted Julia stdout with a practice target. This is explicitly labeled unverified and never marks the code challenge as passed.
-3. **Next, only after the Julia embed actually runs:** implement its documented ready/code/output event messages, verify response shape and origin, add genuine automatic stdout checks on successful execution. Do not trust unverified cross-origin messages or turn text matches into a claim of code correctness.
-4. **Later:** run multiple executable function test cases securely using a supported runner, and add plot-specific validation. Do not ship fake hidden tests or store API credentials in the frontend.
+- 107/107 Node tests.
+- 13/13 Julia full-function suites; 13/13 focused suites.
+- 9/9 Julia full-property suites; 9/9 individual-property tests.
+- 9/9 parsable incomplete scaffolds, correctly failing their designated tests.
+- Four expected negative function checks, plus two expected integration failures.
+- One real five-case cross-lesson integration suite.
+- 32/32 Chromium desktop/mobile acceptance checks.
 
-Official embed docs: https://www.jdoodle.com/docs/embeds / https://www.jdoodle.com/docs/embeds/drive-it-from-your-page
+Those Julia tests ran **fixed, reviewed reference implementations**, not private learner code. Real successful JDoodle execution/output events, browser-based automatic coding grades, and live hosted `Plots.jl` runs remain **unverified/unavailable**. No code is silently uploaded for grading.
 
-## Course sources and caveats
+Run the repository tests with **Node 20+** using `npm test`. GitHub Actions uses Node 22, Julia 1.11 and Chromium. The application itself requires no npm installation.
 
-- **AMP Vorlesung 1, 14 Oct 2026** — numerical error analysis, linear systems (LR/QR/Cholesky), least-squares.
-- **AMP Übungsblatt 1, due 22 Oct 2026 at 08:00** — Julia \`Plots\` exercise with norm boundaries and transformations, plus written proofs, model questions and convergence.
-- **Noel Kalicharan, Julia – Bit by Bit (2021)** — basic numerical types, conditions, loops, functions, arrays.
-- Official Julia documentation, LinearAlgebra reference and Plots.jl tutorial for advanced parts.
+## Data and course boundaries
 
-Practice examples intentionally do not contain complete assignment solutions.
+Progress and drafts remain in local browser storage. Clearing site data, switching browsers or opening another domain can lose access to them. Export important `.jl` work. No sign-in, server sync or account-based backup is provided.
 
-**Mathematical note about UE01 1.2(d):** The boundary of \`||x||_M = ||M*x||₂\` is the inverse image \`M⁻¹(S¹)\` of the Euclidean unit circle; mapping points by \`M\` gives the direct image. These differ for a generic invertible matrix. The sheet's wording and suggested procedure should be clarified with the exercise tutor rather than silently equated.
+The curriculum draws on AMP lecture and Übung 1 topics, Noel Kalicharan's *Julia — Bit by Bit* (2021), Julia's documentation, and numerical mathematics references. Examples are original practice, not completed Übung 1 submissions. The assignment instructions take priority over this companion app.
 
-Original exercise and lecturer instructions have authority over this supplementary content. The first sheet requests \`.jl\` source, PDF copies of code, and a ZIP as specified.
+For Übung 1's transformed norm geometry, distinguish the direct image `M(S¹)` from the inverse image `M⁻¹(S¹)`, which is the boundary of `||Mx||₂ = 1` for invertible `M`; do not treat them as equal in general.
 
-## Future scope
+## Release boundary
 
-Once the embed is verified: preserve per-lesson scratch work and attach genuine execution feedback, then tighten numerical tolerance rules and add plots. Keep hosting static until a real requirement justifies a backend.
-
-## J3 — local coding workspace
-
-Every lesson now has an editable code draft which autosaves in browser local storage and survives lesson switching and reloads. The **Copy my code** button transfers the exact draft to the clipboard for JDoodle, OneCompiler or local Julia; **Reset to starter** requires explicit confirmation and affects only the current lesson. Unsaved or unavailable local storage is clearly reported. No typed draft is treated as executable proof, and any JDoodle iframe initialization remains labelled **unverified** until a real Julia project embed and its event payloads are tested. No speculative execution event listener or automatic coding-mastery claim is included.
-
-## J4 — supplied JDoodle course embed
-
-The user provided official JDoodle embed markup using `https://www.jdoodle.com/embed/v1/d74ec9cf98a1b5b`. That address is now the **default course embed**, following JDoodle's documented `data-pym-src` + `jdoodle-pym.min.js` integration. Saving a custom URL overrides this in the current browser; **Disable embedded editor** records an explicit disabled state; **Restore course editor** clears the override. The page retains separate per-lesson local drafts and fallback external compiler links.
-
-**Verification limitation:** The hosted editor has not yet been observed running Julia; web access to the embed session is unavailable from the connected verification environment. A successfully loaded third-party script or iframe is *not* proof that the embedded project uses Julia or that execution/output events work. No unverified code is granted completed coding-task status, and no speculative `postMessage` event listener was added. A live Julia execution + output-event payload must be documented and tested before execution-based grading can be implemented.
-
-
-## J5 — read-only JDoodle event boundary
-
-Official JDoodle docs confirm that embeds can send ready, code-change and execution-output notifications to a containing page; however the public `drive-it-from-your-page` page does **not** define exact event names or field types. A checked **Get embedding code** snippet or observed live transcript is required to map these events safely.
-
-The app now offers an **opt-in, ephemeral Connection diagnostics** panel. Incoming messages must originate at `https://www.jdoodle.com`, come from the `contentWindow` of the currently configured JDoodle embed's iframe, and have the exact configured embed path. Messages from the host page, another JDoodle iframe, or unrelated origins are ignored. This is a conservative diagnostic, not verified execution; some valid provider messages may be discarded until their actual frame topology is established.
-
-Only the count, top-level data format, and a bounded, syntax-validated non-sensitive marker are exposed. No program text, outputs, credentials or message payloads are stored or logged. No `postMessage` commands, automatic code injection, or output-based completion is enabled. Connection reports explicitly state `liveJuliaExecutionVerified: false`.
-
-Synthetic browser fixtures validate the source/origin boundary, including forged same-page messages and a fake execution-result payload. **Those checks are not real JDoodle Julia execution.**
-
-### Next live verification
-1. From the actual JDoodle project, open **Get embedding code**. Select **Receive Code**, **Receive Output**, and **Receive Status**; copy the full expanded script including handlers (the boxes only generate JavaScript).
-2. In a real browser, run `println(2 + 3)` in the embedded Julia editor, inspect the emitted event names and payloads.
-3. Only after confirming the event shapes, frame origins, success/error and execution association should this app implement an output adapter; any successful output check must remain separate from multi-input code mastery.
-
-
-## J6 — observed live JDoodle behavior (2026-10-19)
-
-On a GitHub-hosted Chromium runner the user's supplied embed and JDoodle Pym script both returned HTTP 200. The frame loaded an editor with Julia selected (versions 1.12.4 and 1.9.3 visible), an ACE editor, and an enabled Execute button. A structured `{onLoad: ...}` message was observed from JDoodle.
-
-A fixed arithmetic smoke program was entered in the editor and Execute clicked. After a longer 20-second wait, the distinct calculated output was **absent**. The output pane instead displayed a JDoodle service error: *"Unable to process your request. Please try again, or contact JDoodle Support at hello@jdoodle.com."* No structured completed-output event appeared. **Live Julia execution and the execution event contract remain NOT VERIFIED; output-based grading is NOT IMPLEMENTED.**
-
-Julia Lab now recognizes an origin/source/path-checked `onLoad` property as an ephemeral connection diagnostic, even if it arrives before the diagnostic panel opens. It is explicitly *not* readiness-for-commands, run success, or code mastery. Untrusted messages cannot trigger a grade, nor are code/output payloads retained.
-
-The manually gated probe is kept in `tests/live-jdoodle-probe.mjs` for reproducibility but removed from the standard CI workflow, preventing automatic repeated JDoodle runs. The normal Node + synthetic Chromium acceptance remains independent of JDoodle's external uptime. The next actual dependency is a functioning JDoodle execution and the vendor-generated expanded embedding snippet documenting ready/code/output events; neither can be inferred from `onLoad` alone.
-
-## J7 — Julia source file handoff and runtime fallback
-
-JDoodle's documented embed supports execution events, but the authentic J6 browser run returned the provider's "Unable to process your request" message, and no successful Julia output event was proven. Current official JDoodle docs do not identify why this particular request failed; no paid REST API/backend was introduced.
-
-J7 adds **Download .jl**, **Import .jl**, and a mobile-accessible **Go to compiler and alternatives** control. Download exports the exact current lesson draft as `amp-julia-lab-lesson-XX.jl` with no backend, making it usable in VS Code and standard Julia. Import accepts a local `.jl` file up to the existing 50,000-character editor limit and requires explicit confirmation before replacing only the current lesson's saved draft. Failed/cancelled imports preserve existing progress and code. All imported text stays local, and none is executed by the web app. A fallback explanation now distinguishes JDoodle service failures from the learner's code mistakes. OneCompiler and JDoodle external links are preserved.
-
-Once JDoodle's execution backend succeeds and the vendor-generated Receive Output event shape can be verified, automatic output checking can be added without relying on pasted output or an invented callback schema.
-
-## J8 — Question-specific reasoning and continue learning
-
-Learners now receive one **source-authored reasoning explanation for each of the 48 questions** after selecting the correct answer, or a question-specific retry prompt after an incorrect answer. These explanations reflect existing textbook/programming and AMP syllabus concepts; they are not generated by the browser, and no correct answer is disclosed before an attempt. An explicit concept checkpoint says when at least 2/3 answers are correct while always marking coding verification as unavailable.
-
-The **Continue lesson** control selects the first concept set not yet reviewed in numerical curriculum order, preserving lesson navigation, selected question history, and all code drafts. Once all 16 concept sets are reviewed, it switches to a review action rather than claiming Julia programming mastery. This is a content/navigation feature, not code execution or numerical-proof evaluation. Import/export and external compiler fallback are unchanged.
-
-## J9 — Separate Julia debugging lab
-
-Added 16 original, course-aligned **Debug a Julia program** exercises, one for every canonical lesson 01–16. Learners repair deliberately faulty code, read two progressively more specific hints, inspect the expected behavior, and explicitly reveal a worked reference and explanation when ready. Cases cover indexing, broadcasting, plots, norms, matrix products, loop predicates, sum-of-squares, tolerances, asymptotic sampling, dot products, residuals, substitution, QR, least squares and sensitivity.
-
-Repairs have a **separate local-storage namespace** from challenge drafts and MCQ progress. Reset requires confirmation. **Compare with example** performs a plainly labelled text comparison (allowing line-ending/trailing-space differences); it does not run Julia, award mastery, or imply that other valid implementations are wrong. **Copy repair code** allows the existing JDoodle/OneCompiler/local Julia path.
-
-This feature does not reproduce full solutions to Übung 1. JDoodle's J6 service error remains a blocker for trusted executed-output grading, and no speculative messages, paid API or backend are introduced.
-
-## J10 — native AMP Norm & Matrix Explorer
-
-Lessons 05 and 06 include an interactive, browser-computed 2D vector and matrix visualizer. Choose ℓ₁, ℓ₂ or ℓ∞, change the input vector, and try identity/stretch/shear/rotation/singular matrices. SVG plots the selected norm boundary, its direct image under A, and—only if invertible—the inverse image under A⁻¹. Numeric readouts show v, A·v, both selected norm values and det(A). Singular matrices explicitly disable the inverse curve and explain why ||A·v|| is not a norm then.
-
-This supports conceptual exploration rather than reproducing the submitted Übung 1 plots or emitting Julia code. All calculations use the browser's JavaScript IEEE 754 doubles. Settings persist under a new independent local-storage key; no Julia execution, grading, progress mutation, or external API call occurs. Reset changes only the experiment settings.
-
-J10 also repairs a demonstrated J9 exact-head Node test failure: the 02 indexing repair was shorter than the intended 30-character source minimum, so that case now explicitly assigns the first entry before printing. The original bug and teaching objective are preserved, and the test is not weakened.
-
-## J11 — Gaussian Elimination Lab (Lessons 12–13)
-
-Four independent 3×3 example systems provide a **step-by-step interactive Gaussian elimination trace**, including row selection, partial-pivot swaps, row eliminations, an upper-triangular system, back-substitution, a final computed solution and original-system residual. Changing the pivoting strategy demonstrates zero-pivot failure, tiny-pivot sensitivity, and singular systems without asserting a unique solution. Previous/Next/First/Last navigate snapshots of the augmented matrix. A Julia `A \\ b` example for the chosen dataset is displayed and can be copied for external execution.
-
-Implementation uses native DOM controls and browser-side JavaScript binary64 formulas; it is **not** running Julia, proving correctness, or grading submitted code. No automatic mastery or cross-app writes. Settings use an independent localStorage key, and no existing question/lesson IDs, drafts, repairs, JDoodle embed or fallbacks change. Substantive AMP practice focused on linear-system algorithms rather than J10's norm geometry. Original `AGENTS.md` main copy restrictions respected.
-
-## J12 — Floating-point Error & Convergence Lab (Lessons 09–10)
-
-An interactive browser-calculated experiment compares finite-difference estimates of f′(x) for f(x)=sin(x), with the cos(x) Float64 result as a *floating-point reference*. Learners choose x ∈ {0.5, 1, 2} and h=10⁻ᵏ, k=1,…,16. The lab computes (i) forward difference, (ii) central difference, (iii) the algebraically equivalent stabilized forward difference using the trigonometric identity, and displays numerical estimates, absolute errors, observed consecutive error-ratio orders, and an SVG log-error plot.
-
-The design explicitly distinguishes truncation order from cancellation at small h; h that rounds x+h back to x is identified. Errors rounded to zero are **not placed on the logarithmic chart**, and the observed finite-sample rate is not represented as an asymptotic proof. One copyable Julia script corresponds to the chosen x and step, but the experiment itself uses browser JavaScript binary64, not Julia or JDoodle. Persistent settings occupy their own local-storage namespace and never change grades or lesson progress. J11 elimination, J10 norms, J9 repair, J8 explanations, all 16 source-aligned lessons, progress, drafts, import/export, fallback and privacy remain unchanged.
-
-## J13 — Interactive least-squares fitting (Lesson 15)
-
-A new **native least-squares explorer** lets learners move the intercept and slope of a fitted line across four original datasets: exact linear observations, noisy observations, an outlier, and rank-deficient repeated x values. It plots measured points, the learner’s current line, per-point residual segments and a least-squares comparison line. A table provides observed and predicted values and individual residuals. SSE, residual 2-norm, both analytical SSE-gradient components, minimum SSE and the gap are shown with numeric values.
-
-The best-fit coefficients are computed from centered sums for full-rank data and can be applied to the sliders (rounded to 0.01, openly labelled). When x is constant the design matrix has deficient rank; the tool states the family of optimal pairs and disables the unique-fit action. A generated Julia `A \\ y` example may be copied to an external compiler; no browser data is passed to JDoodle and no actual Julia execution, coding mastery or numerical proof is claimed. Settings persist separately in localStorage. All existing lessons, draft and assessment state, J8–J12 tools, rights, fallback and privacy remain intact.
-
-## J14 — Active program-state tracing (Lessons 03, 07, 08, 11)
-
-Learners predict the **next accumulator value before it is shown** in four original, fixed Julia-style algorithm examples: summing a Julia range, counting strictly positive values through if/else, summing squares in a function loop, and calculating a dot product with one-based indexing. Lesson 07 also requires a true/false branch prediction. Learners must submit both predictions before revealing an explanation and advancing. The history table shows real modeled before/after values only for completed iterations. Neither a right/wrong prediction nor a finished trace is coding mastery or proof that any Julia source executed.
-
-The step model is deterministic browser JavaScript arithmetic paired with explicitly authored Julia snippets; it is not an interpreter or a JavaScript-to-Julia semantic equivalence guarantee for arbitrary programs. Positions resume per example using independent local-storage keys; Reset trace confirms and affects only the active trace. All 16 lessons, official source identity, existing MCQs, J8–J13 numerical labs, J9 repairs, challenge drafts, .jl import/export, external compiler links and origin/privacy protections remain unchanged. No provider execution/API or paid services.
-
-
-## J15 — QR & Cholesky Factorization Lab (Lesson 14)
-
-An interactive original teaching lab traces 2×2 modified Gram–Schmidt QR and lower-triangular Cholesky operations in the existing QR & Cholesky lesson. Learners select one of five original examples (positive-definite, nonsymmetric, symmetric-indefinite, dependent columns, nearly dependent columns) and compare the available factorization methods. The previous/next/first/last controls show mathematical expressions, current factor entries and numerical reconstruction checks. For QR, the separate ||Q'Q−I||F orthogonality check reveals that small reconstruction error can coexist with degraded orthogonality for nearly dependent columns. For Cholesky, the UI checks real-matrix symmetry and positivity of successive pivots and stops without fabricating L when not positive definite. For dependent columns, the educational two-column QR trace explicitly stops; it does not claim QR factorization is impossible in other forms.
-
-The model uses JavaScript binary64 on fixed teaching examples, not a Julia runtime, general numerical proof, or assignment grading. Generated Julia source can be copied to a separate compiler. Scenario/method settings use an independent browser storage key. Existing 16 canonical lessons, source rights, J8–J14 labs, code drafts, MCQ progress, .jl transfers, privacy boundaries and compiler fallback are unchanged.
-
-
-## J16 — Conditioning and solution-sensitivity lab (Lesson 16)
-
-An interactive capstone uses the **exact 2×2 diagonal systems announced in lesson 16**. Select A=diag(1,s) for s∈{1,0.1,0.01,0.001,0.000001}, perturbation δb=[0,δ] for δ∈{0,10^-6,10^-5,10^-4}, and either the AMP exercise b=[1,2] or a direction-comparison b=[1,0]. The model uses algebraic diagonal solutions evaluated in JavaScript binary64 to compute original/perturbed solutions, absolute and relative solution changes, residuals against both the original and perturbed right-hand sides, κ₂(A)=1/s, a standard relative-error bound, and observed amplification.
-
-Learners inspect the impact of a small perturbation on well- and ill-conditioned matrices using a comparison table and logarithmic SVG plot (zero changes are correctly omitted from log axes). The b=[1,0] alternative shows a direction attaining the worst-case relative amplification; the AMP b=[1,2] illustrates that a large κ₂ does not force every *particular* relative perturbation to attain the bound, even if its absolute solution change is large. Perturbation zero explicitly makes the observed amplification undefined. A copyable Julia example uses LinearAlgebra with the same source-aligned matrices, but no Julia execution or algorithmic-stability verdict is implied. All numeric results, choices and persistence are independent of course mastery, existing drafts and other lesson tools. No backend, provider messages or paid services.
-
-
-## J17 — Independent Julia transfer practice (all 16 lessons)
-
-Each canonical lesson's coding section now offers **Original lesson challenge**, **Transfer A** and **Transfer B**. The 32 new, original AMP-aligned tasks use unfamiliar data, functions, boundary cases and cross-checks: variables, indexing, broadcasting, plotting, norms, transforms, loops, functions, floating-point comparisons, numerical sampling, linear algebra, solving, substitution, QR/Cholesky, least squares and conditioning. Each transfer provides distinct instructions, a small starter, success criteria and two optional reveals: a planning cue and an additional independent test case. These are supplementary practice prompts, not professor-provided assignment solutions or automated executions.
-
-**One editor is reused:** switching the task changes its instructions, starter, checks and saved code while preserving separate browser-local original, Transfer A and Transfer B drafts for every lesson. The original canonical 16 lesson draft keys are unchanged. Saved transfer keys are new and validated per lesson/variant; unsaved work blocks task switching when storage writes fail. Existing code copy, .jl download and .jl import work with the selected task and use variant-specific filenames for export. Asynchronous import checks both lesson and selected variant before overwriting. Reset affects only the active draft. Original pasted-output checks are not reused for transfer tasks (no fabricated answer checking or coding mastery); users run their code in Julia externally and use the source-backed check cases. All existing quiz progress, content and numerical labs, JDoodle origin constraints, source rights and privacy remain intact.
-
-
-## J18 — External Julia Test harness for function-based coding tasks
-
-The existing single coding editor now exposes downloadable/copyable Julia Test source for selected function-based original/transfer exercises in lessons 08, 09 and 13 (nine distinct code tasks). Each source-aligned suite includes ordinary, edge and boundary cases (sum_of_squares, count_above, product_or_one, isclose, approxzero, near_relative, forward and backward substitution). When the user edits the original/transfer draft, the preview updates with the exact current draft, followed by the relevant @testset assertions and the Julia standard-library imports using Test and using LinearAlgebra. The learner must explicitly run the downloaded file using Julia; the web app does not evaluate Julia code or observe, store, certify or grade execution results. Failed assertions or errors must be investigated in the learner's own runtime.
-
-For the other tasks the existing source-aligned success criteria, planning cues and additional edge tests remain as written—no invented code tests for plotting, scripts without a defined callable interface, or unknown user source. This extends practice instead of adding a compiler, grader, shadow editor, progress store or independent scheduler. No learner source is transmitted for test generation; everything runs synchronously in-browser until the learner chooses to export/copy. The original .jl export/import, separate J17 task drafts, canonical 16 lessons, UI privacy and JDoodle fallback remain unchanged.
-
-
-## J19 — Authentic Julia test qualification and pasted-report diagnosis
-
-The existing generated Julia Test harness now gives each case a labeled nested Julia testset, keeping the original lesson/transfer source and assertions. A new authentic test-qualification script generates the same nine export files from checked-in, reviewed reference implementations, then executes them in Julia 1.11 on the existing public-repository CI runner. One deliberately wrong implementation must fail with nonzero exit. These are controlled CI fixtures, **not** execution of browser learner drafts. A runtime failure is treated as a failing workflow, never simulated.
-
-Learners who run the generated test file externally can now paste up to 12,000 characters of Julia terminal output into a local-only error reader. It identifies recognized Julia syntax, undefined-name, MethodError, failed assertion, runtime-error and test-summary markers and gives practical next debugging steps, naming the selected task and matching case labels when visible. It explicitly treats all pasted reports as unauthenticated text: no verified PASS/FAIL, saved report history, grading, progress changes, automatic code execution, provider messaging, or new storage. Editing source or switching tasks clears previous report diagnostics to prevent stale interpretation.
-
-All canonical 16 lesson IDs, 32 independent transfer tasks and draft keys, previous numerical/algorithmic labs, original .jl transfer, assessment progress, source rights, privacy fences and JDoodle/OneCompiler fallbacks are preserved.
-
-
-## J20 — Focused Julia regression reproduction and stronger edge cases
-
-Learners can select one named case from the existing Julia Test suite, or paste a Julia error mentioning exactly one known test case, to prepare a focused .jl reproducer containing their current code and only that assertion. Downloads include the case number in the filename. This isolates a failure for external Julia execution and debugging; after editing, the learner downloads the full suite again to check for regressions. Pasted text remains unauthenticated and never grades, certifies, or stores results. The original editor, source, draft keys, test generator and .jl download mechanism are reused.
-
-Each of nine source-aligned function tasks has an additional edge assertion involving negative inputs, signed matrix coefficients, precise tolerances, or branch boundaries. The existing public GitHub Actions Julia 1.11 qualification runs generated full suites and focused cases against reviewed reference implementations only, and must detect an intentionally bad implementation. No learner source is run in CI or by the web app. All 16 lessons, 32 transfer exercises, progress, prior labs and compiler fallbacks remain unchanged.
-
-
-## J21 — Metamorphic properties and algorithmic transfer
-
-The original Julia code editor adds two source-authored **input-relation properties** for each of the nine currently qualified function-based coding tasks (18 relationships across Lessons 08, 09 and 13). These are meaningfully different from ordinary fixed input/output examples and J20 focused failures: learners consider what must remain invariant or change when input ordering, sign, threshold, tolerance or right-hand-side scale is transformed. For triangular solves, the properties include new-system residual reconstruction and linear right-hand-side scaling. Each property has an explicit conceptual question and optional mathematical reason. The learner can generate a selected property or both properties as Julia Test source containing the current editor draft. These files are intended for explicit execution in the learner's own Julia runtime. No browser execution, mastery, or verified grading occurs; no third-party source sharing is added.
-
-The generator reuses the existing single Test-file constructor, and CI executes all nine authored full-property suites plus nine individually selected properties against only the same reviewed reference implementations used for J19/J20. An intentionally bad checked-in function must fail a selected property to validate detection. Unsupported tasks retain the existing practice and manual success checks; no fabricated tests are invented. Existing original 16 lesson IDs, 32 transfers, task draft separation, .jl import/export, previous numeric labs, storage boundaries and compiler fallbacks are preserved.
-
-
-## J22 — Function design and executable incomplete scaffolds
-
-The original Julia coding editor now offers a contract-first design workflow for all nine function-based original/transfer tasks from Lessons 08, 09 and 13. Each source-authored design specifies its input/output interface, three distinct implementation decisions (state/algorithm/boundary handling), and optional grounded reasoning. The learner may view or copy a syntactically valid Julia function scaffold with step-specific TODO questions and a deliberate error("TODO: implement ...") in place of a solution.
-
-A learner can explicitly confirm replacing the currently selected task's draft only with that scaffold. The app writes to the already-existing per-lesson/variant draft storage before changing the visible editor; failed storage writes leave the previous code intact. Canceling confirmation also leaves the original work untouched. The skeleton shares the same Julia editor, existing test-file export, manual Julia execution, and original task identities; there is no second code editor, separate progress writer, grading claim, or unverified execution event.
-
-The existing authentic Julia 1.11 CI must check that all nine scaffold sources parse and are genuine incomplete implementations by rejecting each with the relevant source-aligned Test assertion. Fixed reference implementations continue to pass all original, focused, property and negative tests. The design stages do not certify correctness or replace independent coding.
-
-
-## J23 — Independent reusable numerical functions (Lessons 12, 14, 15, 16)
-
-Existing script-based problems in Lessons 12, 14, 15 and 16 now include a Numerical function mission alongside unchanged Original / Transfer A / Transfer B tasks. Mission 12 implements solve_checked(A,b) for arbitrary nonsingular square systems with computed residual; Mission 14 implements factorization_errors(A) for symmetric positive-definite input with independently verified QR and Cholesky residuals; Mission 15 implements fit_line(t,y) with least-squares coefficients and residual for new and noisy data; Mission 16 implements solution_sensitivity(A,b,db) comparing solves and residuals against each matching right-hand side. These four supplementary tasks require reusable functions, rather than memorizing a single matrix/vector output, and retain precise return-field contracts.
-
-The missions reuse the existing code editor, per-task transfer-draft:v1 storage with a validated mission variant, original .jl download/import, saved progress and draft recovery, and the same source-aligned Julia Test generator. Each mission includes four independently authored tests on unfamiliar data and permits existing focused-case reproduction and read-only pasted-error diagnosis. The explicit task mode is available only in the four qualifying lessons. No existing lesson or J17 transfer task was rewritten, removed or renumbered. The learner's Julia code is not executed in the browser, uploaded to CI or automatically graded.
-
-The existing authentic Julia 1.11 CI executes the four complete mission suites and their focused regression files using checked-in reference implementations, and must reject a deliberately incorrect zero-solution function. All existing nine fixed-function suites, properties, scaffolds, intentional negative checks and desktop/mobile acceptance remain required. This does not verify learner implementations or live JDoodle execution.
-
- 
-## J24 — Cross-lesson Julia program integration
-
-The Lesson 16 practice selector has a separate Cross-lesson integration task. Learners implement `analyze_perturbation(A,b,db)` using their independently saved `solve_checked(A,b)` from Lesson 12 and `solution_sensitivity(A,b,db)` from Lesson 16. The return contract is `(base_residual, change, perturbed_residual)`. The application assembles a downloadable/copyable Julia Test file containing the current integration draft and the two saved mission drafts read fresh from their ORIGINAL browser-local keys. Missing drafts are explicitly labeled and replaced by the incomplete starters in the export, not fabricated implementations. Export never modifies either source draft; switching tasks continues to use the existing storage, editor, and .jl transfer behavior.
-
-The combined file contains five source-aligned tests and must be explicitly run by the learner's own Julia runtime. No browser execution, duplicate editor, grader, progress state, network transmission, or verified mastery. CI qualifies only fixed reviewed implementations and requires both an intentionally wrong integration implementation and a broken dependency to fail authentic Julia tests. Existing 16 canonical lessons, 32 transfers, four numerical missions, rights, privacy, and compiler fallbacks remain unchanged.
+**v1.0 deliberately uses a static learning app plus local/external Julia execution.** A real browser-side execution/grading service requires separately validated provider events or a secure runtime and is not a v1 release blocker. No backend, credentials or paid provider service is part of this version. This branch is intended for review before any merge or deployment.
