@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101112">
+  <meta name="description" content="Julia Lab: focused Julia practice for Algorithmische Mathematik und Programmieren, Universität zu Köln.">
+  <title>Julia Lab — AMP</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip" href="#lesson-main">Skip to lesson</a>
+  <header class="topbar">
+    <a href="#lesson/01" class="brand" aria-label="Julia Lab home"><span class="brand-mark">j<span>.</span></span><span><strong>Julia Lab</strong><small>Algorithmische Mathematik und Programmieren</small></span></a>
+    <div class="top-right"><span class="course">Uni Köln · WS 2026/27</span><button class="quiet" id="settings-toggle" type="button">Compiler settings</button></div>
+  </header>
+  <div class="shell">
+    <nav class="sidebar" aria-label="Lessons">
+      <div class="sidebar-head"><span class="eyebrow">YOUR COURSE</span><h2>Learning path</h2><div class="progress-bar"><span id="progress-fill"></span></div><p id="progress-label">0 of 16 lessons reviewed</p><button type="button" class="continue-button" id="continue-lesson">Continue lesson 01 · Variables & numbers</button><p id="continue-detail" class="continue-detail">Übung 1 essentials</p></div>
+      <div id="nav-items"></div>
+      <p class="sidebar-foot">Practice material only. Consult the official weekly exercise sheets for required submissions.</p>
+    </nav>
+    <main id="lesson-main">
+      <div class="lesson-meta" id="lesson-meta"></div>
+      <h1 id="lesson-title" tabindex="-1"></h1>
+      <p class="lead" id="lesson-goal"></p>
+      <section class="paper" aria-labelledby="theory-title">
+        <div class="section-title"><span class="section-num">01</span><h2 id="theory-title">Understand the concept</h2></div>
+        <p id="lesson-theory"></p>
+        <div class="code-label">JULIA EXAMPLE</div>
+        <pre class="code"><code id="example-code"></code></pre>
+      </section>
+      <section class="paper" aria-labelledby="practice-title">
+        <div class="section-title"><span class="section-num">02</span><h2 id="practice-title">Quick checks</h2></div>
+        <p class="section-intro">Answer each question before moving on. Your selections are saved locally.</p>
+        <div id="questions"></div>
+        <p class="concept-brief" id="concept-brief" role="status" aria-live="polite"></p>
+      </section>
+      <section class="paper" aria-labelledby="coding-title">
+        <div class="section-title"><span class="section-num">03</span><h2 id="coding-title">Write Julia yourself</h2></div>
+        <div class="practice-switch">
+          <label for="practice-mode">Coding task</label>
+          <select id="practice-mode" aria-describedby="draft-help">
+            <option value="original">Original lesson challenge</option>
+            <option value="a">Transfer A</option>
+            <option value="b">Transfer B</option>
+            <option value="mission" hidden disabled>Numerical function mission</option>
+            <option value="integration" hidden disabled>Cross-lesson integration</option>
+          </select>
+        </div>
+        <p id="challenge-text"></p>
+        <div class="code-label">STARTER FILE <button class="text-button" id="copy-starter" type="button">Copy code</button></div>
+        <pre class="code"><code id="starter-code"></code></pre>
+        <div class="draft-title">
+          <label for="scratch-code">YOUR CODE · SAVED LOCALLY</label>
+          <span class="draft-caption">Draft only · not executed</span>
+        </div>
+        <textarea id="scratch-code" class="scratch-editor" rows="11" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="draft-help"></textarea>
+        <div class="draft-actions" role="group" aria-label="Julia source file tools">
+          <button type="button" class="secondary" id="copy-draft">Copy code</button>
+          <button type="button" class="secondary" id="download-draft">Download .jl</button>
+          <button type="button" class="secondary" id="import-draft">Import .jl</button>
+          <button type="button" class="quiet" id="reset-draft">Reset to starter</button>
+          <input type="file" accept=".jl,text/plain" id="import-file" hidden aria-label="Julia source file to import">
+        </div>
+        <button type="button" class="primary jump-to-compiler" id="go-to-compiler">Go to compiler and alternatives ↓</button>
+        <p class="section-intro" id="draft-help">Your work is saved per lesson. Copy it to an online Julia compiler or download a .jl file for VS Code. Importing a .jl file replaces only the current lesson's draft after confirmation. None of these actions executes or grades code.</p>
+        <p class="feedback" id="draft-feedback" role="status" aria-live="polite"></p>
+        <p class="section-intro"><strong>Success criteria:</strong> <span id="challenge-checks"></span></p>
+        <section id="integration-handoff" class="integration-handoff" aria-labelledby="integration-heading" hidden>
+          <h3 id="integration-heading">Combine your saved Julia functions</h3>
+          <dl class="integration-source-status">
+            <div><dt>Lesson 12 · solve_checked</dt><dd id="integration-solver-state"></dd></div>
+            <div><dt>Lesson 16 · solution_sensitivity</dt><dd id="integration-sensitivity-state"></dd></div>
+          </dl>
+          <p class="integration-instruction">The file includes your current integration code and the two saved mission drafts. If a draft is missing, its incomplete starter is used. Export never changes existing drafts.</p>
+          <div class="external-test-actions">
+            <button id="integration-download" class="secondary" type="button">Download combined Julia tests</button>
+            <button id="integration-copy" class="secondary" type="button">Copy combined Julia tests</button>
+          </div>
+          <details id="integration-preview-details">
+            <summary>View combined source and tests</summary>
+            <pre class="code"><code id="integration-preview"></code></pre>
+          </details>
+          <p class="feedback" role="status" aria-live="polite" id="integration-feedback"></p>
+        </section>
+        <div id="external-tests" class="external-tests" hidden>
+          <h3 id="external-test-heading"></h3>
+          <ol id="external-test-cases"></ol>
+          <div class="external-test-actions" role="group" aria-label="External Julia test script">
+            <button id="external-test-download" type="button" class="secondary">Download Julia test file</button>
+            <button id="external-test-copy" type="button" class="secondary">Copy Julia test file</button>
+          </div>
+          <details id="external-test-details">
+            <summary>View generated Julia tests</summary>
+            <pre class="code"><code id="external-test-preview"></code></pre>
+          </details>
+          <p class="external-test-run">Open the downloaded .jl file with Julia to run its Test assertions. This app only prepares the file; it does not execute your code, receive the results, or award mastery. A test failure identifies a case to investigate, not the only possible defect.</p>
+          <p id="external-test-feedback" class="feedback" role="status" aria-live="polite"></p>
+          <div class="external-focus">
+            <label for="external-focus-case">Reproduce one test case</label>
+            <select id="external-focus-case"><option value="">Choose a case</option></select>
+            <div class="external-test-actions">
+              <button id="external-focus-download" type="button" class="secondary" disabled>Download focused .jl</button>
+              <button id="external-focus-copy" type="button" class="secondary" disabled>Copy focused .jl</button>
+            </div>
+            <details id="external-focus-details">
+              <summary>View focused Julia test</summary>
+              <pre class="code"><code id="external-focus-preview"></code></pre>
+            </details>
+            <p id="external-focus-feedback" class="feedback" role="status" aria-live="polite"></p>
+            <p class="external-focus-instruction">Run the selected case in Julia to reproduce a failure. After editing your code, run the full test file to check for regressions.</p>
+          </div>
+          <section id="algorithm-design" class="algorithm-design" aria-labelledby="algorithm-design-heading" hidden>
+            <h3 id="algorithm-design-heading">Design the function</h3>
+            <dl class="algorithm-contract">
+              <div><dt>Inputs</dt><dd id="algorithm-contract-input"></dd></div>
+              <div><dt>Return value</dt><dd id="algorithm-contract-output"></dd></div>
+            </dl>
+            <ol id="algorithm-design-stages"></ol>
+            <details id="algorithm-scaffold-details">
+              <summary>View incomplete Julia scaffold</summary>
+              <pre class="code"><code id="algorithm-scaffold"></code></pre>
+            </details>
+            <div class="external-test-actions">
+              <button id="algorithm-scaffold-copy" type="button" class="secondary">Copy scaffold</button>
+              <button id="algorithm-scaffold-use" type="button" class="secondary">Use scaffold in current draft</button>
+            </div>
+            <p id="algorithm-design-feedback" class="feedback" role="status" aria-live="polite"></p>
+          </section>
+          <section id="property-lab" class="property-lab" aria-labelledby="property-heading" hidden>
+            <h3 id="property-heading">Test an algorithm property</h3>
+            <label for="property-choice">Relationship to test</label>
+            <select id="property-choice"><option value="">Choose a property</option></select>
+            <p id="property-question"></p>
+            <details id="property-reason" hidden>
+              <summary>Explain the expected relationship</summary>
+              <p id="property-reason-text"></p>
+            </details>
+            <div class="external-test-actions">
+              <button id="property-one-download" type="button" class="secondary" disabled>Download selected property</button>
+              <button id="property-all-download" type="button" class="secondary" disabled>Download both properties</button>
+            </div>
+            <details id="property-code-details" hidden>
+              <summary>View property test source</summary>
+              <pre class="code"><code id="property-source"></code></pre>
+            </details>
+            <p id="property-feedback" class="feedback" role="status" aria-live="polite"></p>
+          </section>
+          <details id="external-report-details">
+            <summary>Inspect Julia terminal errors</summary>
+            <label for="external-report-input">Pasted Julia Test output (not verified)</label>
+            <textarea id="external-report-input" rows="6" maxlength="12000" spellcheck="false" placeholder="Paste a Test Summary or first Julia error block. Do not paste secrets."></textarea>
+            <button id="external-report-inspect" class="secondary" type="button">Inspect pasted output</button>
+            <div id="external-report-results" role="status" aria-live="polite"></div>
+          </details>
+        </div>
+        <details id="transfer-plan" hidden><summary>Planning cue</summary><p></p></details>
+        <details id="transfer-tests" hidden><summary>Additional case to test</summary><p></p></details>
+        <details id="hint-1"><summary>Hint 1 · Concept</summary><p></p></details>
+        <details id="hint-2"><summary>Hint 2 · Approach</summary><p></p></details>
+        <details id="hint-3"><summary>Hint 3 · Last step</summary><p></p></details>
+      </section>
+      <section class="paper numerical-explorer" id="numerical-explorer" aria-labelledby="numerical-heading" hidden>
+        <div class="section-title"><span class="section-num">04</span><h2 id="numerical-heading">Explore norms and transformations</h2></div>
+        <div class="numerical-controls">
+          <label>Norm
+            <select id="num-norm">
+              <option value="one">ℓ₁</option>
+              <option value="two">ℓ₂</option>
+              <option value="infinity">ℓ∞</option>
+            </select>
+          </label>
+          <label>Matrix
+            <select id="num-matrix">
+              <option value="identity">Identity</option>
+              <option value="stretch">Stretch (2, 1/2)</option>
+              <option value="shear">Horizontal shear</option>
+              <option value="rotation">Quarter turn</option>
+              <option value="singular">Singular projection</option>
+            </select>
+          </label>
+          <label>v₁: <output id="num-x-value">1</output>
+            <input id="num-x" type="range" min="-3" max="3" step="0.5" value="1">
+          </label>
+          <label>v₂: <output id="num-y-value">1</output>
+            <input id="num-y" type="range" min="-3" max="3" step="0.5" value="1">
+          </label>
+        </div>
+        <div class="numerical-layout">
+          <svg id="numerical-plot" role="img" viewBox="-7 -7 14 14" aria-label="Two-dimensional vector and norm boundary visualization">
+            <title>Vector and norm boundary</title>
+            <g id="numerical-plot-content"></g>
+          </svg>
+          <div class="numerical-details">
+            <div class="numerical-legend">
+              <span><i class="numeric-legend-input"></i>v</span>
+              <span><i class="numeric-legend-output"></i>A·v</span>
+              <span><i class="numeric-legend-boundary"></i>Norm boundary</span>
+              <span><i class="numeric-legend-direct"></i>A(boundary)</span>
+              <span id="num-inverse-legend"><i class="numeric-legend-inverse"></i>A⁻¹(boundary)</span>
+            </div>
+            <dl class="numerical-values">
+              <div><dt>Matrix</dt><dd id="num-matrix-name"></dd></div>
+              <div><dt>v</dt><dd id="num-vector"></dd></div>
+              <div><dt>A·v</dt><dd id="num-mapped"></dd></div>
+              <div><dt>||v||<sub id="num-norm-name">ℓ₂</sub></dt><dd id="num-length"></dd></div>
+              <div><dt>||A·v||<sub id="num-norm-mapped-name">ℓ₂</sub></dt><dd id="num-mapped-length"></dd></div>
+              <div><dt>det(A)</dt><dd id="num-determinant"></dd></div>
+            </dl>
+            <p class="numerical-state" id="num-inverse-state"></p>
+            <button class="secondary" id="num-reset" type="button">Reset experiment</button>
+            <p id="num-storage-status" class="feedback" role="status"></p>
+          </div>
+        </div>
+        <p class="numerical-note">The boundary is ||v|| = 1 in the chosen norm. Its direct image A(boundary) generally differs from the inverse image A⁻¹(boundary), which is the unit boundary of ||A·v||. These are JavaScript numerical illustrations, not Julia executions or mathematical proofs.</p>
+      </section>
+      <section class="paper elimination-lab" id="elimination-lab" aria-labelledby="elim-heading" hidden>
+        <div class="section-title"><span class="section-num">04</span><h2 id="elim-heading">Trace Gaussian elimination</h2></div>
+        <div class="elim-controls">
+          <label for="elim-system">Linear system</label>
+          <select id="elim-system">
+            <option value="regular">3×3 linear system</option>
+            <option value="swap">Zero leading pivot</option>
+            <option value="small">Small leading pivot</option>
+            <option value="singular">Singular system</option>
+          </select>
+          <label for="elim-pivot">Pivot selection</label>
+          <select id="elim-pivot">
+            <option value="partial">Partial pivoting</option>
+            <option value="none">Without pivoting</option>
+          </select>
+        </div>
+        <p class="elim-step" id="elim-stage" aria-live="polite"></p>
+        <p class="elim-operation" id="elim-operation" aria-live="polite"></p>
+        <div class="elim-matrix-scroll">
+          <table class="elim-matrix" aria-label="Augmented matrix A and b at the selected elimination step">
+            <thead><tr><th scope="col">Row</th><th scope="col">a₁</th><th scope="col">a₂</th><th scope="col">a₃</th><th scope="col">b</th></tr></thead>
+            <tbody id="elim-matrix-body"></tbody>
+          </table>
+        </div>
+        <div class="elim-step-actions" role="group" aria-label="Elimination steps">
+          <button class="secondary" id="elim-start" type="button" disabled>First</button>
+          <button class="secondary" id="elim-prev" type="button" disabled>Previous step</button>
+          <button class="primary" id="elim-next" type="button">Next step</button>
+          <button class="secondary" id="elim-end" type="button">Last</button>
+        </div>
+        <div id="elim-solution" class="elim-result" hidden aria-live="polite">
+          <p id="elim-solution-text"></p>
+          <p id="elim-residual"></p>
+        </div>
+        <details class="elim-julia-details">
+          <summary>Julia code for this system</summary>
+          <pre class="code"><code id="elim-julia"></code></pre>
+          <button class="secondary" id="elim-copy" type="button">Copy Julia code</button>
+          <p id="elim-copy-status" class="feedback" role="status"></p>
+        </details>
+        <p id="elim-save-status" class="feedback" role="status"></p>
+        <p class="elim-disclaimer">Row operations and residuals are calculated in this browser using JavaScript floating-point arithmetic. Run the separate Julia example in a compiler to compare results. A small residual does not by itself guarantee a small solution error.</p>
+      </section>
+      <section class="paper precision-lab" id="precision-lab" aria-labelledby="precision-heading" hidden>
+        <div class="section-title"><span class="section-num">04</span><h2 id="precision-heading">Floating-point error and convergence</h2></div>
+        <div class="precision-controls">
+          <label for="precision-x">Evaluation point x</label>
+          <select id="precision-x"><option value="0.5">0.5</option><option value="1">1</option><option value="2">2</option></select>
+          <label for="precision-step">Step exponent k: <output id="precision-k">3</output></label>
+          <input id="precision-step" type="range" min="1" max="16" step="1" value="3" aria-describedby="precision-h"/>
+        </div>
+        <p id="precision-problem" class="precision-formula"></p>
+        <p class="precision-formula">Step size h = <strong id="precision-h"></strong> · Reference cos(x) = <strong id="precision-reference"></strong></p>
+        <svg id="precision-chart" role="img" viewBox="0 0 560 240" aria-label="Absolute approximation error on a logarithmic scale for 16 decreasing step sizes">
+          <title>Finite-difference error versus step size</title>
+          <g id="precision-chart-content"></g>
+        </svg>
+        <div class="precision-legend" aria-label="Error graph series">
+          <span class="precision-legend-forward">Forward difference</span>
+          <span class="precision-legend-central">Central difference</span>
+          <span class="precision-legend-stabilized">Stable forward identity</span>
+        </div>
+        <p class="precision-graph-label">Horizontal: exponent k in h = 10⁻ᵏ. Vertical: absolute error (logarithmic). Rounded-zero errors cannot be displayed on a log axis.</p>
+        <div class="precision-table-scroll">
+          <table class="precision-table">
+            <caption>Approximations at the selected step size</caption>
+            <thead><tr><th scope="col">Method</th><th scope="col">Estimate</th><th scope="col">Absolute error</th><th scope="col">Observed order</th></tr></thead>
+            <tbody id="precision-comparison"></tbody>
+          </table>
+        </div>
+        <p class="precision-rate-definition" id="precision-rate-definition"></p>
+        <p class="precision-warning" id="precision-warning" role="status" aria-live="polite"></p>
+        <details class="precision-code-details">
+          <summary>Julia code for this comparison</summary>
+          <pre class="code"><code id="precision-julia"></code></pre>
+          <button type="button" class="secondary" id="precision-copy">Copy Julia code</button>
+          <p class="feedback" id="precision-copy-status" role="status"></p>
+        </details>
+        <button class="secondary precision-reset" id="precision-reset" type="button">Reset experiment</button>
+        <p class="feedback" id="precision-save-status" role="status"></p>
+        <p class="precision-scope">Calculated with JavaScript Float64-like binary64 arithmetic, using cos(x) as a floating-point reference. These measurements are not Julia execution, an exact-error oracle, convergence proof, or coding mastery.</p>
+      </section>
+      <section class="paper fitting-lab" id="fitting-lab" aria-labelledby="fit-heading" hidden>
+        <div class="section-title"><span class="section-num">04</span><h2 id="fit-heading">Explore linear least squares</h2></div>
+        <div class="fit-controls">
+          <label for="fit-dataset">Measurements</label>
+          <select id="fit-dataset">
+            <option value="exact">Exact line</option>
+            <option value="noisy">Noisy measurements</option>
+            <option value="outlier">With an outlier</option>
+            <option value="singular">Repeated x values</option>
+          </select>
+          <label for="fit-intercept">Intercept a: <output id="fit-intercept-value">0</output></label>
+          <input id="fit-intercept" type="range" min="-3" max="6" step="0.01" value="0"/>
+          <label for="fit-slope">Slope b: <output id="fit-slope-value">1</output></label>
+          <input id="fit-slope" type="range" min="-1" max="5" step="0.01" value="1"/>
+          <label for="fit-residuals">Show residuals</label>
+          <input id="fit-residuals" type="checkbox" checked/>
+        </div>
+        <svg id="fit-chart" role="img" viewBox="0 0 620 335" aria-label="Measurements, selected line, least-squares reference and residuals">
+          <title>Linear least-squares fit</title>
+          <g id="fit-chart-content"></g>
+        </svg>
+        <div class="fit-legend">
+          <span class="fit-legend-points">Measurements</span>
+          <span class="fit-legend-candidate">Your line</span>
+          <span class="fit-legend-reference">Least-squares comparison</span>
+          <span class="fit-legend-residual">Residuals</span>
+        </div>
+        <dl class="fit-values">
+          <div><dt>Sum of squared residuals (SSE)</dt><dd id="fit-sse"></dd></div>
+          <div><dt>Residual 2-norm</dt><dd id="fit-norm"></dd></div>
+          <div><dt>Gradient (∂SSE/∂a, ∂SSE/∂b)</dt><dd id="fit-gradient"></dd></div>
+          <div><dt>Minimum SSE</dt><dd id="fit-optimum-sse"></dd></div>
+          <div><dt>SSE above minimum</dt><dd id="fit-gap"></dd></div>
+        </dl>
+        <div class="fit-reference">
+          <strong id="fit-reference-title"></strong>
+          <p id="fit-reference-text"></p>
+          <button class="secondary" id="fit-apply" type="button">Use least-squares fit</button>
+          <p id="fit-apply-feedback" class="feedback" role="status"></p>
+        </div>
+        <div class="fit-data-scroll">
+          <table class="fit-data-table">
+            <caption>Residuals for the selected line: observed − predicted</caption>
+            <thead><tr><th scope="col">x</th><th scope="col">Observed y</th><th scope="col">Predicted y</th><th scope="col">Residual</th></tr></thead>
+            <tbody id="fit-data-rows"></tbody>
+          </table>
+        </div>
+        <details class="fit-code-details">
+          <summary>Julia least-squares example</summary>
+          <pre class="code"><code id="fit-julia"></code></pre>
+          <button type="button" class="secondary" id="fit-copy">Copy Julia code</button>
+          <p class="feedback" id="fit-copy-status" role="status"></p>
+        </details>
+        <button type="button" class="secondary fit-reset" id="fit-reset">Reset experiment</button>
+        <p class="feedback" id="fit-storage-status" role="status"></p>
+        <p class="fit-scope">Fitted parameters and errors are calculated in the browser using JavaScript binary64. This is not Julia execution, a proof of numerical stability, or coding mastery.</p>
+      </section>
+      <section class="paper program-trace" id="program-trace" aria-labelledby="trace-heading" hidden>
+        <div class="section-title"><span class="section-num">04</span><h2 id="trace-heading">Predict program state</h2></div>
+        <h3 id="trace-title"></h3>
+        <pre class="code"><code id="trace-code"></code></pre>
+        <p class="trace-iteration" id="trace-iteration"></p>
+        <p id="trace-context"></p>
+        <p class="trace-before"><span id="trace-state-name">total</span> before iteration: <strong id="trace-before"></strong></p>
+        <div id="trace-prediction-fields">
+          <label for="trace-input" id="trace-predict-label">Predict the next value</label>
+          <input id="trace-input" type="number" step="1" inputmode="numeric" autocomplete="off" min="-100000" max="100000" aria-describedby="trace-explanation"/>
+          <div id="trace-branch-wrap" hidden>
+            <label for="trace-branch">Prediction for <code id="trace-condition"></code></label>
+            <select id="trace-branch">
+              <option value="">Choose true or false</option>
+              <option value="true">true</option>
+              <option value="false">false</option>
+            </select>
+          </div>
+          <div class="trace-actions">
+            <button type="button" class="primary" id="trace-check">Check prediction</button>
+            <button type="button" class="secondary" id="trace-next" disabled>Next iteration</button>
+          </div>
+        </div>
+        <p id="trace-explanation" class="trace-feedback" aria-live="polite" role="status"></p>
+        <p id="trace-finish" class="trace-finish" hidden></p>
+        <button type="button" class="quiet" id="trace-reset">Reset trace</button>
+        <div class="trace-history-wrap">
+          <table class="trace-history">
+            <caption>Completed iterations</caption>
+            <thead><tr><th scope="col">Iteration</th><th scope="col">Loop values</th><th scope="col">Before</th><th scope="col">After</th></tr></thead>
+            <tbody id="trace-history"></tbody>
+          </table>
+          <p id="trace-history-empty">No iterations completed.</p>
+        </div>
+        <p id="trace-save-status" class="feedback" role="status"></p>
+        <p class="trace-scope">Predictions are checked against the shown program's modeled state. This does not execute learner-authored Julia code or award coding mastery.</p>
+      </section>
+      <section class="paper factor-lab" id="factor-lab" aria-labelledby="factor-heading" hidden>
+        <div class="section-title"><span class="section-num">04</span><h2 id="factor-heading">Explore QR and Cholesky</h2></div>
+        <div class="factor-controls">
+          <label for="factor-case">Matrix</label>
+          <select id="factor-case">
+            <option value="spd">Symmetric positive-definite</option>
+            <option value="nonsymmetric">Non-symmetric invertible</option>
+            <option value="indefinite">Symmetric indefinite</option>
+            <option value="rankdef">Rank-deficient</option>
+            <option value="close">Nearly dependent columns</option>
+          </select>
+          <label for="factor-method">Factorization method</label>
+          <select id="factor-method">
+            <option value="qr">QR · orthogonal columns</option>
+            <option value="cholesky">Cholesky · positive definiteness</option>
+          </select>
+        </div>
+        <p id="factor-progress" class="factor-progress" aria-live="polite"></p>
+        <p id="factor-operation" class="factor-operation"></p>
+        <p id="factor-explanation" class="factor-explanation"></p>
+        <div class="factor-matrices">
+          <div>
+            <h3>A</h3>
+            <table aria-label="Original matrix" class="factor-matrix"><tbody id="factor-a"></tbody></table>
+          </div>
+          <div>
+            <h3 id="factor-left-label">Q</h3>
+            <table aria-label="Left factor" class="factor-matrix"><tbody id="factor-left"></tbody></table>
+          </div>
+          <div id="factor-right-group">
+            <h3>R</h3>
+            <table aria-label="Upper triangular factor" class="factor-matrix"><tbody id="factor-right"></tbody></table>
+          </div>
+        </div>
+        <div class="factor-actions" role="group" aria-label="Factorization steps">
+          <button type="button" class="secondary" id="factor-first">First</button>
+          <button type="button" class="secondary" id="factor-prev">Previous step</button>
+          <button type="button" class="primary" id="factor-next">Next step</button>
+          <button type="button" class="secondary" id="factor-last">Last</button>
+        </div>
+        <div class="factor-result" id="factor-result" hidden aria-live="polite">
+          <p id="factor-status"></p>
+          <p id="factor-reconstruction"></p>
+          <p id="factor-orthogonality"></p>
+          <p id="factor-warning"></p>
+        </div>
+        <details class="factor-code">
+          <summary>Julia factorization example</summary>
+          <pre class="code"><code id="factor-julia"></code></pre>
+          <button type="button" class="secondary" id="factor-copy">Copy Julia code</button>
+          <p class="feedback" id="factor-copy-status" role="status"></p>
+        </details>
+        <button type="button" class="secondary factor-reset" id="factor-reset">Reset experiment</button>
+        <p id="factor-save-status" class="feedback" role="status"></p>
+        <p class="factor-scope">Calculations use JavaScript binary64 on fixed 2×2 matrices. Norms and failure classifications are numerical examples, not Julia execution, general factorization proofs or coding grades.</p>
+      </section>
+      <section class="paper sensitivity-lab" id="sensitivity-lab" aria-labelledby="sensitivity-heading" hidden>
+        <div class="section-title"><span class="section-num">04</span><h2 id="sensitivity-heading">Explore conditioning and solution sensitivity</h2></div>
+        <div class="sensitivity-controls">
+          <label for="sensitivity-scale">Second diagonal entry a₂₂</label>
+          <select id="sensitivity-scale">
+            <option value="1">1 (identity matrix)</option>
+            <option value="0.1">0.1</option>
+            <option value="0.01">0.01</option>
+            <option value="0.001">0.001</option>
+            <option value="0.000001">0.000001 (AMP comparison)</option>
+          </select>
+          <label for="sensitivity-delta">Right-hand-side change δb₂</label>
+          <select id="sensitivity-delta">
+            <option value="0">0 (no perturbation)</option>
+            <option value="0.000001">0.000001 (AMP comparison)</option>
+            <option value="0.00001">0.00001</option>
+            <option value="0.0001">0.0001</option>
+          </select>
+          <label for="sensitivity-rhs">Right-hand side b</label>
+          <select id="sensitivity-rhs">
+            <option value="exercise">AMP exercise b = [1, 2]</option>
+            <option value="direction">Direction comparison b = [1, 0]</option>
+          </select>
+        </div>
+        <div class="sensitivity-equations">
+          <p id="sensitivity-matrix"></p>
+          <p id="sensitivity-b"></p>
+          <p id="sensitivity-deltab"></p>
+        </div>
+        <dl class="sensitivity-metrics">
+          <div><dt>Original solution x</dt><dd id="sensitivity-x"></dd></div>
+          <div><dt>Perturbed solution x̃</dt><dd id="sensitivity-xnew"></dd></div>
+          <div><dt>Solution difference x̃ − x</dt><dd id="sensitivity-dx"></dd></div>
+          <div><dt>Absolute solution change ||x̃ − x||₂</dt><dd id="sensitivity-absolute"></dd></div>
+          <div><dt>Residual against original b: ||Ax̃ − b||₂</dt><dd id="sensitivity-residual"></dd></div>
+          <div><dt>Residual against perturbed b + δb</dt><dd id="sensitivity-residual-perturbed"></dd></div>
+          <div><dt>Relative data change ||δb||₂ / ||b||₂</dt><dd id="sensitivity-relb"></dd></div>
+          <div><dt>Relative solution change ||x̃−x||₂ / ||x||₂</dt><dd id="sensitivity-relx"></dd></div>
+          <div><dt>Condition number κ₂(A)</dt><dd id="sensitivity-cond"></dd></div>
+          <div><dt>Relative-error upper bound κ₂ · relative data change</dt><dd id="sensitivity-bound"></dd></div>
+          <div><dt>Observed relative amplification</dt><dd id="sensitivity-amplification"></dd></div>
+        </dl>
+        <p id="sensitivity-direction" class="sensitivity-direction" aria-live="polite"></p>
+        <svg id="sensitivity-chart" role="img" viewBox="0 0 600 234" aria-label="Absolute solution change across five diagonal matrix scales on a logarithmic axis">
+          <title>Solution sensitivity across matrices</title>
+          <g id="sensitivity-plot"></g>
+        </svg>
+        <p id="sensitivity-chart-note" class="sensitivity-chart-note"></p>
+        <div class="sensitivity-table-scroll">
+          <table class="sensitivity-table">
+            <caption>Compare all five matrices at the selected b and δb</caption>
+            <thead><tr><th scope="col">a₂₂</th><th scope="col">κ₂(A)</th><th scope="col">||x̃−x||₂</th><th scope="col">Relative solution change</th><th scope="col">Observed amplification</th></tr></thead>
+            <tbody id="sensitivity-comparison"></tbody>
+          </table>
+        </div>
+        <details class="sensitivity-code">
+          <summary>Julia code for this system</summary>
+          <pre class="code"><code id="sensitivity-julia"></code></pre>
+          <button type="button" class="secondary" id="sensitivity-copy">Copy Julia code</button>
+          <p id="sensitivity-copy-result" class="feedback" role="status"></p>
+        </details>
+        <button type="button" class="secondary sensitivity-reset" id="sensitivity-reset">Reset experiment</button>
+        <p id="sensitivity-storage" class="feedback" role="status"></p>
+        <p class="sensitivity-scope">The condition number is a worst-case relative-sensitivity bound, not an observed error for every b. Solutions use the diagonal formula evaluated in JavaScript binary64; tiny roundoff differences may occur. This is not Julia execution, a solver-stability test, or coding mastery.</p>
+      </section>
+      <section class="paper repair-lab" aria-labelledby="repair-section-title">
+        <div class="section-title"><span class="section-num" id="repair-section-number">04</span><h2 id="repair-section-title">Debug a Julia program</h2></div>
+        <h3 id="repair-title"></h3>
+        <p id="repair-objective"></p>
+        <p class="repair-target"><strong>Expected behavior:</strong> <span id="repair-expected"></span></p>
+        <label for="repair-editor">Repair this code</label>
+        <textarea id="repair-editor" class="scratch-editor" rows="10" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="repair-expected repair-feedback"></textarea>
+        <div class="repair-actions">
+          <button type="button" class="secondary" id="repair-compare">Compare with example</button>
+          <button type="button" class="secondary" id="repair-copy">Copy repair code</button>
+          <button type="button" class="quiet" id="repair-reset">Reset repair</button>
+        </div>
+        <p class="feedback repair-feedback" id="repair-feedback" role="status" aria-live="polite"></p>
+        <details id="repair-hint-1"><summary>Hint 1</summary><p></p></details>
+        <details id="repair-hint-2"><summary>Hint 2</summary><p></p></details>
+        <details id="repair-reference">
+          <summary>Show one reference repair</summary>
+          <pre class="code"><code id="repair-reference-code"></code></pre>
+          <p id="repair-cause"></p>
+        </details>
+      </section>
+      <div class="lesson-footer">
+        <button type="button" class="secondary" id="previous">← Previous</button>
+        <button type="button" class="primary" id="next">Next lesson →</button>
+      </div>
+    </main>
+    <aside class="compiler" aria-label="Julia code execution" id="compiler-panel">
+      <div class="compiler-heading"><div><span class="eyebrow">WORKSPACE</span><h2 id="compiler-title" tabindex="-1">Run your Julia code</h2></div><span class="runtime-tag" id="runtime-state">Checking editor…</span></div>
+      <p class="compiler-explainer">Use the embedded editor when available. Copy your code draft into it. Execution happens at JDoodle, not on this page; iframe loading is not proof that Julia ran.</p>
+      <div id="embed-slot">
+        <div class="placeholder" id="embed-placeholder"><span class="placeholder-icon">{ }</span><strong>Loading course compiler</strong><p>The JDoodle editor is supplied for the course. If loading fails, use an external link below.</p></div>
+      </div>
+      <div class="compiler-links">
+        <a href="https://www.jdoodle.com/online-compiler-julia" rel="noopener noreferrer" target="_blank">Open JDoodle ↗</a>
+        <a href="https://onecompiler.com/julia" rel="noopener noreferrer" target="_blank">Open OneCompiler ↗</a>
+      </div>
+      <div class="fallback-help">
+        <strong>JDoodle cannot execute?</strong>
+        If you see “Unable to process your request,” copy or download your code and run it in OneCompiler or locally with Julia. A provider error is not a failed programming exercise.
+        <button type="button" class="quiet" id="back-to-draft">Return to my code ↑</button>
+      </div>
+      <section class="result-panel" aria-labelledby="result-title">
+        <h3 id="result-title">Check practice output</h3>
+        <p>After running Julia, paste its printed output here. This compares text only; it cannot confirm code execution, test other inputs or award coding mastery.</p>
+        <label for="output-input">Output from Julia</label>
+        <textarea id="output-input" spellcheck="false" rows="4" placeholder="Paste Julia output…"></textarea>
+        <button type="button" class="secondary full" id="check-output">Compare output</button>
+        <p class="feedback" id="output-feedback" role="status" aria-live="polite"></p>
+      </section>
+      <details id="bridge-diagnostics" class="bridge-diagnostics">
+        <summary>Connection diagnostics (optional)</summary>
+        <p>JDoodle documents ready, code-change and output notifications, but this app has not validated the exact payload contract. This view counts messages only if they come from the configured JDoodle iframe. It never captures source code or output, and never grants coding mastery.</p>
+        <p id="bridge-status" role="status" aria-live="polite">No matching frame messages observed.</p>
+        <button type="button" id="copy-diag" class="secondary full">Copy safe diagnostic summary</button>
+        <p id="bridge-feedback" class="feedback" role="status"></p>
+      </details>
+      <section id="settings-panel" class="settings-panel" hidden>
+        <h3>Configure JDoodle</h3>
+        <p>The supplied course JDoodle embed is selected by default. Enter a different JDoodle embed URL to override it in this browser. Editor loading is not confirmation of Julia execution.</p>
+        <label for="embed-url">JDoodle embed URL</label>
+        <input id="embed-url" type="url" inputmode="url" placeholder="https://www.jdoodle.com/embed/v1/…" autocomplete="off">
+        <button type="button" class="primary full" id="save-embed">Save compiler link</button>
+        <button type="button" class="quiet full" id="clear-embed">Disable embedded editor</button>
+        <button type="button" class="quiet full" id="default-embed">Restore course editor</button>
+        <p class="feedback" id="settings-feedback" role="status"></p>
+        <a href="https://www.jdoodle.com/docs/embeds/create-an-embed" target="_blank" rel="noopener noreferrer">JDoodle embed setup guide ↗</a>
+      </section>
+      <div class="privacy-note">No Julia code is executed by Julia Lab. If enabled, the embedded JDoodle service loads from a third party and executes code under JDoodle's terms. Lesson choices and drafts remain in this browser. A successful iframe or script load is not evidence of an executed Julia program.</div>
+    </aside>
+  </div>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>

@@ -1,5 +1,66 @@
-# Julia Lab
+# Julia Lab — AMP (v1.0)
 
-Course-focused Julia practice for Algorithmische Mathematik und Programmieren (AMP), Universität zu Köln, WS 2026/27.
+A static, browser-based Julia learning companion for **Algorithmische Mathematik und Programmieren**, Universität zu Köln, WS 2026/27. It is independent study material, **not** an official course tool or homework submission system.
 
-This repository is being initialized for a lightweight, static learning app. Course questions and coding exercises are supplementary; they do not replace official assignment instructions.
+## Start
+
+The entire application is in this repository; no account, database, build step, paid API or server-side service is required.
+
+1. Start a local static server in the repository directory:
+   - **Windows:** `py -m http.server 5173`
+   - **macOS/Linux:** `python3 -m http.server 5173`
+2. Open **http://localhost:5173** in a browser.
+3. Select **Continue lesson**. The first six lessons cover the essentials for Übung 1.
+4. Write Julia in the lesson editor. Your drafts and multiple-choice answers are saved **in this browser only**.
+5. Run Julia code in an external compiler or install Julia and run exported `.jl` files locally. The website itself **does not execute or grade Julia code**.
+
+## What is included
+
+- **16 lessons**, 48 concept questions with explanations and 16 original coding challenges.
+- **32 independent transfer exercises**, 16 debugging tasks and numerical practice missions.
+- Interactive experiments for norms/matrices, Gaussian elimination, floating-point precision, least-squares fitting, algorithm traces, QR/Cholesky and numerical sensitivity.
+- One lesson code workspace, saved per task. Import/export local `.jl` files and explicitly confirm resets or scaffold replacements.
+- Julia `Test` script downloads for supported callable functions: complete suites, selected cases, algorithm properties and a cross-lesson integration exercise.
+- External JDoodle/OneCompiler access, with an account-owned embedded JDoodle editor configured by default. The embedded service's live Julia execution is **not reliable or verified**.
+
+The browser computes interactive mathematical illustrations in JavaScript, independently of the learner's Julia code. Correct multiple-choice answers are concept review, **not evidence of programming mastery**.
+
+## Run the Julia tests
+
+For supported function tasks, select the exercise and download its **Julia test file**. Run it using a local Julia installation:
+
+```sh
+julia amp-julia-lab-lesson-XX-tests.jl
+```
+
+Use the **actual filename** downloaded by the app; the name above is illustrative. These generated scripts include your current code draft and run Julia's standard `Test` assertions. A successful local run is evidence for those specific test cases, not a mathematical proof or official course grade. For ordinary script/plot tasks without generated tests, execute the exported `.jl` file yourself and inspect the result.
+
+Some plotting lessons require `Plots.jl`; install it in a local Julia environment with `import Pkg; Pkg.add("Plots")`. Whether it works in JDoodle depends on the external provider and is not guaranteed.
+
+## Verification
+
+The exact J24 branch commit `1b86d20a2f8dc16200bcf2fa5a61d10a7d548ea2` passed [GitHub Actions #39511383531](https://github.com/thiepn/julia/actions/runs/39511383531):
+
+- 107/107 Node tests.
+- 13/13 Julia full-function suites; 13/13 focused suites.
+- 9/9 Julia full-property suites; 9/9 individual-property tests.
+- 9/9 parsable incomplete scaffolds, correctly failing their designated tests.
+- Four expected negative function checks, plus two expected integration failures.
+- One real five-case cross-lesson integration suite.
+- 32/32 Chromium desktop/mobile acceptance checks.
+
+Those Julia tests ran **fixed, reviewed reference implementations**, not private learner code. Real successful JDoodle execution/output events, browser-based automatic coding grades, and live hosted `Plots.jl` runs remain **unverified/unavailable**. No code is silently uploaded for grading.
+
+Run the repository tests with **Node 20+** using `npm test`. GitHub Actions uses Node 22, Julia 1.11 and Chromium. The application itself requires no npm installation.
+
+## Data and course boundaries
+
+Progress and drafts remain in local browser storage. Clearing site data, switching browsers or opening another domain can lose access to them. Export important `.jl` work. No sign-in, server sync or account-based backup is provided.
+
+The curriculum draws on AMP lecture and Übung 1 topics, Noel Kalicharan's *Julia — Bit by Bit* (2021), Julia's documentation, and numerical mathematics references. Examples are original practice, not completed Übung 1 submissions. The assignment instructions take priority over this companion app.
+
+For Übung 1's transformed norm geometry, distinguish the direct image `M(S¹)` from the inverse image `M⁻¹(S¹)`, which is the boundary of `||Mx||₂ = 1` for invertible `M`; do not treat them as equal in general.
+
+## Release boundary
+
+**v1.0 deliberately uses a static learning app plus local/external Julia execution.** A real browser-side execution/grading service requires separately validated provider events or a secure runtime and is not a v1 release blocker. No backend, credentials or paid provider service is part of this version. This branch is intended for review before any merge or deployment.
