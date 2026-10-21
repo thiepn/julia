@@ -64,3 +64,24 @@ For Übung 1's transformed norm geometry, distinguish the direct image `M(S¹)` 
 ## Release boundary
 
 **v1.0 deliberately uses a static learning app plus local/external Julia execution.** A real browser-side execution/grading service requires separately validated provider events or a secure runtime and is not a v1 release blocker. No backend, credentials or paid provider service is part of this version. This branch is intended for review before any merge or deployment.
+
+
+## Post-v1 draft: local plot preview and Übung 2
+
+Lessons 04–06 now offer original Plots.jl examples for multiple curves, equal aspect
+ratios, matrix actions and figure export. After executing Julia outside the browser,
+save your plot with savefig(p, "figure.png") or savefig(p, "figure.svg") and
+choose the local file in the Julia Lab plot panel. Import is capped at 5 MB; PNG
+signatures and SVG structure are checked, active/external SVG content rejected.
+The figure is temporary, not uploaded, stored, executed or graded.
+
+Lessons 09 and 16 offer independent cancellation and relative conditioning experiments.
+The tables on the webpage are calculated in JavaScript; the shown Julia source must
+be run in Julia. The cancellation script includes current PrettyTables.jl
+column_labels usage. Install the dependency locally via
+import Pkg; Pkg.add("PrettyTables"). The Julia 1.11 CI runs the exact original
+numeric snippets and parses the plotted source; third-party Plots.jl/PrettyTables.jl
+package runtime execution remains NOT_TESTED and is not falsely claimed.
+
+This is a new draft PR and is not merged/deployed. Existing local drafts, lesson
+identities, review history, rights and the original app remain intact.
