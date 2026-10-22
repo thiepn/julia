@@ -42,6 +42,11 @@ try{
        assert.match(diag,/julia_version=/);
        assert.match(diag,/package_LinearAlgebra=available/);
        assert.match(diag,/package_Plots=(?:missing|available)/);
+       await page.locator("#scratch-code").fill("println(42)");
+       assert.equal(await page.locator("#local-runner-diagnose").isEnabled(),true);
+       assert.equal(await page.locator("#local-runner-diagnostic-output").innerText(),"");
+       await page.locator("#local-runner-diagnose").click();
+       await page.waitForFunction(()=>document.querySelector("#local-runner-diagnostic-output").textContent.includes("JULIA_LAB_DIAGNOSTIC_V1"),null,{timeout:45000});
        await page.locator("#completion-track-choice").selectOption("repair_dimensions");
        assert.match(await page.locator("#completion-track-starter").innerText(),/zeros\(size\(A,1\)\)/);
        await page.goto(origin+"/#lesson/07");

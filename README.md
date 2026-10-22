@@ -181,3 +181,35 @@ The UI never requests or uses ILIAS credentials, does not store identity
 or PDFs in localStorage and does not send submission files to any provider.
 All ZIP assembly is inside the browser; without a successful verified
 local run, the optional result attachment remains disabled.
+
+### Windows and Julia environment troubleshooting (G1)
+
+From PowerShell or Windows Terminal (not from the Julia REPL) inspect
+`julia --version`, `juliaup status`, `where.exe julia`, `node --version`
+and `where.exe node`. Juliaup is the Julia project's preferred Windows
+installer/version manager; official instructions: https://julialang.org/downloads/.
+Opening VS Code from a different shell may result in a different PATH.
+Use the Julia VS Code extension and select the Julia executable deliberately.
+
+If Node cannot find Julia although it is installed, the user may set the
+JULIA_LAB_JULIA environment variable to a trusted **full path** to julia.exe
+before launching `node local-runner/server.mjs`. PowerShell example for
+the current terminal session only:
+
+    $env:JULIA_LAB_JULIA = 'C:\path\to\julia.exe'
+    node local-runner/server.mjs
+
+This does not modify system PATH or install anything. Restarting the
+companion starts a fresh session code; the website never stores it.
+With JDoodle disabled, **Check local Julia environment** authenticates
+against the SAME localhost server. It executes a fixed, read-only Julia
+script showing version, OS, architecture, whether a project is active,
+and whether LinearAlgebra, Test, Plots and PrettyTables are discoverable.
+It does **not** print project paths or run Pkg.add/Pkg.instantiate/update.
+Package discoverability does not prove that `using` a package will work;
+the actual existing learner program remains the execution authority.
+
+For a selected project, review Project.toml / Manifest.toml and decide
+separately if and when to activate/instantiate/install dependencies.
+Successful CI on Linux does not establish a real Windows/VS Code setup;
+native Windows execution is still a human acceptance requirement.

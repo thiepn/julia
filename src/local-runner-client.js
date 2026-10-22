@@ -33,7 +33,8 @@ export function initLocalRunner({doc=document, fetcher=fetch, endpoint=LOCAL_RUN
   function clear(){
     activeRequest++;
     release();output.textContent="";status.textContent="No execution in this task.";
-    run.disabled=false;busy=false;
+    run.disabled=false;diagnoseButton.disabled=false;busy=false;
+    diagnosticOutput.textContent="";diagnosticStatus.textContent="";
     onClear();
   }
   async function submit(){
