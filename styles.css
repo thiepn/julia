@@ -431,3 +431,33 @@
   #submission-print-source{font-family:Consolas,"DejaVu Sans Mono",monospace;font-size:9.5pt;line-height:1.45;
     white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;color:#111!important;margin:0}
 }
+
+
+/* Canonical lesson depth panel: actual code/proof content, no secondary progress UI. */
+.completion-depth[hidden],.completion-depth [hidden]{display:none!important}
+.completion-depth{border-top:1px solid var(--line);padding-top:22px}
+.completion-depth h2{font-size:21px;line-height:1.35;margin:0 0 14px}
+.completion-depth h3{font-size:17px;line-height:1.35;margin:20px 0 9px}
+.completion-depth p,.completion-depth ol,.completion-depth label{font-size:14px;line-height:1.6}
+.completion-depth label{display:block;font-weight:650;margin:12px 0 6px}
+.completion-depth select{width:100%;max-width:100%;min-height:44px;background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:8px;font-size:15px}
+.completion-depth pre{max-width:100%;overflow:auto;white-space:pre;font:13px/1.55 Consolas,monospace}
+.completion-depth ol{padding-left:24px}
+.completion-depth li{margin:0 0 8px}
+.completion-actions{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}
+.completion-actions button,.completion-depth button{min-height:42px}
+.completion-source{color:var(--muted)}
+.completion-warning{border-left:3px solid var(--ink);padding:10px 13px}
+#completion-proofs,#completion-experiments{border-top:1px solid var(--line);margin-top:20px;padding-top:12px}
+@media(max-width:760px){.completion-actions button,.completion-depth>div>button{width:100%}}
+
+
+.course-backup{margin:18px 0}
+.course-backup summary{cursor:pointer;font-size:18px;font-weight:700}
+.course-backup>p,.course-backup>label{display:block;font-size:14px;line-height:1.55;margin:12px 0}
+.course-backup>label{font-weight:650}
+.course-backup button{min-height:44px;margin:8px 8px 8px 0}
+.course-backup input[type=file],.course-backup select{width:100%;max-width:100%;min-height:44px;font-size:15px}
+.course-backup select{border:1px solid var(--line);color:var(--ink);background:var(--surface);padding:8px}
+.course-backup .backup-confirm{display:flex;align-items:start;gap:10px;font-weight:500}
+@media(max-width:760px){.course-backup button{width:100%}}

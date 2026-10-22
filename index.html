@@ -205,6 +205,24 @@
           <p class="submission-caveat">Both AMP Übung 1 and Übung 2 require a .jl file and a PDF of its code per program, bundled as a ZIP for ILIAS. Use your actual name and matriculation number. ZIP assembly does not verify program correctness, PDF/source identity or ILIAS submission. No identity, selected PDF or ZIP is stored by Julia Lab.</p>
         </div>
       </details>
+      <details class="paper course-backup" id="course-backup">
+        <summary>Export or restore Julia Lab learning data</summary>
+        <p>Export saved lesson drafts, transfer/debug drafts, trace positions and quiz answers. Excludes JDoodle settings, runner session codes and submission identity.</p>
+        <button type="button" class="secondary" id="course-backup-disable-embed">Disable JDoodle and reload for private data</button>
+        <button type="button" class="secondary" id="course-backup-export">Download course backup JSON</button>
+        <label for="course-backup-file">Choose a course backup to inspect</label>
+        <input type="file" id="course-backup-file" accept=".json,application/json">
+        <p id="course-backup-preview" role="status"></p>
+        <label for="course-backup-mode">When local records already exist</label>
+        <select id="course-backup-mode">
+          <option value="keep">Keep existing; restore only missing records</option>
+          <option value="replace">Replace conflicts with imported values</option>
+        </select>
+        <label class="backup-confirm"><input type="checkbox" id="course-backup-approval">
+          I confirm that I want to replace existing local records if Replace is selected.</label>
+        <button type="button" class="secondary" id="course-backup-restore" disabled>Restore selected records</button>
+        <p id="course-backup-status" role="status" aria-live="polite"></p>
+      </details>
       <section class="paper numerical-explorer" id="numerical-explorer" aria-labelledby="numerical-heading" hidden>
         <div class="section-title"><span class="section-num">04</span><h2 id="numerical-heading">Explore norms and transformations</h2></div>
         <div class="numerical-controls">
@@ -634,6 +652,45 @@
         </div>
         <p id="amp-mission-status" class="feedback" role="status"></p>
       </section>
+      <section class="paper completion-depth" id="completion-depth" aria-labelledby="completion-title" hidden>
+        <h2 id="completion-title">Deeper Julia and numerical reasoning</h2>
+        <div id="completion-tracks" hidden>
+          <label for="completion-track-choice">Programming depth track</label>
+          <select id="completion-track-choice"></select>
+          <p id="completion-track-description"></p>
+          <p class="completion-source" id="completion-track-source"></p>
+          <ol id="completion-track-steps"></ol>
+          <h3>Independent implementation</h3>
+          <pre class="code"><code id="completion-track-starter"></code></pre>
+          <p id="completion-track-question"></p>
+          <div class="completion-actions">
+            <button type="button" class="secondary" id="completion-starter-copy">Copy starter</button>
+            <button type="button" class="secondary" id="completion-test-download">Download Julia tests for current editor</button>
+          </div>
+          <p id="completion-track-status" class="feedback" role="status" aria-live="polite"></p>
+        </div>
+        <div id="completion-experiments" hidden>
+          <h3>Numerical experiment</h3>
+          <label for="completion-experiment-choice">Julia experiment</label>
+          <select id="completion-experiment-choice"></select>
+          <p id="completion-experiment-intent"></p>
+          <pre class="code"><code id="completion-experiment-code"></code></pre>
+          <button type="button" class="secondary" id="completion-experiment-download">Download executable Julia experiment</button>
+          <p id="completion-experiment-status" role="status"></p>
+        </div>
+        <div id="completion-proofs" hidden>
+          <h3>Mathematical proof practice</h3>
+          <label for="completion-proof-choice">Verified exercise part</label>
+          <select id="completion-proof-choice"></select>
+          <p id="completion-proof-source"></p>
+          <p id="completion-proof-assumptions"></p>
+          <p><strong>Prove or explain:</strong> <span id="completion-proof-target"></span></p>
+          <ol id="completion-proof-steps"></ol>
+          <p><strong>Independent transfer:</strong> <span id="completion-proof-transfer"></span></p>
+          <p class="completion-warning" id="completion-proof-warning" role="note" hidden></p>
+          <p>Written reasoning is not automatically checked or graded.</p>
+        </div>
+      </section>
       <section class="paper repair-lab" aria-labelledby="repair-section-title">
         <div class="section-title"><span class="section-num" id="repair-section-number">04</span><h2 id="repair-section-title">Debug a Julia program</h2></div>
         <h3 id="repair-title"></h3>
@@ -669,9 +726,12 @@
         <label for="local-runner-token">Runner session code</label>
         <input type="password" id="local-runner-token" autocomplete="off" spellcheck="false">
         <div class="local-runner-actions">
+          <button type="button" class="secondary" id="local-runner-diagnose">Check local Julia environment</button>
           <button type="button" class="primary" id="local-runner-run">Run current Julia draft</button>
           <button type="button" class="secondary" id="local-runner-clear">Clear results</button>
         </div>
+        <p id="local-runner-diagnostic-status" class="feedback" role="status" aria-live="polite"></p>
+        <pre class="local-runner-console" aria-label="Julia installation and package diagnostics"><code id="local-runner-diagnostic-output"></code></pre>
         <p id="local-runner-status" class="feedback" role="status" aria-live="polite">No execution in this task.</p>
         <pre class="local-runner-console" aria-label="Julia standard output and errors"><code id="local-runner-output"></code></pre>
         <div id="local-runner-images" class="local-runner-images" aria-label="Locally generated Julia plots"></div>

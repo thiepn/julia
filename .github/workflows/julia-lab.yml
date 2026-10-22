@@ -1,7 +1,7 @@
 name: Julia Lab checks
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feature/julia-amp-ue02-numerical-workshops]
     paths:
       - "index.html"
       - "styles.css"
@@ -40,15 +40,25 @@ jobs:
         run: node tests/local-runner-qualification.mjs
       - name: Execute AMP numerical function missions with genuine Julia Test
         run: node tests/amp-julia-qualification.mjs
+      - name: Run independent Julia depth and machine-arithmetic checks
+        run: node tests/completion-julia.mjs
+      - name: Execute actual Julia environment diagnostic
+        run: node tests/completion-diagnostics-julia.mjs
       - name: Install Playwright runner for browser acceptance
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium firefox webkit
           sudo apt-get install -y poppler-utils
       - name: Chromium desktop/mobile acceptance
         run: node tests/browser.mjs
       - name: AMP workshops Chromium desktop/mobile
         run: node tests/amp-browser.mjs
+      - name: Julia depth and proof scaffolds in Chromium desktop/mobile
+        run: node tests/completion-browser.mjs
+      - name: Portable lesson backup and conflict resolution in Chromium
+        run: node tests/course-backup-browser.mjs
+      - name: Julia G1/G2 three-engine desktop/mobile acceptance
+        run: node tests/completion-g1g2-browser.mjs
       - name: AMP private PDF/ZIP submission and real Julia results in Chromium
         run: node tests/submission-browser.mjs
 
