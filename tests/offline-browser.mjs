@@ -60,6 +60,9 @@ try{
    // Re-enable the default course embed setting while disconnected. The app
    // must suppress external JDoodle loading without disturbing the local source.
    await page.evaluate(()=>localStorage.removeItem("amp-julia-lab:jdoodle-embed-v1"));
+   // After inspecting offline status in Tools, return to the lesson before refresh.
+   await page.locator("#r2-course-open").click();
+   await page.locator('.lesson-link[href="#lesson/09"]').click();
    await page.reload();
    await r2Role(page,"heading",{name:"Floating-point numbers"}).waitFor();
    assert.match(await r2Locator(page,"#runtime-state").innerText(),/Offline/);
