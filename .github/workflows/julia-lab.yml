@@ -1,7 +1,7 @@
 name: Julia Lab checks
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feature/julia-amp-ue02-numerical-workshops]
     paths:
       - "index.html"
       - "styles.css"
@@ -38,12 +38,29 @@ jobs:
         run: node tests/ue02-qualification.mjs
       - name: Execute genuine Julia local runner protocol regressions
         run: node tests/local-runner-qualification.mjs
+      - name: Execute AMP numerical function missions with genuine Julia Test
+        run: node tests/amp-julia-qualification.mjs
+      - name: Run independent Julia depth and machine-arithmetic checks
+        run: node tests/completion-julia.mjs
+      - name: Execute actual Julia environment diagnostic
+        run: node tests/completion-diagnostics-julia.mjs
       - name: Install Playwright runner for browser acceptance
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium firefox webkit
+          sudo apt-get install -y poppler-utils
       - name: Chromium desktop/mobile acceptance
         run: node tests/browser.mjs
+      - name: AMP workshops Chromium desktop/mobile
+        run: node tests/amp-browser.mjs
+      - name: Julia depth and proof scaffolds in Chromium desktop/mobile
+        run: node tests/completion-browser.mjs
+      - name: Portable lesson backup and conflict resolution in Chromium
+        run: node tests/course-backup-browser.mjs
+      - name: Julia G1/G2 three-engine desktop/mobile acceptance
+        run: node tests/completion-g1g2-browser.mjs
+      - name: AMP private PDF/ZIP submission and real Julia results in Chromium
+        run: node tests/submission-browser.mjs
 
   authentic-plotting:
     runs-on: ubuntu-24.04
@@ -65,11 +82,16 @@ jobs:
           julia --startup-file=no --color=no -e 'using Pkg; Pkg.add([Pkg.PackageSpec(name="Plots",version="1.41.7"), Pkg.PackageSpec(name="PrettyTables",version="3.5.0")]); using Plots, PrettyTables; gr(); println("JULIA PACKAGES READY")'
       - name: Execute actual learner Julia examples and verify generated outputs
         run: node tests/julia-package-qualification.mjs
+      - name: Execute AMP PrettyTables and conditioning experiments
+        run: node tests/amp-prettytables-qualification.mjs
       - name: Install Chromium for authentic figure preview acceptance
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install --with-deps chromium
+          sudo apt-get install -y poppler-utils
       - name: Chromium desktop/mobile loads real exported Julia figures
         run: node tests/real-julia-plot-browser.mjs
       - name: Local runner executes real plot source in desktop/mobile Chromium
         run: node tests/local-runner-browser.mjs
+      - name: Private AMP submission ZIP includes genuine local Plots.jl images
+        run: AMP_SUBMISSION_REAL_PLOTS=1 node tests/submission-browser.mjs

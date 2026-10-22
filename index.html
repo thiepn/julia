@@ -170,6 +170,59 @@
         <button class="secondary" type="button" id="plotting-recipe-copy">Copy Julia example</button>
         <p class="feedback" id="plotting-recipe-feedback" role="status"></p>
       </section>
+      <details class="paper submission-workflow" id="submission-workflow">
+        <summary>Prepare AMP submission (.jl, code PDF and ZIP)</summary>
+        <div class="submission-content">
+          <p id="submission-private-state" role="status"></p>
+          <button type="button" class="secondary" id="submission-disable-embed">Disable JDoodle and reload</button>
+          <div class="submission-fields">
+            <div><label for="submission-name">Filename name</label>
+              <input id="submission-name" type="text" autocomplete="off" maxlength="40" placeholder="Nachname"></div>
+            <div><label for="submission-number">Matrikelnummer</label>
+              <input id="submission-number" type="text" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="123456"></div>
+            <div><label for="submission-task">Aufgabe</label>
+              <input id="submission-task" type="text" autocomplete="off" maxlength="5" placeholder="2.2b"></div>
+          </div>
+          <div class="submission-actions">
+            <button type="button" class="secondary" id="submission-print-button">Print code → Save as PDF</button>
+          </div>
+          <label for="submission-pdf">Select the saved code PDF</label>
+          <input type="file" id="submission-pdf" accept=".pdf,application/pdf">
+          <label class="submission-check"><input type="checkbox" id="submission-confirm">
+            I checked that this PDF contains the exact code in the current Julia editor.</label>
+          <label class="submission-check"><input type="checkbox" id="submission-include-results">
+            Include results from a successful local Julia run (optional)</label>
+          <p id="submission-run-state"></p>
+          <button type="button" class="secondary" id="submission-stage">Add code/PDF pair to ZIP</button>
+          <h3>ZIP contents</h3>
+          <p id="submission-count"></p>
+          <ul id="submission-items"></ul>
+          <div class="submission-actions">
+            <button type="button" id="submission-download-zip" class="primary" disabled>Download ZIP</button>
+            <button type="button" id="submission-clear" class="secondary">Clear bundle</button>
+          </div>
+          <p class="feedback" id="submission-status" role="status" aria-live="polite"></p>
+          <p class="submission-caveat">Both AMP Übung 1 and Übung 2 require a .jl file and a PDF of its code per program, bundled as a ZIP for ILIAS. Use your actual name and matriculation number. ZIP assembly does not verify program correctness, PDF/source identity or ILIAS submission. No identity, selected PDF or ZIP is stored by Julia Lab.</p>
+        </div>
+      </details>
+      <details class="paper course-backup" id="course-backup">
+        <summary>Export or restore Julia Lab learning data</summary>
+        <p>Export saved lesson drafts, transfer/debug drafts, trace positions and quiz answers. Excludes JDoodle settings, runner session codes and submission identity.</p>
+        <button type="button" class="secondary" id="course-backup-disable-embed">Disable JDoodle and reload for private data</button>
+        <button type="button" class="secondary" id="course-backup-export">Download course backup JSON</button>
+        <label for="course-backup-file">Choose a course backup to inspect</label>
+        <input type="file" id="course-backup-file" accept=".json,application/json">
+        <p id="course-backup-preview" role="status"></p>
+        <label for="course-backup-mode">When local records already exist</label>
+        <select id="course-backup-mode">
+          <option value="keep">Keep existing; restore only missing records</option>
+          <option value="replace">Replace conflicts with imported values</option>
+        </select>
+        <label class="backup-confirm"><input type="checkbox" id="course-backup-approval">
+          I confirm that I want to replace existing local records if Replace is selected.</label>
+        <button type="button" class="secondary" id="course-backup-restore" disabled>Restore selected records</button>
+        <p id="course-backup-status" role="status" aria-live="polite"></p>
+      </details>
       <section class="paper numerical-explorer" id="numerical-explorer" aria-labelledby="numerical-heading" hidden>
         <div class="section-title"><span class="section-num">04</span><h2 id="numerical-heading">Explore norms and transformations</h2></div>
         <div class="numerical-controls">
@@ -541,6 +594,103 @@
         <button class="secondary" type="button" id="ue02-copy">Copy Julia example</button>
         <p class="feedback" id="ue02-feedback" role="status"></p>
       </section>
+      <section class="paper amp-workshop" id="amp-root-workshop" aria-labelledby="amp-root-title" hidden>
+        <h2 id="amp-root-title">Quadratic roots: conditioning and cancellation</h2>
+        <p>For x² − 2ax + b = 0 with a &gt; 0 and 0 &lt; b ≤ a², compare direct subtraction with the algebraically equivalent rationalized smaller root. Nearly coincident roots are inherently sensitive; subtracting nearly equal numbers can also cause avoidable numerical error.</p>
+        <div class="amp-controls">
+          <div><label for="amp-root-case">Coefficient experiment</label><select id="amp-root-case"></select></div>
+          <div><label for="amp-root-mode">Parameter sweep</label><select id="amp-root-mode"></select></div>
+        </div>
+        <table class="amp-table amp-summary"><caption>Calculated in browser JavaScript binary64</caption><tbody id="amp-root-summary"></tbody></table>
+        <h3>Parameter sweep</h3>
+        <svg id="amp-root-chart" viewBox="0 0 600 235" role="img" aria-label="Relative conditioning or cancellation across perturbation scales"></svg>
+        <p id="amp-root-chart-label"></p>
+        <div class="amp-table-scroll">
+          <table class="amp-table"><caption>Browser-calculated numerical comparison</caption>
+            <thead><tr><th scope="col">δ</th><th scope="col">Direct</th><th scope="col">Stable</th><th scope="col">Relative discrepancy</th><th scope="col">Condition</th></tr></thead>
+            <tbody id="amp-root-sweep-table"></tbody>
+          </table>
+        </div>
+        <details class="amp-source"><summary>Julia/PrettyTables source for this experiment</summary><pre class="code"><code id="amp-root-julia"></code></pre></details>
+        <div class="amp-actions">
+          <button type="button" class="secondary" id="amp-root-download-julia">Download Julia experiment</button>
+          <button type="button" class="secondary" id="amp-root-download-csv">Export CSV comparison</button>
+        </div>
+        <p id="amp-root-status" class="feedback" role="status"></p>
+      </section>
+      <section class="paper amp-workshop" id="amp-condition-workshop" aria-labelledby="amp-condition-title" hidden>
+        <h2 id="amp-condition-title">Relative condition: finite perturbations</h2>
+        <p>For differentiable f and x ≠ 0, f(x) ≠ 0, compare |xf′(x)/f(x)| with finite relative input perturbations. A finite difference approximates this limiting quantity but does not prove it.</p>
+        <div class="amp-controls">
+          <div><label for="amp-condition-case">Function</label><select id="amp-condition-case"></select></div>
+          <div><label for="amp-condition-x">Input x</label><select id="amp-condition-x"></select></div>
+        </div>
+        <p id="amp-condition-formula"></p>
+        <p><strong>Analytic relative condition:</strong> <span id="amp-condition-kappa"></span></p>
+        <div class="amp-table-scroll">
+          <table class="amp-table"><caption>Calculated in browser JavaScript binary64</caption>
+            <thead><tr><th scope="col">ε</th><th scope="col">Finite observed amplification</th><th scope="col">Difference from analytic condition</th></tr></thead>
+            <tbody id="amp-condition-table"></tbody>
+          </table>
+        </div>
+        <details class="amp-source"><summary>Julia source for this comparison</summary><pre class="code"><code id="amp-condition-julia"></code></pre></details>
+        <button type="button" class="secondary" id="amp-condition-download">Download Julia experiment</button>
+        <p class="feedback" role="status" id="amp-condition-status"></p>
+      </section>
+      <section class="paper amp-workshop" id="amp-mission-workshop" aria-labelledby="amp-mission-title" hidden>
+        <h2 id="amp-mission-title">Independent numerical programming</h2>
+        <label for="amp-mission-choice">Julia function challenge</label>
+        <select id="amp-mission-choice"></select>
+        <p id="amp-mission-task"></p>
+        <pre class="code"><code id="amp-mission-starter"></code></pre>
+        <h3>Julia Test cases</h3>
+        <ul id="amp-mission-cases"></ul>
+        <p>Copy the starter into the existing lesson code editor. Implement it, then download a Julia Test file for the source currently in that editor. The browser does not grade your code.</p>
+        <div class="amp-actions">
+          <button type="button" class="secondary" id="amp-mission-copy">Copy starter</button>
+          <button type="button" class="secondary" id="amp-mission-tests">Download Julia tests for current draft</button>
+        </div>
+        <p id="amp-mission-status" class="feedback" role="status"></p>
+      </section>
+      <section class="paper completion-depth" id="completion-depth" aria-labelledby="completion-title" hidden>
+        <h2 id="completion-title">Deeper Julia and numerical reasoning</h2>
+        <div id="completion-tracks" hidden>
+          <label for="completion-track-choice">Programming depth track</label>
+          <select id="completion-track-choice"></select>
+          <p id="completion-track-description"></p>
+          <p class="completion-source" id="completion-track-source"></p>
+          <ol id="completion-track-steps"></ol>
+          <h3>Independent implementation</h3>
+          <pre class="code"><code id="completion-track-starter"></code></pre>
+          <p id="completion-track-question"></p>
+          <div class="completion-actions">
+            <button type="button" class="secondary" id="completion-starter-copy">Copy starter</button>
+            <button type="button" class="secondary" id="completion-test-download">Download Julia tests for current editor</button>
+          </div>
+          <p id="completion-track-status" class="feedback" role="status" aria-live="polite"></p>
+        </div>
+        <div id="completion-experiments" hidden>
+          <h3>Numerical experiment</h3>
+          <label for="completion-experiment-choice">Julia experiment</label>
+          <select id="completion-experiment-choice"></select>
+          <p id="completion-experiment-intent"></p>
+          <pre class="code"><code id="completion-experiment-code"></code></pre>
+          <button type="button" class="secondary" id="completion-experiment-download">Download executable Julia experiment</button>
+          <p id="completion-experiment-status" role="status"></p>
+        </div>
+        <div id="completion-proofs" hidden>
+          <h3>Mathematical proof practice</h3>
+          <label for="completion-proof-choice">Verified exercise part</label>
+          <select id="completion-proof-choice"></select>
+          <p id="completion-proof-source"></p>
+          <p id="completion-proof-assumptions"></p>
+          <p><strong>Prove or explain:</strong> <span id="completion-proof-target"></span></p>
+          <ol id="completion-proof-steps"></ol>
+          <p><strong>Independent transfer:</strong> <span id="completion-proof-transfer"></span></p>
+          <p class="completion-warning" id="completion-proof-warning" role="note" hidden></p>
+          <p>Written reasoning is not automatically checked or graded.</p>
+        </div>
+      </section>
       <section class="paper repair-lab" aria-labelledby="repair-section-title">
         <div class="section-title"><span class="section-num" id="repair-section-number">04</span><h2 id="repair-section-title">Debug a Julia program</h2></div>
         <h3 id="repair-title"></h3>
@@ -576,9 +726,12 @@
         <label for="local-runner-token">Runner session code</label>
         <input type="password" id="local-runner-token" autocomplete="off" spellcheck="false">
         <div class="local-runner-actions">
+          <button type="button" class="secondary" id="local-runner-diagnose">Check local Julia environment</button>
           <button type="button" class="primary" id="local-runner-run">Run current Julia draft</button>
           <button type="button" class="secondary" id="local-runner-clear">Clear results</button>
         </div>
+        <p id="local-runner-diagnostic-status" class="feedback" role="status" aria-live="polite"></p>
+        <pre class="local-runner-console" aria-label="Julia installation and package diagnostics"><code id="local-runner-diagnostic-output"></code></pre>
         <p id="local-runner-status" class="feedback" role="status" aria-live="polite">No execution in this task.</p>
         <pre class="local-runner-console" aria-label="Julia standard output and errors"><code id="local-runner-output"></code></pre>
         <div id="local-runner-images" class="local-runner-images" aria-label="Locally generated Julia plots"></div>
@@ -634,6 +787,11 @@
       <div class="privacy-note">No Julia code runs in the hosted browser. The optional local runner executes a chosen draft on your computer only after you explicitly press Run and disable JDoodle. If enabled, the embedded JDoodle service loads from a third party and executes code under JDoodle's terms. Lesson choices and drafts remain in this browser. A successful iframe or script load is not evidence of an executed Julia program.</div>
     </aside>
   </div>
+  <section id="submission-print" aria-label="Printable Julia code">
+    <h1 id="submission-print-title"></h1>
+    <p id="submission-print-meta"></p>
+    <pre id="submission-print-source"></pre>
+  </section>
   <script type="module" src="./src/app.js"></script>
 </body>
 </html>

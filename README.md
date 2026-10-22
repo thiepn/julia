@@ -115,3 +115,101 @@ Only run code you trust. Loopback restrictions in some browsers may prevent a
 remote HTTPS page from connecting; use the included localhost site in that
 case. Explicitly allow other trusted origins via `JULIA_LAB_ORIGINS`.
 Running code and rendering graphics never award coding mastery or change drafts.
+
+## Substantial AMP Übung 2 learning upgrade (new draft branch)
+
+Lessons 09 and 16 now contain three new source-grounded capabilities:
+
+1. **Quadratic root conditioning:** Direct versus rationalized smaller roots
+   of x² - 2ax + b. Independent presets and a=3 parameter sweeps contrast
+   inherent sensitivity near a double root with cancellation of a tiny root.
+   Inspect a plot and numerical table, export browser-calculated CSV, or
+   download independent Julia/PrettyTables source for execution.
+2. **Relative condition by finite perturbations:** Explore cosine, shifted
+   square and a nontrivial composition. Compare analytic |x f'(x)/f(x)|
+   with finite perturbations of x; Julia source can reproduce the samples.
+3. **Independent Julia programming missions:** Practice a cancellation-resistant
+   difference, relative response, or stable quadratic root. Copy source into
+   the original lesson editor, then generate a Julia `Test` script from its
+   *current existing draft*. The app does not execute or grade the exported test.
+
+These exercises are original learning transfers informed by AMP Übung 2 and
+are NOT the university homework answer key. They deliberately use independent
+coefficient values and input grids rather than supplying the assigned result
+table for Aufgabe 2.2(b). Source lives in AMP root/condition/mission modules.
+All browser numerical values are computed with JavaScript Number (binary64).
+No new progress engine, saved draft store, grader, backend or compiler was added.
+Local user Julia execution continues through the existing optional companion;
+the real Julia/PrettyTables source and Julia Test suites are exercised in CI.
+
+**Release boundary:** New development branch / draft PR only. Do not merge
+or deploy until the full multi-upgrade batch is accepted.
+
+## AMP programming submission workflow (same PR #5)
+
+Source: AMP Übung 1 (22 October 2026, 08:00) and Übung 2 (29 October
+2026, 08:00). Both require: one `.jl` file per Julia programming task,
+a corresponding PDF **of the code**, filename containing the student's name
+and matriculation number, and a ZIP uploaded by the student to ILIAS.
+Programs should include meaningful comments. This app does not submit files.
+
+Expand **Prepare AMP submission (.jl, code PDF and ZIP)** inside any lesson.
+Disable JDoodle and reload before entering personal filename details so its
+third-party embed script cannot read them. Enter a filename name in safe
+Latin letters, your matriculation number, and an exercise identifier such
+as `1.2` or `2.2b`. The original code editor remains the source of truth.
+
+1. Write your own Julia code; optionally execute the current editor source
+   with the existing local Julia runner to obtain actual output and plots.
+2. Choose **Print code -> Save as PDF**, then use the browser's system
+   print dialog to save a **text-selectable PDF of that exact source**.
+   For accurate Unicode and pagination, printing uses native browser fonts.
+3. Select the saved PDF, check that it contains the exact code, and
+   optionally include the current **successful local Julia execution**
+   output plus up to three exported image files in the ZIP.
+4. Stage the `.jl`/PDF pair and repeat for up to eight programming tasks.
+   The staged files are kept only in this tab's memory, not in browser storage.
+5. Download the standards-compliant, uncompressed ZIP. Open it and check
+   the source/PDF pairs before uploading to ILIAS yourself.
+
+The browser cannot read the system print dialog, automatically capture the
+PDF it saves or independently prove that an imported PDF reproduces your
+source. The user confirms the PDF/source match before staging. The PDF
+must have a valid header/end marker, and entries have strict size/path limits
+and ZIP CRC checks. Local Julia execution **does not grade** correctness.
+The UI never requests or uses ILIAS credentials, does not store identity
+or PDFs in localStorage and does not send submission files to any provider.
+All ZIP assembly is inside the browser; without a successful verified
+local run, the optional result attachment remains disabled.
+
+### Windows and Julia environment troubleshooting (G1)
+
+From PowerShell or Windows Terminal (not from the Julia REPL) inspect
+`julia --version`, `juliaup status`, `where.exe julia`, `node --version`
+and `where.exe node`. Juliaup is the Julia project's preferred Windows
+installer/version manager; official instructions: https://julialang.org/downloads/.
+Opening VS Code from a different shell may result in a different PATH.
+Use the Julia VS Code extension and select the Julia executable deliberately.
+
+If Node cannot find Julia although it is installed, the user may set the
+JULIA_LAB_JULIA environment variable to a trusted **full path** to julia.exe
+before launching `node local-runner/server.mjs`. PowerShell example for
+the current terminal session only:
+
+    $env:JULIA_LAB_JULIA = 'C:\path\to\julia.exe'
+    node local-runner/server.mjs
+
+This does not modify system PATH or install anything. Restarting the
+companion starts a fresh session code; the website never stores it.
+With JDoodle disabled, **Check local Julia environment** authenticates
+against the SAME localhost server. It executes a fixed, read-only Julia
+script showing version, OS, architecture, whether a project is active,
+and whether LinearAlgebra, Test, Plots and PrettyTables are discoverable.
+It does **not** print project paths or run Pkg.add/Pkg.instantiate/update.
+Package discoverability does not prove that `using` a package will work;
+the actual existing learner program remains the execution authority.
+
+For a selected project, review Project.toml / Manifest.toml and decide
+separately if and when to activate/instantiate/install dependencies.
+Successful CI on Linux does not establish a real Windows/VS Code setup;
+native Windows execution is still a human acceptance requirement.

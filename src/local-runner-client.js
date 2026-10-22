@@ -21,16 +21,21 @@ export function decodeLocalFigure(data,dom=document){
   return new Blob([safeSvgDocument(svg,new dom.defaultView.DOMParser(),new dom.defaultView.XMLSerializer())],{type:"image/svg+xml"});
 }
 export function initLocalRunner({doc=document, fetcher=fetch, endpoint=LOCAL_RUNNER_URL,
-  getDraft, getIdentity, embedActive=()=>true}={}){
+  getDraft, getIdentity, embedActive=()=>true, onResult=()=>{}, onClear=()=>{}}={}){
   const token=doc.querySelector("#local-runner-token"),run=doc.querySelector("#local-runner-run");
   const status=doc.querySelector("#local-runner-status"),output=doc.querySelector("#local-runner-output");
   const images=doc.querySelector("#local-runner-images");
+  const diagnoseButton=doc.querySelector("#local-runner-diagnose");
+  const diagnosticOutput=doc.querySelector("#local-runner-diagnostic-output");
+  const diagnosticStatus=doc.querySelector("#local-runner-diagnostic-status");
   let activeRequest=0,busy=false,objects=[];
   const release=()=>{for(const url of objects)URL.revokeObjectURL(url);objects=[];images.replaceChildren();};
   function clear(){
     activeRequest++;
     release();output.textContent="";status.textContent="No execution in this task.";
-    run.disabled=false;busy=false;
+    run.disabled=false;diagnoseButton.disabled=false;busy=false;
+    diagnosticOutput.textContent="";diagnosticStatus.textContent="";
+    onClear();
   }
   async function submit(){
     if(busy)return;
@@ -52,11 +57,13 @@ export function initLocalRunner({doc=document, fetcher=fetch, endpoint=LOCAL_RUN
       if(request!==activeRequest||identity!==getIdentity()||code!==getDraft())return;
       if(!response.ok)throw Error(json.error||"The local runner returned HTTP "+response.status);
       const list=Array.isArray(json.figures)?json.figures.slice(0,3):[];
+      const accepted=[];
       for(const data of list){
         try{
           const imageBlob=decodeLocalFigure(data,doc);
           const src=URL.createObjectURL(imageBlob);
           objects.push(src);
+          accepted.push({name:data.name,blob:imageBlob});
           const fig=doc.createElement("figure"),img=doc.createElement("img");
           img.src=src;img.alt="Julia output: "+data.name;
           const cap=doc.createElement("figcaption");cap.textContent=data.name;
@@ -64,6 +71,7 @@ export function initLocalRunner({doc=document, fetcher=fetch, endpoint=LOCAL_RUN
         }catch{status.textContent="Figure rejected: unsupported or unsafe output.";}
       }
       output.textContent=[json.stdout,json.stderr].filter(Boolean).join("\n")||"(No printed output)";
+      onResult({code,identity,ok:json.ok===true,stdout:json.stdout||"",stderr:json.stderr||"",figures:accepted});
       if(!status.textContent.startsWith("Figure rejected")){
         status.textContent=json.timedOut?"Execution timed out after 120 seconds.":json.ok?
           "Executed with local Julia. Results are not graded.":"Julia exited with an error (exit code "+json.exitCode+").";
@@ -76,7 +84,37 @@ export function initLocalRunner({doc=document, fetcher=fetch, endpoint=LOCAL_RUN
       if(request===activeRequest){busy=false;run.disabled=false;}
     }
   }
+  async function diagnose(){
+    if(busy)return;
+    if(embedActive()){
+      diagnosticStatus.textContent="Disable the JDoodle embed and reload before local diagnostics.";
+      return;
+    }
+    if(!token.value||token.value.length<16){
+      diagnosticStatus.textContent="Enter the access code printed by the local Julia runner.";
+      return;
+    }
+    const request=++activeRequest;
+    busy=true;diagnoseButton.disabled=true;run.disabled=true;
+    diagnosticOutput.textContent="";diagnosticStatus.textContent="Checking local Julia without installing packages…";
+    try{
+      const diagnosticUrl=endpoint.replace(/\/run$/,"/diagnose");
+      const response=await fetcher(diagnosticUrl,{method:"POST",
+        headers:{"Authorization":"Bearer "+token.value},cache:"no-store"});
+      const result=await response.json();
+      if(request!==activeRequest)return;
+      if(!response.ok)throw Error(result.error||"Julia companion error "+response.status);
+      diagnosticOutput.textContent=result.stdout||result.stderr||"(No diagnostic output)";
+      diagnosticStatus.textContent=result.ok?"Local Julia responded. Missing packages must be installed explicitly in your chosen Julia project.":
+        "Julia environment check failed. Check the runner terminal, Julia path and project environment.";
+    }catch(error){
+      if(request===activeRequest)diagnosticStatus.textContent="Local diagnostics unavailable: "+String(error.message||error);
+    }finally{
+      if(request===activeRequest){busy=false;diagnoseButton.disabled=false;run.disabled=false;}
+    }
+  }
+  diagnoseButton.addEventListener("click",diagnose);
   run.addEventListener("click",submit);
   doc.querySelector("#local-runner-clear").addEventListener("click",clear);
-  return {clear,run:submit};
+  return {clear,run:submit,diagnose};
 }

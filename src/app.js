@@ -1,8 +1,12 @@
 import {lessons, stages} from "./lessons.js";
 import {initLocalRunner} from "./local-runner-client.js";
+import {initSubmissionWorkflow} from "./submission-workflow.js";
 import {initPlotPreview} from "./plot-preview.js";
 import {initPlottingPractice} from "./plotting-practice.js";
 import {initUe02Practice} from "./ue02-practice.js";
+import {initAmpWorkshops} from "./amp-workshops.js";
+import {initCompletionDepth} from "./completion-view.js";
+import {initCourseBackup} from "./course-backup-ui.js";
 import {readProgress, writeProgress, readEmbedUrl, writeEmbedUrl,
   validateEmbedUrl, checkChoice, countCorrect, readyForChallenge, checkPastedOutput} from "./checks.js";
 import {readDraft, writeDraft, clearDraft} from "./workspace.js";
@@ -28,15 +32,26 @@ import {missionForLesson} from "./numerical-missions.js";
 import {integrationForLesson,buildIntegrationTestFile} from "./integration-task.js";
 
 const $ = (selector) => document.querySelector(selector);
-const localRunner=initLocalRunner({getDraft:()=>$("#scratch-code").value,
-  getIdentity:()=>current().id+":"+practiceVariant,embedActive:()=>Boolean(readEmbedUrl())});
-const plotPreview = initPlotPreview();
-const plottingPractice = initPlottingPractice();
-const ue02Practice = initUe02Practice();
-const progress = readProgress();
 let currentIndex = 0;
 let practiceVariant = "original";
 let unsavedPractice = false;
+const current = () => lessons[currentIndex];
+const localRunner=initLocalRunner({getDraft:()=>$("#scratch-code").value,
+  getIdentity:()=>current().id+":"+practiceVariant,embedActive:()=>Boolean(readEmbedUrl()),
+  onResult:data=>submission.onRun(data),onClear:()=>submission.invalidateRun()});
+const submission=initSubmissionWorkflow({download:downloadLocalJulia,
+  getDraft:()=>$("#scratch-code").value,
+  getIdentity:()=>current().id+":"+practiceVariant,
+  embedActive:()=>Boolean(readEmbedUrl()),
+  disableEmbed:()=>$("#local-runner-disable-embed").click()});
+const plotPreview = initPlotPreview();
+const plottingPractice = initPlottingPractice();
+const ue02Practice = initUe02Practice();
+const ampWorkshops = initAmpWorkshops({download:downloadLocalJulia,getDraft:()=>$("#scratch-code").value});
+const depthPractice=initCompletionDepth({download:downloadLocalJulia,getDraft:()=>$("#scratch-code").value});
+const courseBackup=initCourseBackup({download:downloadLocalJulia,isEmbedActive:()=>Boolean(readEmbedUrl()),
+  disableEmbed:()=>$("#local-runner-disable-embed").click()});
+const progress = readProgress();
 // Diagnostics are opt-in and ephemeral. No provider code/output is retained.
 let diagnosticCount = 0;
 let diagnosticLast = null;
@@ -71,7 +86,7 @@ window.addEventListener("message", (event) => {
 });
 const safe = (value) => String(value).replace(/[&<>"']/g, char =>
   ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
-const current = () => lessons[currentIndex];
+
 function nextConceptIndex() {
   const index = lessons.findIndex(lesson => !readyForChallenge(lesson, progress));
   return index === -1 ? lessons.length - 1 : index;
@@ -315,6 +330,7 @@ function renderIntegrationTask(){
 }
 function renderPractice(){
   localRunner.clear();
+  submission.onSourceChange();
   const lesson=current(),item=activePractice(),transfer=practiceVariant!=="original";
   const mission=missionForLesson(lesson.id);
   $("#practice-mode").querySelector('[value="mission"]').hidden=!mission;
@@ -363,6 +379,7 @@ function renderPractice(){
 }
 function render() {
   localRunner.clear();
+  submission.onSourceChange();
   practiceVariant="original";
   currentIndex = lessonIndexFromHash();
   const l = current();
@@ -380,6 +397,8 @@ function render() {
   plotPreview.showForLesson(l.id);
   plottingPractice.showForLesson(l.id);
   ue02Practice.showForLesson(l.id);
+  ampWorkshops.showForLesson(l.id);
+  depthPractice.showForLesson(l.id);
   $("#repair-section-number").textContent=["03","05","06","07","08","09","10","11","12","13","14","15","16"].includes(l.id)?"05":"04";
   $("#lesson-theory").textContent = l.theory;
   $("#example-code").textContent = l.example;
@@ -495,6 +514,7 @@ $("#copy-starter").addEventListener("click", async () => {
 });
 $("#scratch-code").addEventListener("input", () => {
   localRunner.clear();
+  submission.onSourceChange();
   const saved = writePracticeCode(current().id, practiceVariant, $("#scratch-code").value);
   unsavedPractice=!saved;
   $("#external-report-results").replaceChildren();

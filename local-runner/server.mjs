@@ -18,6 +18,17 @@ export const DEFAULT_ORIGINS=[
   "https://julia.thiepn.dev",
   "https://julia-thiepn-project.vercel.app"
 ];
+export const JULIA_DIAGNOSTIC_SOURCE = [
+  "using Pkg",
+  'println("JULIA_LAB_DIAGNOSTIC_V1")',
+  'println("julia_version=", VERSION)',
+  'println("platform=", Sys.iswindows() ? "windows" : Sys.isapple() ? "macos" : "linux")',
+  'println("architecture=", Sys.ARCH)',
+  'println("active_project=", Base.active_project() === nothing ? "none" : "present")',
+  'for name in ("LinearAlgebra", "Test", "Plots", "PrettyTables")',
+  '    println("package_", name, "=", Base.find_package(name) === nothing ? "missing" : "available")',
+  'end'
+].join("\n");
 const PNG_MAGIC=Buffer.from([137,80,78,71,13,10,26,10]);
 const allowedName=/^[A-Za-z0-9][A-Za-z0-9_.-]*\.(png|svg)$/i;
 export function validateSource(body){
@@ -41,7 +52,7 @@ function collect(stream){
   });
   return ()=>Buffer.concat(chunks).toString("utf8");
 }
-export async function executeJulia(code,{juliaCommand="julia",timeoutMs=RUN_TIMEOUT_MS}={}){
+export async function executeJulia(code,{juliaCommand=process.env.JULIA_LAB_JULIA||"julia",timeoutMs=RUN_TIMEOUT_MS}={}){
   const dir=await mkdtemp(join(tmpdir(),"julia-lab-run-"));
   try{
     await writeFile(join(dir,"exercise.jl"),code,{encoding:"utf8",mode:0o600});
@@ -100,12 +111,19 @@ export function createLocalRunner({token=randomBytes(24).toString("hex"),origins
       res.end(JSON.stringify(payload));
     };
     if(req.method==="OPTIONS"){res.writeHead(204);res.end();return;}
-    if(req.method!=="POST"||req.url!=="/run"){send(404,{error:"Unknown runner endpoint."});return;}
+    if(req.method!=="POST"||!["/run","/diagnose"].includes(req.url)){send(404,{error:"Unknown runner endpoint."});return;}
     const auth=req.headers.authorization;
     if(!eqToken(auth?.startsWith("Bearer ")?auth.slice(7):null,token)){
       send(401,{error:"Invalid session access code."});return;
     }
     if(busy){send(409,{error:"Julia is still running another program."});return;}
+    if(req.url==="/diagnose"){
+      busy=true;
+      try{const result=await execute(JULIA_DIAGNOSTIC_SOURCE);send(200,{...result,figures:[]});}
+      catch(error){send(500,{error:"Julia diagnostics could not complete: "+String(error.message||error)});}
+      finally{busy=false;}
+      return;
+    }
     if(!/^application\/json(?:\s*;|$)/i.test(req.headers["content-type"]||"")){
       send(415,{error:"Expected a JSON request."});return;
     }

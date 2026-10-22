@@ -373,3 +373,91 @@
 .local-runner-images img{display:block;max-width:100%;height:auto;max-height:450px;object-fit:contain;background:#fff}
 .local-runner-images figcaption{font-size:14px;color:var(--muted);margin-top:7px}
 @media(max-width:760px){.local-runner-actions button{flex:1;min-width:140px}}
+
+.amp-workshop{border-top:1px solid var(--line);padding-top:20px}
+.amp-workshop[hidden]{display:none}
+.amp-workshop h2{font-size:22px;line-height:1.3;margin:0 0 12px;letter-spacing:-.015em}
+.amp-workshop h3{font-size:17px;margin:22px 0 10px;line-height:1.35}
+.amp-workshop p,.amp-workshop label,.amp-workshop li{font-size:14px;line-height:1.55}
+.amp-workshop label{display:block;font-weight:650;margin:0 0 6px}
+.amp-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:16px 0}
+.amp-controls select,.amp-workshop>select{width:100%;max-width:100%;min-height:44px;font-size:14px;background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:8px}
+.amp-table-scroll{overflow:auto;max-width:100%;margin:14px 0}
+.amp-table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+.amp-table-scroll .amp-table{min-width:540px}
+.amp-table caption{text-align:left;font-size:14px;color:var(--muted);padding:9px 0}
+.amp-table th,.amp-table td{padding:9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.amp-table th:first-child{text-align:left}
+.amp-summary th{font-weight:500;color:var(--muted)}
+.amp-workshop svg{width:100%;max-width:600px;height:auto;overflow:visible;display:block;margin:15px 0 2px}
+.amp-grid-line{stroke:var(--line);stroke-width:1}
+.amp-line{stroke:var(--accent);stroke-width:3;fill:none}
+.amp-point{fill:var(--accent)}
+.amp-svg-label{font-size:12px;fill:var(--muted)}
+.amp-source{margin:14px 0}
+.amp-source summary{font-size:14px;cursor:pointer;font-weight:650}
+.amp-source pre{max-width:100%;overflow:auto;white-space:pre;max-height:400px;font-size:13px}
+.amp-actions{display:flex;gap:9px;flex-wrap:wrap}
+.amp-actions button{min-height:42px}
+.amp-workshop .feedback{font-size:14px;overflow-wrap:anywhere}
+@media(max-width:760px){.amp-actions button{width:100%}.amp-controls{grid-template-columns:1fr}}
+
+/* Document export controls and native text-selectable browser PDF printing */
+.submission-workflow{margin:18px 0}
+.submission-workflow summary{cursor:pointer;font-size:18px;line-height:1.35;font-weight:700}
+.submission-content{padding-top:16px}
+.submission-content p,.submission-content label,.submission-content li{font-size:14px;line-height:1.55}
+.submission-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:13px;margin:14px 0}
+.submission-fields label,.submission-content>label:not(.submission-check){display:block;font-weight:650;margin:0 0 7px}
+.submission-fields input{width:100%;max-width:100%;min-height:44px;padding:9px;font-size:16px;background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.submission-content input[type=file]{font-size:14px;width:100%;max-width:100%;padding:11px 0}
+.submission-check{display:flex;align-items:start;gap:9px;margin:14px 0}
+.submission-check input{margin-top:5px;flex:0 0 auto}
+.submission-actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+.submission-actions button,.submission-content>button{min-height:42px}
+#submission-items{list-style:none;padding:0;margin:7px 0}
+#submission-items li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+#submission-items button{min-height:38px;flex:0 0 auto}
+.submission-caveat{margin-top:18px}
+#submission-print{display:none}
+@media(max-width:760px){.submission-fields{grid-template-columns:1fr}.submission-actions button{flex:1}}
+@media print{
+  @page{size:A4;margin:18mm}
+  body{background:white!important;color:#111!important;display:block!important}
+  body > *:not(#submission-print){display:none!important}
+  #submission-print{display:block!important;color:#111!important;max-width:none!important;font-family:Arial,sans-serif}
+  #submission-print-title{font-size:15pt;font-weight:700;overflow-wrap:anywhere;margin:0 0 5mm}
+  #submission-print-meta{font-size:10pt;margin:0 0 8mm}
+  #submission-print-source{font-family:Consolas,"DejaVu Sans Mono",monospace;font-size:9.5pt;line-height:1.45;
+    white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;color:#111!important;margin:0}
+}
+
+
+/* Canonical lesson depth panel: actual code/proof content, no secondary progress UI. */
+.completion-depth[hidden],.completion-depth [hidden]{display:none!important}
+.completion-depth{border-top:1px solid var(--line);padding-top:22px}
+.completion-depth h2{font-size:21px;line-height:1.35;margin:0 0 14px}
+.completion-depth h3{font-size:17px;line-height:1.35;margin:20px 0 9px}
+.completion-depth p,.completion-depth ol,.completion-depth label{font-size:14px;line-height:1.6}
+.completion-depth label{display:block;font-weight:650;margin:12px 0 6px}
+.completion-depth select{width:100%;max-width:100%;min-height:44px;background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:8px;font-size:15px}
+.completion-depth pre{max-width:100%;overflow:auto;white-space:pre;font:13px/1.55 Consolas,monospace}
+.completion-depth ol{padding-left:24px}
+.completion-depth li{margin:0 0 8px}
+.completion-actions{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}
+.completion-actions button,.completion-depth button{min-height:42px}
+.completion-source{color:var(--muted)}
+.completion-warning{border-left:3px solid var(--ink);padding:10px 13px}
+#completion-proofs,#completion-experiments{border-top:1px solid var(--line);margin-top:20px;padding-top:12px}
+@media(max-width:760px){.completion-actions button,.completion-depth>div>button{width:100%}}
+
+
+.course-backup{margin:18px 0}
+.course-backup summary{cursor:pointer;font-size:18px;font-weight:700}
+.course-backup>p,.course-backup>label{display:block;font-size:14px;line-height:1.55;margin:12px 0}
+.course-backup>label{font-weight:650}
+.course-backup button{min-height:44px;margin:8px 8px 8px 0}
+.course-backup input[type=file],.course-backup select{width:100%;max-width:100%;min-height:44px;font-size:15px}
+.course-backup select{border:1px solid var(--line);color:var(--ink);background:var(--surface);padding:8px}
+.course-backup .backup-confirm{display:flex;align-items:start;gap:10px;font-weight:500}
+@media(max-width:760px){.course-backup button{width:100%}}
