@@ -1193,6 +1193,7 @@ try {
     await plotPage.waitForFunction(()=>document.querySelector("#plot-image").naturalWidth>0);
     assert.match(await r2Locator(plotPage,"#plot-status").innerText(),/local preview only/);
     await r2Locator(plotPage,"#plot-file").setInputFiles({name:"evil.svg",mimeType:"image/svg+xml",buffer:Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>')});
+    await plotPage.waitForFunction(()=>document.querySelector("#plot-status")?.textContent?.includes("unsupported elements"));
     assert.match(await r2Locator(plotPage,"#plot-status").innerText(),/unsupported elements/);
     assert.equal(await r2Locator(plotPage,"#plot-image").isVisible(),false);
     const pngArray=await plotPage.evaluate(async()=>{

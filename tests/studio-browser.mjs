@@ -44,7 +44,12 @@ try{
     assert.ok(await page.locator("#r2-lab-choice option").count()>0);
     const before=await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1"));
     await page.locator('[data-r2-stage="code"]').click();
-    assert.equal(await page.locator("#coding-title").isVisible(),true);
+    assert.equal(await page.locator("#scratch-code").isVisible(),true);
+    // On phones, full instructions are intentionally collapsed above the real editor.
+    if(viewport.width<=767){
+      await page.locator(".r2-instructions > summary").click();
+      assert.equal(await page.locator("#coding-title").isVisible(),true);
+    }else assert.equal(await page.locator("#coding-title").isVisible(),true);
     await page.locator("#scratch-code").fill('println("studio draft")');
     assert.equal(await page.locator("#compiler-panel").isVisible(),true);
     assert.equal(await page.locator("#scratch-code").inputValue(),'println("studio draft")');
