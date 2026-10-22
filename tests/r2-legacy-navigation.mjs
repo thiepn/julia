@@ -113,6 +113,8 @@ function wrap(page,target,sourceSelector=""){
         return page.locator("#r2-mobile-next").click(...args);
       return member.apply(locator,args);
     };
+    if(name==="getByRole")return (role,options={})=>
+      wrap(page,member.call(locator,role,{...options,includeHidden:true}));
     if(childLocators.has(name))return (...args)=>wrap(page,member.apply(locator,args));
     return member.bind(locator);
   }});
