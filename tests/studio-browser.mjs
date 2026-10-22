@@ -39,11 +39,11 @@ try{
     await page.locator("#lesson-jump").selectOption("09");
     await page.getByRole("heading",{name:"Floating-point numbers"}).waitFor();
     assert.equal(await page.locator("#lesson-jump").inputValue(),"09");
-    await page.locator('[data-r2-stage="explore"]').click();
+    await page.locator('button[data-r2-stage="explore"]').click();
     assert.equal(await page.locator("#r2-stage-explore").isVisible(),true);
     assert.ok(await page.locator("#r2-lab-choice option").count()>0);
     const before=await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1"));
-    await page.locator('[data-r2-stage="code"]').click();
+    await page.locator('button[data-r2-stage="code"]').click();
     assert.equal(await page.locator("#scratch-code").isVisible(),true);
     // On phones, full instructions are intentionally collapsed above the real editor.
     if(viewport.width<=767){
@@ -59,7 +59,7 @@ try{
       await page.locator("#r2-course-open").click();
       assert.equal(await page.locator("#nav-items").isVisible(),true);
       await page.locator('.lesson-link[href="#lesson/09"]').click();
-      await page.locator('[data-r2-stage="code"]').click();
+      await page.locator('button[data-r2-stage="code"]').click();
       assert.equal(await page.locator("#scratch-code").inputValue(),'println("studio draft")');
     }
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
