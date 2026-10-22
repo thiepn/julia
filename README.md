@@ -301,3 +301,19 @@ before discarding written reasoning. For coding transfers, **Use starter in less
 editor** explicitly loads the selected original depth starter via the canonical
 lesson draft saving path; edited drafts require confirmation and storage failures
 never overwrite the editor. No new progress or execution data is persisted.
+
+## Julia Lab studio (app-wide visual + usability pass)
+
+The original 16 lessons, tools, runtime and storage remain canonical. The studio
+presentation adds a consistent editorial typographic scale, desktop course navigation,
+accessible lesson picker, jump controls for learning/quick checks/coding/runner,
+responsive mobile bottom navigation, and an on-demand directory of the experiments
+available for the current lesson. All existing lab DOM and IDs remain in place;
+nothing is duplicated or artificially credited.
+
+Mobile shows the existing Continue and mixed-practice actions directly; the 16-item
+course directory expands only when requested. The current lesson is also selected in
+the persistent picker. Drafts, imports, course backups, proof attempts and numerical
+experiments keep their original storage and execution boundaries. Keyboard focus
+moves to the chosen section and the browser's preferred reduced motion is respected.
+No new accounts, analytics, tracking or external design dependencies.

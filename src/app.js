@@ -1,4 +1,5 @@
 import {initSemesterRehearsal} from "./semester-rehearsal-view.js";
+import {initStudyNavigation} from "./study-navigation.js";
 import {lessons, stages} from "./lessons.js";
 import {initLocalRunner} from "./local-runner-client.js";
 import {initSubmissionWorkflow} from "./submission-workflow.js";
@@ -93,6 +94,7 @@ $("#semester-rehearsal-return").addEventListener("click",()=>{
     $("#semester-rehearsal-return").hidden=true;
   }
 });
+const studyNavigation=initStudyNavigation({lessons,navigate});
 const courseBackup=initCourseBackup({download:downloadLocalJulia,isEmbedActive:()=>Boolean(readEmbedUrl()),
   disableEmbed:()=>$("#local-runner-disable-embed").click()});
 const progress = readProgress();
@@ -463,6 +465,7 @@ function render() {
   $("#output-input").value = "";
   $("#output-feedback").textContent = "";
   renderQuestions(); renderSidebar();
+  studyNavigation.sync(l.id);
   window.scrollTo(0, 0);
   if(pendingRehearsal && pendingRehearsal.lesson===l.id){
     const selected=pendingRehearsal;
