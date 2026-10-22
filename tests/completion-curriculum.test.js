@@ -25,7 +25,7 @@ test("Julia tests are derived from the existing draft, not a second editor or a 
  assert.match(file.filename,/\.jl$/);
  assert.throws(()=>buildCompletionTests("no_such_track",source));
  assert.throws(()=>buildCompletionTests("precision",source),/no automatic/);
- assert.throws(()=>buildCompletionTests("matrix_shapes",""),/nonempty/);
+ assert.throws(()=>buildCompletionTests("matrix_shapes",""),/current Julia draft/);
 });
 test("official UE02 finite difference equality is a flagged interpretation, never silently altered",()=>{
  const warning=PROOF_SCAFFOLDS.find(p=>p.id==="UE02-derivative");
