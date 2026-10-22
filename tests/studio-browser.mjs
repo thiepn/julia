@@ -41,10 +41,10 @@ try{
     await page.locator("#lab-directory summary").click();
     assert.ok(await page.locator("#lab-shortcuts button").count()>0);
     const before=await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1"));
-    await page.locator('[data-study-jump="code"]').last().click();
+    await page.locator('[data-study-jump="code"]:visible').first().click();
     assert.equal(await page.locator("#coding-title").isVisible(),true);
     await page.locator("#scratch-code").fill('println("studio draft")');
-    await page.locator('[data-study-jump="run"]').last().click();
+    await page.locator('[data-study-jump="run"]:visible').first().click();
     assert.equal(await page.locator("#compiler-panel").isVisible(),true);
     assert.equal(await page.locator("#scratch-code").inputValue(),'println("studio draft")');
     assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1")),before);
