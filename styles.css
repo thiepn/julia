@@ -851,3 +851,18 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 @media print{.r2-global-nav,.r2-stage-tabs,.r2-mobile-action,.r2-lesson-picker,
   .r2-code-layout,.r2-course,.r2-mixed,.r2-utilities{display:none!important}
   body{padding:0;background:#fff}}
+
+
+/* R2 responsive reflow: shrink the lesson-picker's flex intrinsic width and
+   contain code/math content inside its local scrolling surface. */
+@media(max-width:767px){
+  .r2-lesson-head,.r2-stage-content,.r2-activity,.r2-learn .paper,
+  .r2-code-layout,.r2-instructions,.r2-editor{
+    min-width:0;max-width:100%;box-sizing:border-box}
+  .r2-lesson-picker{display:grid;grid-template-columns:auto minmax(0,1fr);
+    gap:10px;width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+  .r2-lesson-picker select{width:100%;min-width:0;max-width:100%}
+  .r2-lesson-head .lesson-meta>*{min-width:0;overflow-wrap:anywhere}
+  .r2-lesson-head h1{overflow-wrap:break-word}
+  .r2-learn pre.code,.r2-instructions pre.code{min-width:0;max-width:100%;overflow-x:auto}
+}

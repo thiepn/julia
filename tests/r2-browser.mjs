@@ -42,6 +42,13 @@ try{
       };
       const noOverflow=async label=>{
         const d=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+        if(d>2){const offenders=await page.evaluate(()=>[...document.querySelectorAll("body *")]
+          .map(e=>({tag:e.tagName,id:e.id,cls:typeof e.className==="string"?e.className.slice(0,65):"",
+            x:Math.round(e.getBoundingClientRect().x),
+            right:Math.round(e.getBoundingClientRect().right),width:Math.round(e.getBoundingClientRect().width),
+            display:getComputedStyle(e).display}))
+          .filter(x=>x.display!=="none"&&(x.right>innerWidth+2||x.x< -2))
+          .sort((a,b)=>b.right-a.right).slice(0,14));console.log("R2 OVERFLOW ELEMENTS",device.name,scheme,label,JSON.stringify(offenders));}
         assert.ok(d<=2,device.name+" "+scheme+" "+label+" horizontal overflow: "+d);
       };
       await page.goto(origin+"/#course");
