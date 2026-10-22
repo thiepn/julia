@@ -36,7 +36,8 @@ async function showCanonical(page,locator) {
     const mixedIndex=mixedTask?[...mixedTask.parentElement.children].indexOf(mixedTask):null;
     const closed=[];
     for(let parent=el.parentElement;parent;parent=parent.parentElement)
-      if(parent.tagName==="DETAILS"&&!parent.open){
+      if(parent.tagName==="DETAILS"&&!parent.open&&
+         !(el.tagName==="SUMMARY"&&parent===el.parentElement)){
         closed.unshift([...document.querySelectorAll("details")].indexOf(parent));
       }
     let view=null;
