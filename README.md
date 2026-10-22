@@ -276,3 +276,21 @@ This action never executes or overwrites the separate canonical programming draf
 ## Repair lesson 04: visual evidence from original Plots.jl
 
 The original debugging lesson on retaining two curves now saves `repair-curves.png` and prints the count of actual Plots.jl series. The broken code outputs `series=1` and the original reference repair outputs `series=2`; examine the real plotted lines rather than treating successful execution as proof of correctness. Julia Lab displays and validates the local runner's temporary PNG/SVG output **beside the repair editor**, using the same signature checks and SVG sanitization as the existing local Julia image previews. Figures are never uploaded, graded or included in assignment evidence; clearing, changing or resetting a repair revokes transient figure URLs. The existing Plots.jl dependency must be installed in the local Julia environment. Alternate legitimate repairs remain acceptable.
+
+
+## Mixed semester rehearsal (unmerged enhancement)
+
+**Mixed semester practice** builds a six-exercise cumulative set: one mathematical
+reasoning task and one Julia coding transfer for each of the three officially
+announced WS 2026/27 AMP topics (machine arithmetic/error analysis, LR/QR
+linear systems, and linear least squares). Questions and proof approaches are
+selected from the original lesson-linked depth tasks; no official exam problems,
+future worksheet statements or answer keys are invented.
+
+The reasoning box is temporary for the current tab. **Show approach** reveals
+the original proof plan, not a complete official solution; **Open exercise in
+lesson** selects the canonical lesson's existing proof/Julia depth task. New
+mixed sets change the selection without touching saved drafts, grades, backups,
+the Julia runner or ILIAS. Actual Julia coding validation remains in the
+original local Test workflow. This is ungraded independent exam practice,
+not a replacement for official exercises or a predictor of examination results.

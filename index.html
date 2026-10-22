@@ -17,7 +17,7 @@
   </header>
   <div class="shell">
     <nav class="sidebar" aria-label="Lessons">
-      <div class="sidebar-head"><span class="eyebrow">YOUR COURSE</span><h2>Learning path</h2><div class="progress-bar"><span id="progress-fill"></span></div><p id="progress-label">0 of 16 lessons reviewed</p><button type="button" class="continue-button" id="continue-lesson">Continue lesson 01 · Variables & numbers</button><p id="continue-detail" class="continue-detail">Übung 1 essentials</p></div>
+      <div class="sidebar-head"><span class="eyebrow">YOUR COURSE</span><h2>Learning path</h2><div class="progress-bar"><span id="progress-fill"></span></div><p id="progress-label">0 of 16 lessons reviewed</p><button type="button" class="continue-button" id="continue-lesson">Continue lesson 01 · Variables & numbers</button><p id="continue-detail" class="continue-detail">Übung 1 essentials</p><button type="button" class="secondary rehearsal-open" id="semester-rehearsal-open">Mixed semester practice</button></div>
       <div id="nav-items"></div>
       <p class="sidebar-foot">Practice material only. Consult the official weekly exercise sheets for required submissions.</p>
     </nav>
@@ -37,6 +37,14 @@
         <div id="questions"></div>
         <p class="concept-brief" id="concept-brief" role="status" aria-live="polite"></p>
       </section>
+      <details class="paper semester-rehearsal" id="semester-rehearsal">
+        <summary>Mixed semester rehearsal</summary>
+        <div class="rehearsal-topline">
+          <p id="semester-rehearsal-status" role="status"></p>
+          <button type="button" class="secondary" id="semester-rehearsal-new">New mixed set</button>
+        </div>
+        <div id="semester-rehearsal-items"></div>
+      </details>
       <section class="paper" aria-labelledby="coding-title">
         <div class="section-title"><span class="section-num">03</span><h2 id="coding-title">Write Julia yourself</h2></div>
         <div class="practice-switch">

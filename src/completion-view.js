@@ -135,5 +135,17 @@ export function initCompletionDepth({doc=document,download,getDraft,runLocalTest
    if(currentExperiments.length){
      options(experimentSelect,currentExperiments.map(t=>[t.id,t.title]));renderExperiment();
    }
- }};
+ },
+ focusItem(kind,id){
+   const isProof=kind==="proof";
+   const options=isProof?currentProofs:currentTracks;
+   if(!options.some(x=>x.id===id))return false;
+   const select=isProof?proofSelect:trackSelect;
+   select.value=id;
+   if(isProof)renderProof();else renderTrack();
+   section.scrollIntoView({behavior:"auto",block:"start"});
+   select.focus({preventScroll:true});
+   return true;
+ }
+ };
 }

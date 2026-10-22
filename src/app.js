@@ -1,3 +1,4 @@
+import {initSemesterRehearsal} from "./semester-rehearsal-view.js";
 import {lessons, stages} from "./lessons.js";
 import {initLocalRunner} from "./local-runner-client.js";
 import {initSubmissionWorkflow} from "./submission-workflow.js";
@@ -54,6 +55,11 @@ const depthPractice=initCompletionDepth({download:downloadLocalJulia,getDraft:()
   runLocalTests:options=>localRunner.runTestScript(options),
   runLocalExperiment:options=>localRunner.runExperimentScript(options),
   getIdentity:()=>current().id+":"+practiceVariant});
+let pendingRehearsal=null;
+const semesterRehearsal=initSemesterRehearsal({onOpen:task=>{
+  pendingRehearsal=task;
+  navigate(lessons.findIndex(l=>l.id===task.lesson));
+}});
 const courseBackup=initCourseBackup({download:downloadLocalJulia,isEmbedActive:()=>Boolean(readEmbedUrl()),
   disableEmbed:()=>$("#local-runner-disable-embed").click()});
 const progress = readProgress();
@@ -425,6 +431,11 @@ function render() {
   $("#output-feedback").textContent = "";
   renderQuestions(); renderSidebar();
   window.scrollTo(0, 0);
+  if(pendingRehearsal && pendingRehearsal.lesson===l.id){
+    const selected=pendingRehearsal;
+    pendingRehearsal=null;
+    depthPractice.focusItem(selected.kind,selected.id);
+  }
   document.title = l.title + " — Julia Lab";
 }
 function setupEmbed() {
