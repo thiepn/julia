@@ -1,5 +1,5 @@
 import {initSemesterRehearsal} from "./semester-rehearsal-view.js";
-import {initStudyNavigation} from "./study-navigation.js";
+import {initR2Studio} from "./r2-studio.js";
 import {lessons, stages} from "./lessons.js";
 import {initLocalRunner} from "./local-runner-client.js";
 import {initSubmissionWorkflow} from "./submission-workflow.js";
@@ -40,6 +40,7 @@ let currentIndex = 0;
 let practiceVariant = "original";
 let unsavedPractice = false;
 const current = () => lessons[currentIndex];
+const r2=initR2Studio({lessons,navigate});
 const localRunner=initLocalRunner({getDraft:()=>$("#scratch-code").value,
   getIdentity:()=>current().id+":"+practiceVariant,embedActive:()=>Boolean(readEmbedUrl()),
   onResult:data=>submission.onRun(data),onClear:()=>submission.invalidateRun()});
@@ -81,6 +82,7 @@ let pendingRehearsal=null;
 const semesterRehearsal=initSemesterRehearsal({
   onOpen:task=>{
     pendingRehearsal=task;
+    r2.setNextStage("explore");
     $("#semester-rehearsal-return").hidden=false;
     navigate(lessons.findIndex(l=>l.id===task.lesson));
   },
@@ -90,11 +92,11 @@ const semesterRehearsal=initSemesterRehearsal({
   }
 });
 $("#semester-rehearsal-return").addEventListener("click",()=>{
+  r2.show("mixed");
   if(!semesterRehearsal.returnToActive()){
     $("#semester-rehearsal-return").hidden=true;
   }
 });
-const studyNavigation=initStudyNavigation({lessons,navigate});
 const courseBackup=initCourseBackup({download:downloadLocalJulia,isEmbedActive:()=>Boolean(readEmbedUrl()),
   disableEmbed:()=>$("#local-runner-disable-embed").click()});
 const progress = readProgress();
@@ -149,7 +151,7 @@ function renderContinue() {
 }
 
 function lessonIndexFromHash() {
-  const match = location.hash.match(/^#lesson\/(\d{2})$/);
+  const match = location.hash.match(/^#(?:lesson|mixed|utilities)\/(\d{2})$/);
   return Math.max(0, lessons.findIndex(l => l.id === (match?.[1] || "01")));
 }
 function navigate(index) {
@@ -465,11 +467,12 @@ function render() {
   $("#output-input").value = "";
   $("#output-feedback").textContent = "";
   renderQuestions(); renderSidebar();
-  studyNavigation.sync(l.id);
+  r2.update(l.id);
   window.scrollTo(0, 0);
   if(pendingRehearsal && pendingRehearsal.lesson===l.id){
     const selected=pendingRehearsal;
     pendingRehearsal=null;
+    r2.selectLab("completion-depth");
     depthPractice.focusItem(selected.kind,selected.id);
   }
   document.title = l.title + " — Julia Lab";
@@ -914,8 +917,13 @@ $("#default-embed").addEventListener("click", () => {
   if (writeEmbedUrl(null)) location.reload();
   else $("#settings-feedback").textContent = "Could not restore the course embed.";
 });
-window.addEventListener("hashchange", render);
-if (!location.hash) location.hash = "#lesson/01";
+window.addEventListener("hashchange",()=>{
+  if(location.hash==="#course")r2.show("course");
+  else if(/^#mixed(?:\/\d{2})?$/.test(location.hash))r2.show("mixed");
+  else if(/^#utilities(?:\/\d{2})?$/.test(location.hash))r2.show("utilities");
+  else render();
+});
+if (!location.hash) location.hash = "#course";
 initNumericalExplorer();
 initEliminationLab();
 initPrecisionLab();
@@ -925,5 +933,8 @@ initProgramTrace();
 initFactorLab();
 initSensitivityLab();
 render();
+if(location.hash==="#course")r2.show("course");
+else if(/^#mixed(?:\/\d{2})?$/.test(location.hash))r2.show("mixed");
+else if(/^#utilities(?:\/\d{2})?$/.test(location.hash))r2.show("utilities");
 setupEmbed();
 initOfflineStudy();

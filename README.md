@@ -317,3 +317,10 @@ the persistent picker. Drafts, imports, course backups, proof attempts and numer
 experiments keep their original storage and execution boundaries. Keyboard focus
 moves to the chosen section and the browser's preferred reduced motion is respected.
 No new accounts, analytics, tracking or external design dependencies.
+
+
+## R2 Interactive Mathematics Studio (draft)
+
+The R2 interface reorganizes the **existing** 16 lesson IDs and original question and coding data into Course / Mixed practice and four in-lesson stages: Learn, Check, Code and Explore. The original lesson HTML IDs are retained and their nodes are moved (not copied) by `src/r2-studio.js`. Canonical drafts/progress/backup and the local Julia execution engine are unchanged. The executable code editor and genuine local-runner status/output now share the Code workspace; numerical labs are selected in Explore. ILIAS PDF/ZIP, offline, JDoodle privacy and backup are available from Tools & settings. The legacy styles are consolidated into the one active `styles.css` file; `studio.css` is no longer loaded or precached.
+
+R2 has no simulated execution, mastery or university grade. Lesson deep links remain `#lesson/01` through `#lesson/16`; default navigation is `#course`.

@@ -116,3 +116,30 @@ jobs:
         run: node tests/repair-plot-browser.mjs
       - name: Private AMP submission ZIP includes genuine local Plots.jl images
         run: AMP_SUBMISSION_REAL_PLOTS=1 node tests/submission-browser.mjs
+
+  r2-visual:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install standalone Chromium browser runner
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.56.1
+          npx playwright install chromium
+      - name: R2 responsive and real screenshot acceptance
+        run: R2_SCREENSHOTS=1 node tests/r2-browser.mjs
+      - name: R2 legacy original Chromium learner acceptance (no Julia install needed)
+        run: node tests/browser.mjs
+      - name: R2 backup and restore navigation acceptance
+        run: node tests/course-backup-browser.mjs
+      - name: Upload screenshot review set
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r2-visual-qa
+          path: r2-screenshots/
+          if-no-files-found: ignore
+          retention-days: 7

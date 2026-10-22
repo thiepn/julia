@@ -3,6 +3,7 @@ import {createServer} from "node:http";
 import {readFile} from "node:fs/promises";
 import {resolve,extname,sep} from "node:path";
 import {chromium} from "playwright";
+import {r2Locator,r2Role} from "./r2-legacy-navigation.mjs";
 const root=resolve(".");
 const types={".js":"text/javascript; charset=utf-8",".html":"text/html; charset=utf-8",".css":"text/css; charset=utf-8"};
 const server=createServer(async(req,res)=>{
@@ -25,40 +26,63 @@ try{
   page.on("pageerror",e=>errors.push(e.message));
   await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",r=>
    r.fulfill({status:200,contentType:"text/javascript",body:"window.__mockJDoodle=true;"}));
+  // Backup or embed-setting actions can leave R2 in Tools after a reload.
+  // Re-enter through the actual Course/lesson navigation before asserting.
+  async function returnToLesson(){
+    // The settings and restore actions reload the page asynchronously.
+    // Wait for the original R2 controller to mount before navigating.
+    await page.locator("#r2-course").waitFor({state:"attached"});
+    if(!(await page.locator("#lesson-main").isVisible())){
+      await page.locator("#r2-course-open").click();
+      await page.locator("#r2-course").waitFor({state:"visible"});
+      await page.locator('.lesson-link[href="#lesson/02"]').click();
+      // The lesson click changes the hash before the view finishes rendering.
+      await page.locator("#lesson-main").waitFor({state:"visible"});
+    }
+    const observed=await page.evaluate(()=>({
+      route:location.hash,view:document.body.dataset.r2View,
+      mainHidden:document.getElementById("lesson-main").hidden,
+      headingHidden:document.getElementById("lesson-title").hidden,
+      title:document.getElementById("lesson-title").textContent,
+      courseHidden:document.getElementById("r2-course").hidden
+    }));
+    console.log("BACKUP_R2_ROUTE",JSON.stringify(observed));
+    await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
+  }
   await page.goto(origin+"/#lesson/02");
-  await page.getByRole("heading",{name:"Vectors & indexing"}).waitFor();
-  await page.locator("#course-backup").evaluate(el=>el.open=true);
-  assert.equal(await page.locator("#course-backup-export").isDisabled(),true);
-  await page.locator("#course-backup-disable-embed").click();
-  await page.getByRole("heading",{name:"Vectors & indexing"}).waitFor();
-  await page.locator("#course-backup").evaluate(el=>el.open=true);
-  assert.equal(await page.locator("#course-backup-export").isEnabled(),true);
+  await returnToLesson();
+  await r2Locator(page,"#course-backup").evaluate(el=>el.open=true);
+  assert.equal(await r2Locator(page,"#course-backup-export").isDisabled(),true);
+  await Promise.all([page.waitForNavigation({waitUntil:"load"}),r2Locator(page,"#course-backup-disable-embed").click()]);
+  await returnToLesson();
+  await r2Locator(page,"#course-backup").evaluate(el=>el.open=true);
+  assert.equal(await r2Locator(page,"#course-backup-export").isEnabled(),true);
   const code='println("δ, π, α")';
-  await page.locator("#scratch-code").fill(code);
-  const [download]=await Promise.all([page.waitForEvent("download"),page.locator("#course-backup-export").click()]);
+  await r2Locator(page,"#scratch-code").fill(code);
+  const [download]=await Promise.all([page.waitForEvent("download"),r2Locator(page,"#course-backup-export").click()]);
   assert.equal(download.suggestedFilename(),"AMP-Julia-course-backup-v1.json");
   const backupText=await readFile(await download.path(),"utf8");
   const data=JSON.parse(backupText);
   const key="amp-julia-lab:draft:v1:02";
   assert.equal(data.entries[key],code);
   assert.ok(!backupText.includes("jdoodle")&&!backupText.includes("runner-token"));
-  await page.locator("#scratch-code").fill('println("new work")');
-  await page.locator("#course-backup-file").setInputFiles({name:"course.json",mimeType:"application/json",buffer:Buffer.from(backupText)});
+  await r2Locator(page,"#scratch-code").fill('println("new work")');
+  await r2Locator(page,"#course-backup-file").setInputFiles({name:"course.json",mimeType:"application/json",buffer:Buffer.from(backupText)});
   await page.waitForFunction(()=>document.getElementById("course-backup-preview").textContent.includes("conflict"));
-  assert.match(await page.locator("#course-backup-preview").innerText(),/1 conflict/);
-  await page.locator("#course-backup-restore").click();
-  await page.getByRole("heading",{name:"Vectors & indexing"}).waitFor();
-  assert.equal(await page.locator("#scratch-code").inputValue(),'println("new work")');
-  await page.locator("#course-backup").evaluate(el=>el.open=true);
-  await page.locator("#course-backup-file").setInputFiles({name:"course.json",mimeType:"application/json",buffer:Buffer.from(backupText)});
+  assert.match(await r2Locator(page,"#course-backup-preview").innerText(),/1 conflict/);
+  await Promise.all([page.waitForNavigation({waitUntil:"load"}),r2Locator(page,"#course-backup-restore").click()]);
+  await returnToLesson();
+  assert.equal(await r2Locator(page,"#scratch-code").inputValue(),'println("new work")');
+  await r2Locator(page,"#course-backup").evaluate(el=>el.open=true);
+  await r2Locator(page,"#course-backup-file").setInputFiles({name:"course.json",mimeType:"application/json",buffer:Buffer.from(backupText)});
   await page.waitForFunction(()=>document.getElementById("course-backup-preview").textContent.includes("conflict"));
-  await page.locator("#course-backup-mode").selectOption("replace");
-  await page.locator("#course-backup-restore").click();
-  assert.match(await page.locator("#course-backup-status").innerText(),/Confirm replacing/);
-  await page.locator("#course-backup-approval").check();
-  await page.locator("#course-backup-restore").click();
-  await page.getByRole("heading",{name:"Vectors & indexing"}).waitFor();
-  assert.equal(await page.locator("#scratch-code").inputValue(),code);
+  await r2Locator(page,"#course-backup-mode").selectOption("replace");
+  await r2Locator(page,"#course-backup-restore").click();
+  assert.match(await r2Locator(page,"#course-backup-status").innerText(),/Confirm replacing/);
+  await r2Locator(page,"#course-backup-approval").check();
+  await Promise.all([page.waitForNavigation({waitUntil:"load"}),r2Locator(page,"#course-backup-restore").click()]);
+  await returnToLesson();
+  assert.equal(await r2Locator(page,"#scratch-code").inputValue(),code);
   assert.ok((await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth))<=2,device.name+" overflow");
   assert.deepEqual(errors,[]);
   count++;

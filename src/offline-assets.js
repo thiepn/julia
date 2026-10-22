@@ -1,10 +1,9 @@
 // Immutable release-scoped static-study shell. Add new first-party assets here before shipping.
 // No student drafts, runner outputs, external scripts, tokens, uploads, or account data.
-export const OFFLINE_CACHE_NAME="amp-julia-offline-20261022-8";
+export const OFFLINE_CACHE_NAME="amp-julia-offline-r2-20261022-1";
 export const OFFLINE_ASSETS=Object.freeze([
   "index.html",
   "styles.css",
-  "studio.css",
   "app.webmanifest",
   "assets/julia-lab.svg",
   "assets/julia-lab-192.png",
@@ -15,7 +14,7 @@ export const OFFLINE_ASSETS=Object.freeze([
   "src/amp-root-model.js",
   "src/amp-workshops.js",
   "src/app.js",
-  "src/study-navigation.js",
+  "src/r2-studio.js",
   "src/checks.js",
   "src/completion-experiments.js",
   "src/completion-proofs.js",
