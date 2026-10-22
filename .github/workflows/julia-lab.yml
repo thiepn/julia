@@ -108,5 +108,7 @@ jobs:
         run: node tests/real-julia-plot-browser.mjs
       - name: Local runner executes real plot source in desktop/mobile Chromium
         run: node tests/local-runner-browser.mjs
+      - name: Display original plotting repair figures with genuine Plots.jl in desktop/mobile Chromium
+        run: node tests/repair-plot-browser.mjs
       - name: Private AMP submission ZIP includes genuine local Plots.jl images
         run: AMP_SUBMISSION_REAL_PLOTS=1 node tests/submission-browser.mjs
