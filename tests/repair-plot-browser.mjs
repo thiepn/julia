@@ -31,14 +31,14 @@ try{
    await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>route.fulfill({status:200,contentType:"text/javascript",body:"window.__mockJDoodle=true;"}));
    await page.goto(origin+"/#lesson/04");
    await r2Role(page,"heading",{name:"Plot mathematical functions"}).waitFor();
-   await r2Locator(page,'[data-r2-stage="code"]').click();
+   await r2Locator(page,'button[data-r2-stage="code"]').click();
    await r2Locator(page,"#local-runner-disable-embed").click();
    await r2Role(page,"heading",{name:"Plot mathematical functions"}).waitFor();
-   await r2Locator(page,'[data-r2-stage="code"]').click();
+   await r2Locator(page,'button[data-r2-stage="code"]').click();
    await r2Locator(page,"#local-runner-token").fill(token);
    const main='println("main lesson draft unchanged")';
    await r2Locator(page,"#scratch-code").fill(main);
-   await r2Locator(page,'[data-r2-stage="explore"]').click();
+   await r2Locator(page,'button[data-r2-stage="explore"]').click();
    await r2Locator(page,"#r2-lab-choice").selectOption("repair-lab");
    const progress=await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1"));
    for(const [code,count] of [[source.broken,1],[source.reference,2]]){

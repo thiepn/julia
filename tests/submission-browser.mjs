@@ -70,7 +70,7 @@ try{
       'println("AMP-REAL-PLOT-OK")'
     ].join("\n"): '# UTF-8: α, ε, π\nprintln("AMP-REAL-CODE-OK")\nprintln(6 * 7)';
     await page.goto(origin+"/#lesson/04");
-    await r2Locator(page,'[data-r2-stage="code"]').click();
+    await r2Locator(page,'button[data-r2-stage="code"]').click();
     await r2Locator(page,"#scratch-code").fill(source);
     await r2Locator(page,"#local-runner-token").fill("fixture-session-code-only-in-ci");
     await r2Locator(page,"#local-runner-run").click();
@@ -109,7 +109,7 @@ try{
     await r2Locator(page,"#submission-task").fill("2.2b");
     const nextSource='function f(t)\n    return sqrt(1+t) - 1\nend\n# Print exactly this source in PDF';
     await page.goto(origin+"/#lesson/09");
-    await r2Locator(page,'[data-r2-stage="code"]').click();
+    await r2Locator(page,'button[data-r2-stage="code"]').click();
     await r2Locator(page,"#scratch-code").fill(nextSource);
     await r2Locator(page,"#r2-utilities-open").click();
     await r2Locator(page,"#submission-workflow").evaluate(el=>el.open=true);

@@ -72,7 +72,7 @@ try{
       await page.locator("#r2-question-next").click();
       assert.match(await page.locator("#r2-question-index").innerText(),/Question 2 of 3/);
       await noOverflow("check");await shot("check");
-      await page.locator('[data-r2-stage="code"]').click();
+      await page.locator('button[data-r2-stage="code"]').click();
       const editor=page.locator("#scratch-code");
       assert.equal(await editor.isVisible(),true);
       assert.equal(await page.locator("#compiler-panel").isVisible(),true);
@@ -84,10 +84,10 @@ try{
       assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:draft:v1:09")),
         'println("R2 original persisted source")');
       await page.locator('[data-r2-stage="learn"]').click();
-      await page.locator('[data-r2-stage="code"]').click();
+      await page.locator('button[data-r2-stage="code"]').click();
       assert.equal(await editor.inputValue(),'println("R2 original persisted source")');
       await noOverflow("code");await shot("code");
-      await page.locator('[data-r2-stage="explore"]').click();
+      await page.locator('button[data-r2-stage="explore"]').click();
       assert.equal(await page.locator("#r2-stage-explore").isVisible(),true);
       assert.ok(await page.locator("#r2-lab-choice option").count()>=1);
       await noOverflow("explore");await shot("explore");
@@ -113,9 +113,9 @@ try{
           assert.equal(await page.locator("#r2-stage-learn").isVisible(),true);
           await page.locator('[data-r2-stage="check"]').click();
           assert.equal(await page.locator("#questions .question:visible").count(),1);
-          await page.locator('[data-r2-stage="code"]').click();
+          await page.locator('button[data-r2-stage="code"]').click();
           assert.equal(await page.locator("#scratch-code").isVisible(),true);
-          await page.locator('[data-r2-stage="explore"]').click();
+          await page.locator('button[data-r2-stage="explore"]').click();
           assert.ok(await page.locator("#r2-lab-choice option").count()>=1);
           assert.equal(await page.locator("#repair-lab").count(),1);
           await noOverflow("all-16-lesson-"+id);
