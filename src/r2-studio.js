@@ -45,6 +45,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     '<span id="r2-lesson-unit"></span></div>');
   const toolbar=doc.querySelector(".study-toolbar");
   const picker=toolbar.querySelector(".study-lesson-select");
+  picker.classList.add("r2-lesson-picker");
   lessonHead.append(picker,get("lesson-meta"),get("lesson-title"),get("lesson-goal"));
   toolbar.remove();
   const tabs=node("nav","r2-stage-tabs",'<button type="button" data-r2-stage="learn">01 <span>Learn</span></button>'+
