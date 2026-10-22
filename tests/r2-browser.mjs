@@ -99,6 +99,7 @@ try{
         for(const id of Array.from({length:16},(_,i)=>String(i+1).padStart(2,"0"))){
           await page.locator("#r2-course-open").click();
           await page.locator('.lesson-link[href="#lesson/'+id+'"]').click();
+          await page.waitForFunction(id=>document.querySelector("#lesson-jump")?.value===id,id); // allow hashchange render
           assert.equal(await page.locator("#lesson-jump").inputValue(),id);
           assert.equal(await page.locator("#r2-stage-learn").isVisible(),true);
           await page.locator('[data-r2-stage="check"]').click();
