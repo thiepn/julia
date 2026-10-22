@@ -3,7 +3,7 @@
 import {completionTracksForLesson,buildCompletionTests} from "./completion-tracks.js";
 import {proofScaffoldsForLesson} from "./completion-proofs.js";
 import {experimentsForLesson} from "./completion-experiments.js";
-export function initCompletionDepth({doc=document,download,getDraft,runLocalTests,getIdentity}={}){
+export function initCompletionDepth({doc=document,download,getDraft,runLocalTests,runLocalExperiment,getIdentity}={}){
  if(typeof download!=="function"||typeof getDraft!=="function")throw Error("Depth practice requires canonical editor and download.");
  const by=id=>doc.getElementById(id),section=by("completion-depth");
  const trackSelect=by("completion-track-choice"),proofSelect=by("completion-proof-choice"),
@@ -53,7 +53,9 @@ export function initCompletionDepth({doc=document,download,getDraft,runLocalTest
    if(!experiment)return;
    set("completion-experiment-intent",experiment.intent);
    set("completion-experiment-code",experiment.code);
-   set("completion-experiment-status","Real Julia execution is required to observe the computed output.");
+   set("completion-experiment-status","Execute this Julia source locally to observe its numerical results.");
+   set("completion-experiment-local-status","");
+   set("completion-experiment-local-output","");
  }
  trackSelect.addEventListener("change",renderTrack);
  proofSelect.addEventListener("change",renderProof);
@@ -87,6 +89,24 @@ export function initCompletionDepth({doc=document,download,getDraft,runLocalTest
      set("completion-track-status","Starter copied. Paste into the existing Julia editor when ready.");
    }catch{set("completion-track-status","Clipboard unavailable. Select the visible starter source manually.");}
  });
+ by("completion-experiment-local-run").addEventListener("click",async()=>{
+   try{
+     const experiment=currentExperiments.find(t=>t.id===experimentSelect.value);
+     if(!experiment)throw Error("Select a numerical experiment.");
+     if(typeof runLocalExperiment!=="function"||typeof getIdentity!=="function")
+       throw Error("Local Julia companion is unavailable.");
+     const id=experiment.id,lesson=selectedLesson,identity=getIdentity();
+     await runLocalExperiment({
+       script:{content:experiment.code+"\n"},
+       validFor:()=>selectedLesson===lesson&&experimentSelect.value===id&&
+         getIdentity()===identity,
+       statusElement:by("completion-experiment-local-status"),
+       outputElement:by("completion-experiment-local-output")
+     });
+   }catch(error){
+     set("completion-experiment-local-status",String(error.message||error));
+   }
+ });
  by("completion-experiment-download").addEventListener("click",()=>{
    const experiment=currentExperiments.find(t=>t.id===experimentSelect.value);
    if(!experiment)return;
@@ -101,6 +121,8 @@ export function initCompletionDepth({doc=document,download,getDraft,runLocalTest
    section.hidden=!(currentTracks.length||currentProofs.length||currentExperiments.length);
    by("completion-test-local-status").textContent="";
    by("completion-test-local-output").textContent="";
+   by("completion-experiment-local-status").textContent="";
+   by("completion-experiment-local-output").textContent="";
    tracks.hidden=!currentTracks.length;
    proofs.hidden=!currentProofs.length;
    experiments.hidden=!currentExperiments.length;
