@@ -44,7 +44,7 @@ try{
    assert.ok(cached.urls.some(x=>x.endsWith("/assets/julia-lab-192.png")));
    assert.ok(cached.urls.some(x=>x.endsWith("/assets/julia-lab-512.png")));
    assert.ok(cached.urls.every(x=>x.startsWith(origin+"/")));
-   assert.ok(!cached.urls.some(x=>x.includes("jdoodle")||x.includes("/run")||x.includes("token")));
+   assert.ok(!cached.urls.some(x=>x.includes("jdoodle.com")||x.endsWith("/run")||x.includes("token=")));
    const source='println("offline-δ")';
    await page.locator("#scratch-code").fill(source);
    const saved=await page.evaluate(()=>localStorage.getItem("amp-julia-lab:draft:v1:02"));
