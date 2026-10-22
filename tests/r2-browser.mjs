@@ -34,7 +34,11 @@ try{
       const shot=async view=>{
         if(!shots)return;
         const dir=resolve("r2-screenshots",scheme);await mkdir(dir,{recursive:true});
-        await page.screenshot({path:resolve(dir,device.name+"-"+view+".png"),fullPage:true,animations:"disabled"});
+        await page.screenshot({path:resolve(dir,device.name+"-"+view+".jpg"),type:"jpeg",quality:72,fullPage:true,animations:"disabled"});
+        if(scheme==="light"&&["desktop","mobile-390"].includes(device.name)&&["course","code"].includes(view)){
+          const capture=await page.screenshot({type:"jpeg",quality:58,animations:"disabled"});
+          console.log("R2_VISUAL_CAPTURE:"+device.name+":"+view+":"+capture.toString("base64"));
+        }
       };
       const noOverflow=async label=>{
         const d=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);

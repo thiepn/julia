@@ -37,6 +37,8 @@ try {
     await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>route.fulfill({status:200,contentType:"text/javascript",body:"window.__fixture=true;"}));
     for (const [lesson,asset] of Object.entries(files)) {
       await page.goto("http://127.0.0.1:"+port+"/#lesson/"+lesson);
+      await page.locator('[data-r2-stage="code"]').click();
+      await page.locator(".r2-compiler-extras > summary").click();
       const priorDraft=await page.locator("#scratch-code").inputValue();
       const priorProgress=await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1"));
       assert.equal(await page.locator("#local-plot-preview").isVisible(),true);
