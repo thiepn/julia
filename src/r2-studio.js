@@ -14,7 +14,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
   course.id="r2-course";mixed.id="r2-mixed";utils.id="r2-utilities";
   course.append(node("header","r2-course-hero",
     '<div class="r2-kicker">AMP · JULIA</div><h1>Algorithmische Mathematik<br><em>und Programmieren.</em></h1>'+
-    '<p>16 original lessons in Julia and numerical mathematics.</p>'+
+    '<p>16 lessons · Julia programming and numerical mathematics</p>'+
     '<button type="button" id="r2-hero-continue" class="r2-button r2-primary">Continue learning →</button>'+
     '<span id="r2-course-progress" role="status"></span>'),
     node("header","r2-course-heading",'<h2>Course curriculum</h2><p>Choose a lesson to begin.</p>'),sidebar);
@@ -72,7 +72,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     '<button type="button" id="r2-question-prev" class="r2-button r2-secondary">← Previous</button>'+
     '<button type="button" id="r2-question-next" class="r2-button r2-primary">Next question →</button>'));
   const layout=node("div","r2-code-layout"),
-    instructions=node("section","r2-instructions"),
+    instructions=node("details","r2-instructions"),
     editor=node("section","r2-editor"),
     editorHead=node("header","r2-editor-head",'<span>main.jl</span>'+
       '<span id="r2-editor-status" role="status">Saved locally</span>'),
@@ -82,7 +82,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
       '<button id="r2-exports" type="button" class="r2-button r2-text">Export & backup</button>');
   const draftTitle=codePanel.querySelector(".draft-title"),
     draft=get("scratch-code"),draftActions=codePanel.querySelector(".draft-actions");
-  editor.append(editorHead,draftTitle,draft,draftActions,editorActions);
+  editor.append(editorHead,editorActions,draftTitle,draft,draftActions);
   const extras=node("details","r2-compiler-extras");
   extras.append(node("summary",null,"External compiler, comparison and other tools"));
   const runner=compiler.querySelector(".local-runner");
@@ -91,7 +91,13 @@ export function initR2Studio({doc=document,lessons,navigate}){
     extras.append(item);
   }
   if(runner)compiler.append(runner,extras);
-  editor.append(compiler);instructions.append(codePanel);
+  editor.append(compiler);
+  instructions.append(node("summary","r2-task-summary",
+    '<strong>Coding task</strong><span id="r2-task-summary-text"></span>'),codePanel);
+  const wideLayout=doc.defaultView.matchMedia("(min-width:768px)");
+  const adjustTask=()=>{instructions.open=wideLayout.matches;};
+  adjustTask();
+  wideLayout.addEventListener?.("change",adjustTask);
   layout.append(instructions,editor);code.append(layout);
   explore.append(node("header","r2-inner-head",'<span class="r2-kicker">NUMERICAL STUDIO</span>'+
     '<h2>Explore & experiment</h2><p>Manipulate the original numerical models and inspect their output.</p>'),
@@ -202,6 +208,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     get("r2-lesson-unit").textContent=lesson.stage+" / "+lesson.id;
     get("r2-course-progress").textContent=get("progress-label").textContent;
     get("r2-hero-continue").textContent=get("continue-lesson").textContent+" →";
+    get("r2-task-summary-text").textContent=get("challenge-text").textContent;
     if(currentLesson!==id){question=0;currentLesson=id;}
     get("lesson-jump").value=id;syncLabs();syncQuestions();
     const target=nextStage||"learn";nextStage=null;showStage(target);
@@ -240,9 +247,11 @@ export function initR2Studio({doc=document,lessons,navigate}){
     if(i>=0)navigate(i);
   });
   get("scratch-code").addEventListener("input",()=>{
-    get("r2-editor-status").textContent=
-      get("draft-feedback")?.textContent?.toLowerCase().includes("unsaved")?
-        "Unsaved — copy source":"Saved locally";
+    doc.defaultView.queueMicrotask(()=>{
+      get("r2-editor-status").textContent=
+        get("draft-feedback")?.textContent?.toLowerCase().includes("unsaved")?
+          "Unsaved — copy source":"Saved locally";
+    });
   });
   return {show,showStage,update,selectLab:id=>{
     const choice=get("r2-lab-choice");

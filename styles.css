@@ -879,3 +879,38 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   .r2-learn pre.code{grid-column:2;grid-row:3;margin:0;align-self:start}
 }
 .r2-mobile-action.r2-keyboard-visible{display:none!important}
+
+
+/* Screenshot-reviewed R2 composition: show course choices on the first screen,
+   prioritize the editor on phones, and keep the wordmark punctuation contained. */
+.brand-mark{position:relative;overflow:hidden}
+.brand-mark span{position:static!important;display:inline!important}
+.r2-course-hero{padding:35px 43px;gap:10px}
+.r2-course-hero h1{font-size:clamp(30px,3.9vw,48px);line-height:1.14;max-width:980px}
+.r2-course-hero p{font-size:15px;margin:0 0 4px}
+.r2-course-heading{margin:27px 0 14px}
+.r2-course-heading p{display:none}
+.r2-course-list .sidebar-head{display:none}
+.r2-instructions>summary{display:none}
+.r2-editor-actions{margin:0 0 20px}
+.r2-editor .draft-actions{margin:14px 0}
+@media(max-width:767px){
+  .r2-course-hero{padding:23px 20px;gap:10px}
+  .r2-course-hero h1{font-size:clamp(28px,7.4vw,33px);line-height:1.12}
+  .r2-course-hero p{font-size:14px}
+  .r2-course-heading{margin:23px 0 12px}
+  .r2-instructions{border:1px solid var(--line);border-bottom:0;background:var(--surface);padding:0}
+  .r2-instructions>summary{display:grid;gap:5px;cursor:pointer;padding:14px 16px;list-style:none}
+  .r2-instructions>summary::-webkit-details-marker{display:none}
+  .r2-instructions>summary:after{content:"Read full task & starter →";font-size:12px;
+    font-weight:700;color:var(--accent)}
+  .r2-instructions[open]>summary:after{content:"Hide task details ↑"}
+  .r2-task-summary strong{font-size:14px;color:var(--ink)}
+  #r2-task-summary-text{font-size:14px;line-height:1.4;color:var(--muted);
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .r2-instructions>.paper{padding:0 16px 18px}
+  .r2-code-layout{gap:0}
+  .r2-editor{border-top:1px solid var(--line);padding:15px 14px}
+  .r2-editor-head{padding:2px 0 11px;margin-bottom:12px}
+  .r2-editor .scratch-editor{min-height:clamp(280px,42dvh,460px)}
+}
