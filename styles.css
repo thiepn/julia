@@ -630,7 +630,7 @@ textarea:focus-visible,summary:focus-visible{outline:3px solid var(--accent);out
   gap:12px;padding:17px 21px;border-bottom:1px solid #303a49;
   font:700 12px/1.4 "Cascadia Code",Consolas,monospace;color:#b6acd6}
 .r2-preview-header span:last-child{color:#91d3a5}
-.r2-next-lesson h2{font-size:clamp(21px,2.3vw,28px);line-height:1.28;
+.r2-next-lesson .r2-preview-lesson{font-size:clamp(21px,2.3vw,28px);line-height:1.28;
   letter-spacing:-.035em;margin:24px 21px 9px;color:#faf9ff}
 .r2-next-lesson>p{font-size:15px;line-height:1.65;color:#bbc4d2;
   margin:0 21px 22px}
@@ -812,7 +812,7 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   .r2-course-heading h2{font-size:22px}
   .r2-course-list .nav-group h3{padding:19px 9px 9px}
   .r2-course-list .lesson-link{min-height:52px;padding:10px 9px;font-size:14px}
-  .r2-next-lesson h2{font-size:23px}
+  .r2-next-lesson .r2-preview-lesson{font-size:23px}
   .r2-preview-code{font-size:13px;padding:18px}
   .r2-preview-footer{padding:15px 18px}
   main#lesson-main{padding:17px 13px 95px}
