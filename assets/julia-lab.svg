@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Julia Lab">
+<rect width="512" height="512" rx="64" fill="#232b29"/>
+<path d="M310 106h56v205c0 85-43 119-123 119-72 0-108-38-113-100h60c4 32 19 46 54 46 44 0 66-20 66-72z" fill="#fff"/>
+<circle cx="387" cy="384" r="28" fill="#8bc2a7"/>
+</svg>
