@@ -91,6 +91,7 @@ try{
       assert.equal(await page.locator(".rehearsal-item:visible").count(),1);
       await noOverflow("mixed");await shot("mixed");
       await page.locator("#r2-utilities-open").click();
+      await page.locator("#course-backup summary").click();
       assert.equal(await page.locator("#course-backup-export").isVisible(),true);
       assert.equal(await page.locator("#submission-workflow").isVisible(),true);
       await noOverflow("utilities");await shot("utilities");
