@@ -43,8 +43,8 @@ try{
   await page.locator("#completion-experiment-local-run").click();
   await page.locator("#completion-experiment-local-status").getByText(status,{exact:false}).waitFor({timeout:160000});
   const output=await page.locator("#completion-experiment-local-output").innerText();
-  assert.match(output,/relative_gap=/);
-  assert.match(output,/stable=/);
+  assert.match(output,/relative_gap\s*=\s*/);
+  assert.match(output,/stable\s*=\s*/);
   assert.doesNotMatch(output,/my untouched learner draft/);
   assert.equal(await page.locator("#scratch-code").inputValue(),source);
   assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1")),initialProgress);
@@ -57,8 +57,8 @@ try{
   await page.locator("#completion-experiment-choice").selectOption("qr_orthogonality");
   await page.locator("#completion-experiment-local-run").click();
   await page.locator("#completion-experiment-local-status").getByText(status,{exact:false}).waitFor({timeout:160000});
-  assert.match(await page.locator("#completion-experiment-local-output").innerText(),/orthogonality=/);
-  assert.match(await page.locator("#completion-experiment-local-output").innerText(),/coefficients=/);
+  assert.match(await page.locator("#completion-experiment-local-output").innerText(),/orthogonality\s*=\s*/);
+  assert.match(await page.locator("#completion-experiment-local-output").innerText(),/coefficients\s*=\s*/);
   assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1")),initialProgress);
   await page.goto(origin+"/#lesson/09");
   await page.getByRole("heading",{name:"Floating-point numbers"}).waitFor();
