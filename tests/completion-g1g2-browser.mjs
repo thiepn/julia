@@ -23,7 +23,8 @@ try{
    try{
      for(const [device,options] of [["desktop",{viewport:{width:1280,height:900}}],
        ["mobile",{viewport:{width:390,height:844},isMobile:true,hasTouch:true}]]){
-       const page=await browser.newPage({...options,acceptDownloads:true}),errors=[];
+       const viewportOptions=kind==="Firefox"&&device==="mobile"?{viewport:options.viewport,hasTouch:true}:options;
+       const page=await browser.newPage({...viewportOptions,acceptDownloads:true}),errors=[];
        page.on("pageerror",e=>errors.push(e.message));
        await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>
           route.fulfill({status:200,contentType:"text/javascript",body:"window.__jdoodleTest=true;"}));
