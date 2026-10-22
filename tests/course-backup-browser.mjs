@@ -39,7 +39,7 @@ try{
   await returnToLesson();
   await r2Locator(page,"#course-backup").evaluate(el=>el.open=true);
   assert.equal(await r2Locator(page,"#course-backup-export").isDisabled(),true);
-  await r2Locator(page,"#course-backup-disable-embed").click();
+  await Promise.all([page.waitForNavigation({waitUntil:"load"}),r2Locator(page,"#course-backup-disable-embed").click()]);
   await returnToLesson();
   await r2Locator(page,"#course-backup").evaluate(el=>el.open=true);
   assert.equal(await r2Locator(page,"#course-backup-export").isEnabled(),true);
@@ -56,7 +56,7 @@ try{
   await r2Locator(page,"#course-backup-file").setInputFiles({name:"course.json",mimeType:"application/json",buffer:Buffer.from(backupText)});
   await page.waitForFunction(()=>document.getElementById("course-backup-preview").textContent.includes("conflict"));
   assert.match(await r2Locator(page,"#course-backup-preview").innerText(),/1 conflict/);
-  await r2Locator(page,"#course-backup-restore").click();
+  await Promise.all([page.waitForNavigation({waitUntil:"load"}),r2Locator(page,"#course-backup-restore").click()]);
   await returnToLesson();
   assert.equal(await r2Locator(page,"#scratch-code").inputValue(),'println("new work")');
   await r2Locator(page,"#course-backup").evaluate(el=>el.open=true);
@@ -66,7 +66,7 @@ try{
   await r2Locator(page,"#course-backup-restore").click();
   assert.match(await r2Locator(page,"#course-backup-status").innerText(),/Confirm replacing/);
   await r2Locator(page,"#course-backup-approval").check();
-  await r2Locator(page,"#course-backup-restore").click();
+  await Promise.all([page.waitForNavigation({waitUntil:"load"}),r2Locator(page,"#course-backup-restore").click()]);
   await returnToLesson();
   assert.equal(await r2Locator(page,"#scratch-code").inputValue(),code);
   assert.ok((await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth))<=2,device.name+" overflow");
