@@ -238,6 +238,11 @@ export function initR2Studio({doc=document,lessons,navigate}){
       get("draft-feedback")?.textContent?.toLowerCase().includes("unsaved")?
         "Unsaved — copy source":"Saved locally";
   });
-  return {show,showStage,update,setNextStage:s=>{if(validStages.includes(s))nextStage=s;},
+  return {show,showStage,update,selectLab:id=>{
+    const choice=get("r2-lab-choice");
+    if([...choice.options].some(opt=>opt.value===id)){
+      choice.value=id;syncLabs();
+    }
+  },setNextStage:s=>{if(validStages.includes(s))nextStage=s;},
     getView:()=>currentView,getStage:()=>currentStage};
 }
