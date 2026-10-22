@@ -27,7 +27,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
   nextPreview.setAttribute("aria-labelledby","r2-next-lesson-title");
   nextPreview.innerHTML=
     '<div class="r2-preview-header"><span>UP NEXT · LESSON SOURCE</span><span>Julia</span></div>'+
-    '<h2 id="r2-next-lesson-title"></h2><p id="r2-next-lesson-goal"></p>'+
+    '<p id="r2-next-lesson-title" class="r2-preview-lesson"></p><p id="r2-next-lesson-goal"></p>'+
     '<div class="r2-preview-file"><span>example.jl</span><span>Read-only</span></div>'+
     '<pre class="r2-preview-code"><code id="r2-next-lesson-code"></code></pre>'+
     '<div class="r2-preview-footer"><span id="r2-next-lesson-source"></span>'+
