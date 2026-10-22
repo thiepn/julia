@@ -54,7 +54,7 @@ export function initStudyNavigation({doc=document,lessons,navigate}={}){
     "numerical-explorer","elimination-lab","precision-lab","fitting-lab",
     "program-trace","factor-lab","sensitivity-lab","ue02-lab",
     "amp-root-workshop","amp-condition-workshop","amp-mission-workshop",
-    "linear-methods","completion-depth","plotting-workshop"
+    "linear-methods","completion-depth","plotting-workshop","repair-lab"
   ];
   function sync(lessonId){
     if(lessons.some(l=>l.id===lessonId))jump.value=lessonId;

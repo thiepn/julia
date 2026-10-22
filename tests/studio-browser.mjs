@@ -30,6 +30,8 @@ try{
     assert.equal(await page.locator(".lesson-link").count(),16);
     assert.equal(await page.locator("#lesson-jump option").count(),16);
     assert.equal(await page.locator("#lesson-jump").inputValue(),"01");
+    assert.equal(await page.locator("#lab-directory").isVisible(),true);
+    assert.ok(await page.locator("#lab-count").innerText()!=="0");
     assert.equal(await page.locator(".study-mobile-dock").isVisible(),viewport.width<=760);
     const title=page.locator("#lesson-title");
     const version=await page.locator("head link[href='./studio.css']").count();
