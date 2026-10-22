@@ -4,7 +4,7 @@ import {createServer} from "node:http";
 import {readFile} from "node:fs/promises";
 import {resolve,extname,sep} from "node:path";
 import {chromium} from "playwright";
-const root=resolve("."),types={".html":"text/html; charset=utf-8",".css":"text/css; charset=utf-8",".js":"text/javascript; charset=utf-8",".svg":"image/svg+xml",".webmanifest":"application/manifest+json"};
+const root=resolve("."),types={".html":"text/html; charset=utf-8",".css":"text/css; charset=utf-8",".js":"text/javascript; charset=utf-8",".svg":"image/svg+xml",".png":"image/png",".webmanifest":"application/manifest+json"};
 const server=createServer(async(req,res)=>{
  const path=decodeURIComponent(new URL(req.url,"http://127.0.0.1").pathname);
  const file=resolve(root,"."+(path==="/" ? "/index.html":path));
@@ -41,6 +41,8 @@ try{
    assert.ok(cached.urls.some(x=>x.endsWith("/src/lessons.js")));
    assert.ok(cached.urls.some(x=>x.endsWith("/src/offline-study.js")));
    assert.ok(cached.urls.some(x=>x.endsWith("/app.webmanifest")));
+   assert.ok(cached.urls.some(x=>x.endsWith("/assets/julia-lab-192.png")));
+   assert.ok(cached.urls.some(x=>x.endsWith("/assets/julia-lab-512.png")));
    assert.ok(cached.urls.every(x=>x.startsWith(origin+"/")));
    assert.ok(!cached.urls.some(x=>x.includes("jdoodle")||x.includes("/run")||x.includes("token")));
    const source='println("offline-δ")';
@@ -63,6 +65,13 @@ try{
    assert.match(download.suggestedFilename(),/\.jl$/);
    const output=await readFile(await download.path(),"utf8");
    assert.match(output,/offline-δ/);
+   const icon=await page.evaluate(async()=>{
+     const res=await fetch("./assets/julia-lab-192.png");
+     const blob=await res.blob();
+     const image=await createImageBitmap(blob);
+     return {ok:res.ok,width:image.width,height:image.height,type:blob.type};
+   });
+   assert.deepEqual(icon,{ok:true,width:192,height:192,type:"image/png"});
    await page.goto(origin+"/#lesson/15");
    await page.getByRole("heading",{name:"Least-squares fitting"}).waitFor();
    assert.ok((await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth))<=2,device.name+" overflow");
