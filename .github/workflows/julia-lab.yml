@@ -54,6 +54,16 @@ jobs:
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install --with-deps chromium firefox webkit
           sudo apt-get install -y poppler-utils
+      - name: R2 course and studio Chromium acceptance with visual captures
+        run: R2_SCREENSHOTS=1 node tests/r2-browser.mjs
+      - name: Upload R2 screenshot review set
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r2-visual-qa
+          path: r2-screenshots/
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Chromium desktop/mobile acceptance
         run: node tests/browser.mjs
       - name: AMP workshops Chromium desktop/mobile
