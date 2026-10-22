@@ -30,10 +30,19 @@ export function initLocalRunner({doc=document, fetcher=fetch, endpoint=LOCAL_RUN
   const diagnosticOutput=doc.querySelector("#local-runner-diagnostic-output");
   const diagnosticStatus=doc.querySelector("#local-runner-diagnostic-status");
   let activeRequest=0,busy=false,objects=[];
+  const preparedFigureUrls=new Map();
+  function clearPreparedFigures(target){
+    if(!target)return;
+    for(const src of preparedFigureUrls.get(target)||[])URL.revokeObjectURL(src);
+    preparedFigureUrls.delete(target);
+    target.replaceChildren();
+  }
   const release=()=>{for(const url of objects)URL.revokeObjectURL(url);objects=[];images.replaceChildren();};
   function clear(){
     activeRequest++;
-    release();output.textContent="";status.textContent="No execution in this task.";
+    release();
+    for(const target of [...preparedFigureUrls.keys()])clearPreparedFigures(target);
+    output.textContent="";status.textContent="No execution in this task.";
     run.disabled=false;diagnoseButton.disabled=false;busy=false;
     diagnosticOutput.textContent="";diagnosticStatus.textContent="";
     onClear();
@@ -117,7 +126,7 @@ export function initLocalRunner({doc=document, fetcher=fetch, endpoint=LOCAL_RUN
   // Both learner Test files and existing source-authored experiments share this
   // single authenticated local process and concurrency gate. Neither can
   // publish program output as a submission run or update learning progress.
-  async function runPreparedScript({script,validFor=()=>true,statusElement,outputElement,kind}={}){
+  async function runPreparedScript({script,validFor=()=>true,statusElement,outputElement,figureElement,kind}={}){
     if(!statusElement||!outputElement)throw Error("A Julia result target is required.");
     if(!["test","experiment","repair"].includes(kind))throw Error("Unsupported Julia run type.");
     if(busy){statusElement.textContent="Julia is already running another task.";return;}
@@ -138,6 +147,7 @@ export function initLocalRunner({doc=document, fetcher=fetch, endpoint=LOCAL_RUN
     }
     const request=++activeRequest;
     busy=true;run.disabled=true;diagnoseButton.disabled=true;
+    if(kind==="repair")clearPreparedFigures(figureElement);
     statusElement.textContent=kind==="experiment"?"Running original numerical experiment with local Julia…":
       kind==="repair"?"Running current repair draft with local Julia…":
       "Running Julia Test on your computer…";
@@ -152,8 +162,25 @@ export function initLocalRunner({doc=document, fetcher=fetch, endpoint=LOCAL_RUN
       if(!isLive())return;
       if(!response.ok)throw Error(result.error||"Local runner HTTP "+response.status);
       outputElement.textContent=[result.stdout,result.stderr].filter(Boolean).join("\n")||"(No terminal output)";
-      statusElement.textContent=kind==="experiment"?localExperimentVerdict(result).message:
-        kind==="repair"?localRepairVerdict(result).message:localTestVerdict(result).message;
+      let rejected=0;
+      if(kind==="repair"&&figureElement){
+        const urls=[];
+        for(const figure of (Array.isArray(result.figures)?result.figures:[]).slice(0,3)){
+          try{
+            const blob=decodeLocalFigure(figure,doc);
+            const url=URL.createObjectURL(blob);
+            urls.push(url);
+            const item=doc.createElement("figure"),img=doc.createElement("img");
+            img.src=url;img.alt="Local Julia repair figure: "+figure.name;
+            const label=doc.createElement("figcaption");label.textContent=figure.name;
+            item.append(img,label);figureElement.append(item);
+          }catch{rejected++;}
+        }
+        if(urls.length)preparedFigureUrls.set(figureElement,urls);
+      }
+      statusElement.textContent=(kind==="experiment"?localExperimentVerdict(result).message:
+        kind==="repair"?localRepairVerdict(result).message:localTestVerdict(result).message)+
+        (rejected?" "+rejected+" unsupported or unsafe figure(s) rejected.":"");
     }catch(error){
       if(isLive())statusElement.textContent="Local Julia unavailable: "+String(error.message||error);
     }finally{
@@ -168,5 +195,5 @@ export function initLocalRunner({doc=document, fetcher=fetch, endpoint=LOCAL_RUN
   diagnoseButton.addEventListener("click",diagnose);
   run.addEventListener("click",submit);
   doc.querySelector("#local-runner-clear").addEventListener("click",clear);
-  return {clear,run:submit,diagnose,runTestScript,runExperimentScript,runRepairScript};
+  return {clear,run:submit,diagnose,runTestScript,runExperimentScript,runRepairScript,clearPreparedFigures};
 }

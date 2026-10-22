@@ -475,6 +475,7 @@ function setupEmbed() {
 function clearRepairExecution(){
   $("#repair-run-status").textContent="";
   $("#repair-run-output").textContent="";
+  localRunner.clearPreparedFigures($("#repair-run-figures"));
 }
 $("#repair-run-local").addEventListener("click",async()=>{
   try{
@@ -484,7 +485,8 @@ $("#repair-run-local").addEventListener("click",async()=>{
       validFor:()=>current().id===id&&practiceVariant===variant&&
         $("#repair-editor").value===code,
       statusElement:$("#repair-run-status"),
-      outputElement:$("#repair-run-output")
+      outputElement:$("#repair-run-output"),
+      figureElement:$("#repair-run-figures")
     });
   }catch(error){
     $("#repair-run-status").textContent=String(error.message||error);
