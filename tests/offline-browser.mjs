@@ -55,8 +55,15 @@ try{
    await page.locator("#offline-access").evaluate(el=>el.open=true);
    await page.locator("#offline-status").getByText("Offline: cached lessons and practice available. External Julia services may be unavailable.").waitFor();
    assert.equal(await page.locator("#offline-indicator").isVisible(),true);
+   assert.equal(await page.locator("#runtime-state").innerText(),"Embed disabled");
+   // Re-enable the default course embed setting while disconnected. The app
+   // must suppress external JDoodle loading without disturbing the local source.
+   await page.evaluate(()=>localStorage.removeItem("amp-julia-lab:jdoodle-embed-v1"));
+   await page.reload();
+   await page.getByRole("heading",{name:"Floating-point numbers"}).waitFor();
    assert.match(await page.locator("#runtime-state").innerText(),/Offline/);
-   assert.equal(await page.locator("#embed-slot script").count(),0);
+   assert.equal(await page.locator("#embed-slot .jdoodle-embed").count(),0);
+   assert.equal(await page.locator('script[src^="https://www.jdoodle.com/"]').count(),0);
    await page.goto(origin+"/#lesson/02");
    await page.getByRole("heading",{name:"Vectors & indexing"}).waitFor();
    assert.equal(await page.locator("#scratch-code").inputValue(),source);
