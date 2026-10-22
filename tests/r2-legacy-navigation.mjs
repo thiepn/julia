@@ -115,3 +115,5 @@ function wrap(page,target){
 }
 export function r2Locator(page,selector,...args){return wrap(page,page.locator(selector,...args));}
 export function r2Role(page,role,opts){return wrap(page,roleTarget(page,role,opts));}
+
+export function r2Text(page,text,options){return wrap(page,page.getByText(text,options));}

@@ -5,7 +5,7 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { resolve, extname, sep } from "node:path";
 import { chromium } from "playwright";
-import {r2Locator,r2Role} from "./r2-legacy-navigation.mjs";
+import {r2Locator,r2Role,r2Text} from "./r2-legacy-navigation.mjs";
 
 const root = resolve(".");
 const types = { ".html":"text/html; charset=utf-8", ".css":"text/css; charset=utf-8", ".js":"text/javascript; charset=utf-8" };
@@ -169,19 +169,19 @@ try {
       name:"invalid.txt",mimeType:"text/plain",buffer:Buffer.from("println(999)")
     });
     assert.equal(await r2Locator(page,"#scratch-code").inputValue(),"println(123)");
-    await page.getByText(/Select a \.jl Julia source file/).waitFor();
+    await r2Text(page,/Select a \.jl Julia source file/).waitFor();
     assert.match(await r2Locator(page,"#draft-feedback").innerText(),/Select a \.jl/);
     page.once("dialog",dialog=>dialog.dismiss());
     await r2Locator(page,"#import-file").setInputFiles({
       name:"verified.jl",mimeType:"text/plain",buffer:Buffer.from("println(456)")
     });
-    await page.getByText(/Import cancelled; your draft is unchanged/).waitFor();
+    await r2Text(page,/Import cancelled; your draft is unchanged/).waitFor();
     assert.equal(await r2Locator(page,"#scratch-code").inputValue(),"println(123)");
     page.once("dialog",dialog=>dialog.accept());
     await r2Locator(page,"#import-file").setInputFiles({
       name:"verified.jl",mimeType:"text/plain",buffer:Buffer.from("println(456)")
     });
-    await page.getByText(/Imported verified\.jl for this lesson/).waitFor();
+    await r2Text(page,/Imported verified\.jl for this lesson/).waitFor();
     assert.equal(await r2Locator(page,"#scratch-code").inputValue(),"println(456)");
     await page.reload();
     assert.equal(await r2Locator(page,"#scratch-code").inputValue(),"println(456)");
@@ -569,7 +569,7 @@ try {
     await r2Locator(page,"#import-file").setInputFiles({
       name:"independent-a.jl",mimeType:"text/plain",buffer:Buffer.from("println(:imported_transfer_a)")
     });
-    await page.getByText(/Imported independent-a\.jl/).waitFor();
+    await r2Text(page,/Imported independent-a\.jl/).waitFor();
     assert.equal(await r2Locator(page,"#scratch-code").inputValue(),"println(:imported_transfer_a)");
     await r2Locator(page,"#practice-mode").selectOption("original");
     assert.equal(await r2Locator(page,"#scratch-code").inputValue(),original);
@@ -978,7 +978,7 @@ try {
     await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js", route=>route.abort());
     await page.evaluate(()=>localStorage.setItem("amp-julia-lab:jdoodle-embed-v1","https://www.jdoodle.com/embed/v1/testembed"));
     await page.reload();
-    await page.getByText("Embed failed to load").waitFor();
+    await r2Text(page,"Embed failed to load").waitFor();
     assert.equal(await r2Locator(page,".compiler-links a").count(),2);
     assert.equal(await r2Locator(page,".jdoodle-embed").count(),1);
     assert.equal(await r2Locator(page,"#progress-label").innerText(),"1 of 16 concept sets reviewed");
@@ -988,11 +988,11 @@ try {
     await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>route.abort());
     await r2Role(page,"button",{name:"Compiler settings"}).click();
     await r2Role(page,"button",{name:"Disable embedded editor"}).click();
-    await page.getByText("Compiler not connected").waitFor();
+    await r2Text(page,"Compiler not connected").waitFor();
     assert.equal(await r2Locator(page,"#progress-label").innerText(),"1 of 16 concept sets reviewed");
     await r2Role(page,"button",{name:"Compiler settings"}).click();
     await r2Role(page,"button",{name:"Restore course editor"}).click();
-    await page.getByText("Embed failed to load").waitFor();
+    await r2Text(page,"Embed failed to load").waitFor();
     assert.equal(await r2Locator(page,".jdoodle-embed").getAttribute("data-pym-src"),"https://www.jdoodle.com/embed/v1/d74ec9cf98a1b5b");
     assert.equal(await r2Locator(page,"#progress-label").innerText(),"1 of 16 concept sets reviewed");
   });
@@ -1014,12 +1014,12 @@ try {
     await frame.evaluate(()=>window.parent.postMessage({onLoad:true,output:"PRIVATE"}, "*"));
     const panel=r2Locator(probe,"#bridge-diagnostics");
     await panel.locator("summary").click();
-    await probe.getByText(/JDoodle sent an onLoad notification/).waitFor();
+    await r2Text(probe,/JDoodle sent an onLoad notification/).waitFor();
     assert.ok(frame,"Synthetic same-origin provider iframe exists");
     await frame.evaluate(()=>window.parent.postMessage({
       type:"execution-output",output:"PRIVATE_JULIA_CODE",status:"success"
     },"*"));
-    await probe.getByText(/1 JDoodle-frame message/).waitFor();
+    await r2Text(probe,/1 JDoodle-frame message/).waitFor();
     assert.match(await r2Locator(probe,"#bridge-status").innerText(),/execution-output/);
     assert.doesNotMatch(await r2Locator(probe,"#bridge-status").innerText(),/PRIVATE_JULIA_CODE/);
     assert.equal(await r2Locator(probe,"#progress-label").innerText(),"0 of 16 concept sets reviewed");
