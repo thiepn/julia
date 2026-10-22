@@ -26,8 +26,10 @@ try{
     await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>route.fulfill({status:200,contentType:"text/javascript",body:"window.__jdoodleStub=true;"}));
     await page.goto(origin+"/#lesson/04");
     await page.getByRole("heading",{name:"Plot mathematical functions"}).waitFor();
+    await page.locator('[data-r2-stage="code"]').click();
     await page.getByRole("button",{name:"Disable JDoodle and reload for local execution"}).click();
     await page.getByRole("heading",{name:"Plot mathematical functions"}).waitFor();
+    await page.locator('[data-r2-stage="code"]').click();
     const noEmbed=await page.evaluate(()=>document.querySelector("#embed-slot .jdoodle-embed")===null);
     assert.equal(noEmbed,true);
     await page.locator("#local-runner-token").fill("test-only-access-code-not-secret");

@@ -30,11 +30,15 @@ try{
    await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>route.fulfill({status:200,contentType:"text/javascript",body:"window.__mockJDoodle=true;"}));
    await page.goto(origin+"/#lesson/04");
    await page.getByRole("heading",{name:"Plot mathematical functions"}).waitFor();
+   await page.locator('[data-r2-stage="code"]').click();
    await page.locator("#local-runner-disable-embed").click();
    await page.getByRole("heading",{name:"Plot mathematical functions"}).waitFor();
+   await page.locator('[data-r2-stage="code"]').click();
    await page.locator("#local-runner-token").fill(token);
    const main='println("main lesson draft unchanged")';
    await page.locator("#scratch-code").fill(main);
+   await page.locator('[data-r2-stage="explore"]').click();
+   await page.locator("#r2-lab-choice").selectOption("repair-lab");
    const progress=await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1"));
    for(const [code,count] of [[source.broken,1],[source.reference,2]]){
      await page.locator("#repair-editor").fill(code);
