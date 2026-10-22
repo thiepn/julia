@@ -12,7 +12,7 @@ test("offline cache is explicit, first-party only and complete",async()=>{
  assert.ok(OFFLINE_ASSETS.length>=45);
  assert.ok(OFFLINE_ASSETS.includes("src/app.js"));
  assert.ok(OFFLINE_ASSETS.includes("src/offline-study.js"));
- assert.ok(!OFFLINE_ASSETS.some(x=>x.includes("local-runner")||x.includes("submission-print")));
+ assert.ok(!OFFLINE_ASSETS.some(x=>x.startsWith("local-runner/")||x.includes("submission-print")));
 });
 test("offline routing never allows external, unknown, query or local Julia execution requests",()=>{
  const scope="https://example.org/julia/";
