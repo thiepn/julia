@@ -9,7 +9,7 @@ const buttonIds=[
   ["run current julia draft","#local-runner-run"],
   ["disable jdoodle and reload for local execution","#local-runner-disable-embed"],
   ["reset experiment","#num-reset"],["next step","#elim-next"],
-  ["use least-squares fit","#fit-apply"],["last","#elim-last"]
+  ["use least-squares fit","#fit-apply"],["last","#elim-end"]
 ];
 function roleName(opts){
   return typeof opts?.name==="string"?opts.name.toLowerCase().replace(/[←→↗]/g,"").trim():null;
@@ -18,7 +18,8 @@ function roleTarget(page,role,opts){
   const name=roleName(opts);
   if(role==="button"&&name==="run current julia draft"&&page.viewportSize()?.width<768)
     return page.locator("#r2-mobile-next");
-  if(role==="button"&&name?.startsWith("continue lesson"))
+  if(role==="button"&&(name?.startsWith("continue lesson")||
+     (opts?.name instanceof RegExp&&opts.name.source.startsWith("Continue lesson"))))
     return page.locator("#r2-hero-continue");
   const mapping=role==="button"&&buttonIds.find(([key])=>key===name);
   if(mapping)return page.locator(mapping[1]);
@@ -86,6 +87,17 @@ function wrap(page,target){
   return new Proxy(target,{get(locator,name){
     const member=locator[name];
     if(typeof member!=="function")return member;
+    if(name==="isVisible")return async(...args)=>{
+      // An existing lab was previously always on-screen. R2 makes it
+      // reachable through the Explore picker; test that real route first.
+      const lab=await locator.first().evaluate(el=>{
+        const parent=el.closest(".r2-lab");
+        const eligible=el===parent||el.id==="compiler-panel";
+        return {eligible:!!eligible, available:parent?!parent.hidden:true};
+      });
+      if(lab.eligible&&lab.available)await showCanonical(page,locator);
+      return member.apply(locator,args);
+    };
     if(browserActions.has(name))return async(...args)=>{
       await showCanonical(page,locator);
       return member.apply(locator,args);
