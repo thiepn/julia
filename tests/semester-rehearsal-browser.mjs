@@ -71,7 +71,7 @@ try{
     await page.locator("#semester-rehearsal-return").click();
     assert.equal(await page.locator("#semester-rehearsal").evaluate(el=>el.open),true);
     assert.equal(await page.locator(".rehearsal-item").count(),6);
-    assert.ok(await page.locator('.rehearsal-item[data-source-id="pivoted_lr"] .rehearsal-work').isFocused());
+    assert.equal(await page.locator('.rehearsal-item[data-source-id="pivoted_lr"] .rehearsal-work').evaluate(el=>el===document.activeElement),true);
     assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1")),JSON.parse(before)["amp-julia-lab:v1"]??null);
     assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:draft:v1:01")),JSON.parse(before)["amp-julia-lab:draft:v1:01"]??null);
     assert.ok((await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth))<=2,spec.name+" horizontal overflow");
