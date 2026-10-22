@@ -56,7 +56,7 @@ try{
        await r2Locator(page,"#completion-track-choice").selectOption("repair_scope");
        assert.match(await r2Locator(page,"#completion-track-starter").innerText(),/total \+= 1/);
        await page.goto(origin+"/#lesson/08");
-       await r2Role(page,"heading",{name:"Functions"}).waitFor();
+       await r2Role(page,"heading",{name:"Functions & algorithms",exact:true}).waitFor();
        await r2Locator(page,"#completion-track-choice").selectOption("repair_types");
        assert.match(await r2Locator(page,"#completion-track-starter").innerText(),/zeros\(Int/);
        await page.goto(origin+"/#lesson/09");
