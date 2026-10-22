@@ -37,6 +37,61 @@ export const COMPLETION_TRACKS=Object.freeze({
  ["single column","@test row_means(reshape([2.,5.],2,1)) ≈ [2.,5.]"],
  ["fractional average","@test row_means([1 2;3 4]) ≈ [1.5,3.5]"]
  ]),
+ repair_dimensions:T("repair_dimensions","02","Repair a matrix dimension bug",
+ "A per-column result has length size(A,2). The faulty program allocates by row count, so square inputs can disguise the error. Inspect size(A) and both rectangular orientations.",
+ "function column_totals(A)\n    totals = zeros(size(A,1)) # Wrong: output length is column count.\n    for j in axes(A,2)\n        totals[j] = sum(A[:,j])\n    end\n    return totals\nend",
+ ["Run the faulty code with a 2×3 matrix; locate the bounds failure.","Predict the output length for a 3×2 input.","Repair allocation/indexing without hard-coding the input size.","Test a single-row and a wide zero matrix."],
+ "Why is using a 2×2 matrix alone a weak test of a per-column function?",
+ "Original practice from Julia Arrays and AMP matrix dimensions",[
+ ["wide matrix","@test column_totals([1 2 3;4 5 6]) == [5,7,9]"],
+ ["tall matrix","@test column_totals([2 3;0 1;4 5]) == [6,9]"],
+ ["single row","@test column_totals(reshape([1.,-3.],1,2)) ≈ [1.,-3.]"],
+ ["zero columns data","@test column_totals(zeros(2,4)) == zeros(4)"]
+ ]),
+ repair_scope:T("repair_scope","07","Repair an uninitialized local accumulator",
+ "An assignment inside a Julia function creates a local variable. Reading it before initialization raises UndefVarError. Test empty/negative/zero inputs as well as positive ones.",
+ "function positive_count(values)\n    for x in values\n        if x > 0\n            total += 1 # BUG: total has not been initialized.\n        end\n    end\n    return total\nend",
+ ["Trace whether total has a value before the first loop iteration.","Run the broken function with empty and positive inputs.","Initialize local state in the correct scope.","Check strictly positive means zero must not be counted."],
+ "Why do empty inputs reveal a different failure path from a vector containing positive numbers?",
+ "Original practice from Julia Scope and AMP loops",[
+ ["mixed values","@test positive_count([-2,0,3,5]) == 2"],
+ ["empty vector","@test positive_count(Int[]) == 0"],
+ ["zero boundary","@test positive_count([0,0,0]) == 0"],
+ ["all positive","@test positive_count([1,4,7]) == 3"]
+ ]),
+ repair_types:T("repair_types","08","Repair an InexactError in numeric arrays",
+ "zeros(Int,n) cannot store a non-integral Float64. A generic numeric algorithm must not silently narrow fractional inputs to integers. Avoid mutating the source matrix.",
+ "function row_energy(A)\n    result = zeros(Int, size(A,1)) # BUG: Float64 results may not fit.\n    for i in axes(A,1)\n        result[i] = sum(abs2, A[i,:])\n    end\n    return result\nend",
+ ["Test a row containing 0.5 and inspect the Julia InexactError.","Locate the forced Int allocation, not just the assignment line.","Repair the output element type without assuming a square matrix.","Check an integer matrix, a Float64 matrix and a zero matrix."],
+ "Why can an implementation pass only-integer tests and still be incorrect for general numeric matrices?",
+ "Original practice from Julia Numeric Types and AMP matrix arithmetic",[
+ ["fractional input","@test row_energy([0.5 1.5;2.0 -1.0]) ≈ [2.5,5.0]"],
+ ["integer input","@test row_energy([3 4;1 2]) ≈ [25.,5.]"],
+ ["rectangular","@test row_energy([1. 2. 3.; 4. 5. 6.]) ≈ [14.,77.]"],
+ ["zero matrix","@test row_energy(zeros(3,2)) == zeros(3)"]
+ ]),
+ squared_bound:T("squared_bound","09","Prove and implement a first-order error bound",
+ "For f(x)=x² and perturbation δ, |f(x+δ)-f(x)| ≤ 2|x||δ|+δ² exactly. The linear term is first order; δ² is the remainder. Code the bound itself, then use other data to test it.",
+ "function square_error_bound(x, delta)\n    # Return a nonnegative upper bound for |(x+delta)^2 - x^2|.\nend",
+ ["Expand (x+δ)²-x² symbolically before programming.","Apply the triangle inequality to the expansion.","Check x=0, negative δ and changing input scales.","Distinguish a numerical test of an inequality from its proof."],
+ "Can a first-order 2|x||δ| term alone be a rigorous bound for every finite δ?",
+ "Original AMP error analysis and Taylor remainder transfer",[
+ ["positive x","@test square_error_bound(3.0,1e-3) ≈ 0.006001"],
+ ["negative x","@test square_error_bound(-2.0,0.5) ≈ 2.25"],
+ ["zero center","@test square_error_bound(0.0,0.1) ≈ 0.01"],
+ ["negative step","@test square_error_bound(1.0,-0.25) ≈ 0.5625"]
+ ]),
+ vector_amplification:T("vector_amplification","16","Vector perturbations and normwise sensitivity",
+ "For a nonsingular matrix A, the relative input-output amplification of x↦Ax for a finite perturbation δx is (||A(x+δx)-Ax||/||Ax||)/(||δx||/||x||). Compare directions and check it against cond(A). Assume nonzero x, Ax and δx.",
+ "using LinearAlgebra\nfunction vector_amplification(A, x, delta_x)\n    # Return the relative output change divided by the relative input change.\nend",
+ ["Separate ||δx||/||x|| from ||Aδx||/||Ax||.","Evaluate two equal-size perturbations in different directions.","Derive an upper bound involving ||A|| and ||A^(-1)||.","Test identity, diagonal and non-diagonal invertible matrices."],
+ "Why does one measured finite amplification not equal the worst-case cond(A) in general?",
+ "Original transfer after AMP Übung 2 2.1 and linear systems",[
+ ["identity","@test isapprox(vector_amplification(Matrix{Float64}(I,2,2),[1.,2.],[1e-3,0.]),1.0;atol=1e-11)"],
+ ["first diagonal direction","@test isapprox(vector_amplification([2. 0.;0. 1.],[1.,1.],[1e-3,0.]),2sqrt(2)/sqrt(5);rtol=1e-10)"],
+ ["second diagonal direction","@test isapprox(vector_amplification([2. 0.;0. 1.],[1.,1.],[0.,1e-3]),sqrt(2)/sqrt(5);rtol=1e-10)"],
+ ["normwise bound","@test begin A=[2. 1.;0. 0.5];x=[1.,2.];d=[1e-3,-1e-3]; vector_amplification(A,x,d) <= cond(A)*(1+1e-8) end"]
+ ]),
  environment:T("environment","04","Julia REPL and package environments",
  "Shell commands, the julia> prompt and the pkg> prompt are different contexts. A Project.toml identifies direct dependencies, while Manifest.toml records resolved versions. The current Julia environment determines whether using Plots succeeds.",
  "using Pkg\nprintln(\"Julia version: \", VERSION)\nprintln(\"Active project: \", Base.active_project())\n# Read project files before adding or updating packages.",
