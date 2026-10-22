@@ -13,7 +13,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     utils=node("section","r2-page r2-utilities");
   course.id="r2-course";mixed.id="r2-mixed";utils.id="r2-utilities";
   course.append(node("header","r2-course-hero",
-    '<div class="r2-kicker">AMP · JULIA</div><h1>Mathematics, understood.<br><em>Code, explored.</em></h1>'+
+    '<div class="r2-kicker">AMP · JULIA</div><h1>Algorithmische Mathematik<br><em>und Programmieren.</em></h1>'+
     '<p>16 original lessons in Julia and numerical mathematics.</p>'+
     '<button type="button" id="r2-hero-continue" class="r2-button r2-primary">Continue learning →</button>'+
     '<span id="r2-course-progress" role="status"></span>'),
@@ -115,6 +115,11 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const action=node("div","r2-mobile-action",'<button id="r2-mobile-next" type="button" '+
     'class="r2-button r2-primary">Try a question →</button>');
   doc.body.append(action);
+  const viewport=doc.defaultView.visualViewport;
+  if(viewport)viewport.addEventListener("resize",()=>{
+    action.classList.toggle("r2-keyboard-visible",
+      doc.defaultView.innerHeight-viewport.height>170);
+  });
   let currentView="lesson",currentStage="learn",question=0,mixedIndex=0,
     currentLesson="",nextStage=null;
   const validStages=["learn","check","code","explore"];

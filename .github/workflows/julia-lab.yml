@@ -52,18 +52,8 @@ jobs:
       - name: Install Playwright runner for browser acceptance
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
-          npx playwright install --with-deps chromium firefox webkit
+          npx playwright install --with-deps chromium
           sudo apt-get install -y poppler-utils
-      - name: R2 course and studio Chromium acceptance with visual captures
-        run: R2_SCREENSHOTS=1 node tests/r2-browser.mjs
-      - name: Upload R2 screenshot review set
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: r2-visual-qa
-          path: r2-screenshots/
-          if-no-files-found: ignore
-          retention-days: 7
       - name: Chromium desktop/mobile acceptance
         run: node tests/browser.mjs
       - name: AMP workshops Chromium desktop/mobile
@@ -126,3 +116,26 @@ jobs:
         run: node tests/repair-plot-browser.mjs
       - name: Private AMP submission ZIP includes genuine local Plots.jl images
         run: AMP_SUBMISSION_REAL_PLOTS=1 node tests/submission-browser.mjs
+
+  r2-visual:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install standalone Chromium browser runner
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.56.1
+          npx playwright install chromium
+      - name: R2 responsive and real screenshot acceptance
+        run: R2_SCREENSHOTS=1 node tests/r2-browser.mjs
+      - name: Upload screenshot review set
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r2-visual-qa
+          path: r2-screenshots/
+          if-no-files-found: ignore
+          retention-days: 7
