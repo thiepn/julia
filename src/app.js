@@ -7,6 +7,7 @@ import {initUe02Practice} from "./ue02-practice.js";
 import {initAmpWorkshops} from "./amp-workshops.js";
 import {initCompletionDepth} from "./completion-view.js";
 import {initCourseBackup} from "./course-backup-ui.js";
+import {initOfflineStudy} from "./offline-study.js";
 import {readProgress, writeProgress, readEmbedUrl, writeEmbedUrl,
   validateEmbedUrl, checkChoice, countCorrect, readyForChallenge, checkPastedOutput} from "./checks.js";
 import {readDraft, writeDraft, clearDraft} from "./workspace.js";
@@ -427,6 +428,14 @@ function setupEmbed() {
   const url = readEmbedUrl();
   $("#embed-url").value = url;
   const slot = $("#embed-slot");
+  if (!navigator.onLine && validateEmbedUrl(url)) {
+    $("#runtime-state").textContent="Offline · JDoodle unavailable";
+    slot.replaceChildren();
+    const notice=document.createElement("p");
+    notice.textContent="External editor unavailable offline. Use saved Julia drafts and local lessons.";
+    slot.append(notice);
+    return;
+  }
   if (!validateEmbedUrl(url)) {
     $("#runtime-state").textContent = "Embed disabled";
     slot.replaceChildren();
@@ -845,3 +854,4 @@ initFactorLab();
 initSensitivityLab();
 render();
 setupEmbed();
+initOfflineStudy();

@@ -7,12 +7,13 @@
   <meta name="description" content="Julia Lab: focused Julia practice for Algorithmische Mathematik und Programmieren, Universität zu Köln.">
   <title>Julia Lab — AMP</title>
   <link rel="stylesheet" href="./styles.css">
+  <link rel="manifest" href="./app.webmanifest">
 </head>
 <body>
   <a class="skip" href="#lesson-main">Skip to lesson</a>
   <header class="topbar">
     <a href="#lesson/01" class="brand" aria-label="Julia Lab home"><span class="brand-mark">j<span>.</span></span><span><strong>Julia Lab</strong><small>Algorithmische Mathematik und Programmieren</small></span></a>
-    <div class="top-right"><span class="course">Uni Köln · WS 2026/27</span><button class="quiet" id="settings-toggle" type="button">Compiler settings</button></div>
+    <div class="top-right"><span class="course">Uni Köln · WS 2026/27</span><span id="offline-indicator" role="status" hidden>Offline</span><button class="quiet" id="settings-toggle" type="button">Compiler settings</button></div>
   </header>
   <div class="shell">
     <nav class="sidebar" aria-label="Lessons">
@@ -808,6 +809,15 @@
         <p id="bridge-status" role="status" aria-live="polite">No matching frame messages observed.</p>
         <button type="button" id="copy-diag" class="secondary full">Copy safe diagnostic summary</button>
         <p id="bridge-feedback" class="feedback" role="status"></p>
+      </details>
+      <details id="offline-access" class="offline-access">
+        <summary>Offline study</summary>
+        <p id="offline-status" role="status" aria-live="polite">Checking offline access…</p>
+        <div class="offline-actions">
+          <button type="button" id="offline-install" class="secondary" hidden>Install app</button>
+          <button type="button" id="offline-update" class="secondary" hidden>Update offline copy</button>
+        </div>
+        <p>Lessons, practice exercises, calculations and local drafts work after the first successful download. The app cannot run Julia code by itself; the local companion or external compiler must be available separately. Export a backup before clearing browser data.</p>
       </details>
       <section id="settings-panel" class="settings-panel" hidden>
         <h3>Configure JDoodle</h3>

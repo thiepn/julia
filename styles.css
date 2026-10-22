@@ -482,3 +482,13 @@
 /* Actual local Julia test output sits beside the corresponding generated test contract. */
 #external-test-local-output,#completion-test-local-output{max-height:280px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}
 #external-test-local-status,#completion-test-local-status{font-size:14px!important;line-height:1.55}
+
+/* Explicit offline-install and update controls; meaningful status only. */
+#offline-indicator{font-size:14px;font-weight:650;color:var(--accent);white-space:nowrap}
+.offline-access{border-top:1px solid var(--line);margin:16px 0;padding:14px 0}
+.offline-access summary{cursor:pointer;font-size:16px;font-weight:650}
+.offline-access p{font-size:14px;line-height:1.6;margin:10px 0}
+.offline-actions{display:flex;gap:9px;flex-wrap:wrap}
+.offline-actions button{min-height:42px;font-size:14px}
+.offline-actions button[hidden],#offline-indicator[hidden]{display:none}
+@media(max-width:760px){#offline-indicator{font-size:14px}.offline-actions button{flex:1 1 100%}}

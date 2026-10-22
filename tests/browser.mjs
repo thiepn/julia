@@ -1203,6 +1203,7 @@ try {
     assert.equal(await plotPage.locator("#plot-image").isVisible(),false);
     assert.match(await plotPage.locator("#plot-status").innerText(),/No local figure/);
     await plotPage.locator("#plot-file").setInputFiles({name:"spoof.png",mimeType:"image/png",buffer:Buffer.from("not really a png")});
+    await plotPage.locator("#plot-status").getByText("not a valid PNG").waitFor();
     assert.match(await plotPage.locator("#plot-status").innerText(),/not a valid PNG/);
     assert.deepEqual(errors,[]);
   });
