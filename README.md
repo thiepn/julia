@@ -276,3 +276,44 @@ This action never executes or overwrites the separate canonical programming draf
 ## Repair lesson 04: visual evidence from original Plots.jl
 
 The original debugging lesson on retaining two curves now saves `repair-curves.png` and prints the count of actual Plots.jl series. The broken code outputs `series=1` and the original reference repair outputs `series=2`; examine the real plotted lines rather than treating successful execution as proof of correctness. Julia Lab displays and validates the local runner's temporary PNG/SVG output **beside the repair editor**, using the same signature checks and SVG sanitization as the existing local Julia image previews. Figures are never uploaded, graded or included in assignment evidence; clearing, changing or resetting a repair revokes transient figure URLs. The existing Plots.jl dependency must be installed in the local Julia environment. Alternate legitimate repairs remain acceptable.
+
+
+## Mixed semester rehearsal (unmerged enhancement)
+
+**Mixed semester practice** builds a six-exercise cumulative set: one mathematical
+reasoning task and one Julia coding transfer for each of the three officially
+announced WS 2026/27 AMP topics (machine arithmetic/error analysis, LR/QR
+linear systems, and linear least squares). Questions and proof approaches are
+selected from the original lesson-linked depth tasks; no official exam problems,
+future worksheet statements or answer keys are invented.
+
+The reasoning box is temporary for the current tab. **Show approach** reveals
+the original proof plan, not a complete official solution; **Open exercise in
+lesson** selects the canonical lesson's existing proof/Julia depth task. New
+mixed sets change the selection without touching saved drafts, grades, backups,
+the Julia runner or ILIAS. Actual Julia coding validation remains in the
+original local Test workflow. This is ungraded independent exam practice,
+not a replacement for official exercises or a predictor of examination results.
+
+Continuing the mixed-set workflow, **Return to mixed set** revisits the active
+question with its in-tab working text intact. A new mixed set requires confirmation
+before discarding written reasoning. For coding transfers, **Use starter in lesson
+editor** explicitly loads the selected original depth starter via the canonical
+lesson draft saving path; edited drafts require confirmation and storage failures
+never overwrite the editor. No new progress or execution data is persisted.
+
+## Julia Lab studio (app-wide visual + usability pass)
+
+The original 16 lessons, tools, runtime and storage remain canonical. The studio
+presentation adds a consistent editorial typographic scale, desktop course navigation,
+accessible lesson picker, jump controls for learning/quick checks/coding/runner,
+responsive mobile bottom navigation, and an on-demand directory of the experiments
+available for the current lesson. All existing lab DOM and IDs remain in place;
+nothing is duplicated or artificially credited.
+
+Mobile shows the existing Continue and mixed-practice actions directly; the 16-item
+course directory expands only when requested. The current lesson is also selected in
+the persistent picker. Drafts, imports, course backups, proof attempts and numerical
+experiments keep their original storage and execution boundaries. Keyboard focus
+moves to the chosen section and the browser's preferred reduced motion is respected.
+No new accounts, analytics, tracking or external design dependencies.

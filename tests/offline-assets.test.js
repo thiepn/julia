@@ -6,7 +6,7 @@ test("offline cache is explicit, first-party only and complete",async()=>{
  assert.match(OFFLINE_CACHE_NAME,/^amp-julia-offline-/);
  assert.equal(OFFLINE_ASSETS.length,new Set(OFFLINE_ASSETS).size);
  for(const path of OFFLINE_ASSETS){
-   assert.match(path,/^(?:src\/[a-z0-9-]+\.js|assets\/julia-lab(?:\.svg|-(?:192|512)\.png)|index\.html|styles\.css|app\.webmanifest)$/i);
+   assert.match(path,/^(?:src\/[a-z0-9-]+\.js|assets\/julia-lab(?:\.svg|-(?:192|512)\.png)|index\.html|(?:styles|studio)\.css|app\.webmanifest)$/i);
    assert.equal((await stat(path)).isFile(),true,path);
  }
  assert.ok(OFFLINE_ASSETS.length>=45);

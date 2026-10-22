@@ -3,7 +3,7 @@
 import {completionTracksForLesson,buildCompletionTests} from "./completion-tracks.js";
 import {proofScaffoldsForLesson} from "./completion-proofs.js";
 import {experimentsForLesson} from "./completion-experiments.js";
-export function initCompletionDepth({doc=document,download,getDraft,runLocalTests,runLocalExperiment,getIdentity}={}){
+export function initCompletionDepth({doc=document,download,getDraft,runLocalTests,runLocalExperiment,getIdentity,applyStarter}={}){
  if(typeof download!=="function"||typeof getDraft!=="function")throw Error("Depth practice requires canonical editor and download.");
  const by=id=>doc.getElementById(id),section=by("completion-depth");
  const trackSelect=by("completion-track-choice"),proofSelect=by("completion-proof-choice"),
@@ -81,6 +81,12 @@ export function initCompletionDepth({doc=document,download,getDraft,runLocalTest
        outputElement:by("completion-test-local-output")});
    }catch(error){by("completion-test-local-status").textContent=String(error.message||error);}
  });
+ by("completion-starter-use").addEventListener("click",()=>{
+   const track=currentTracks.find(t=>t.id===trackSelect.value);
+   if(!track||typeof applyStarter!=="function")return;
+   const result=applyStarter(track);
+   set("completion-track-status",result.message);
+ });
  by("completion-starter-copy").addEventListener("click",async()=>{
    const track=currentTracks.find(t=>t.id===trackSelect.value);
    if(!track)return;
@@ -135,5 +141,17 @@ export function initCompletionDepth({doc=document,download,getDraft,runLocalTest
    if(currentExperiments.length){
      options(experimentSelect,currentExperiments.map(t=>[t.id,t.title]));renderExperiment();
    }
- }};
+ },
+ focusItem(kind,id){
+   const isProof=kind==="proof";
+   const options=isProof?currentProofs:currentTracks;
+   if(!options.some(x=>x.id===id))return false;
+   const select=isProof?proofSelect:trackSelect;
+   select.value=id;
+   if(isProof)renderProof();else renderTrack();
+   section.scrollIntoView({behavior:"auto",block:"start"});
+   select.focus({preventScroll:true});
+   return true;
+ }
+ };
 }

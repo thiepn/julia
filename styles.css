@@ -500,3 +500,27 @@
 /* Execution evidence directly beside the canonical repair editor. */
 #repair-run-output{max-height:290px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}
 #repair-run-status{font-size:14px!important;line-height:1.55}
+
+
+/* Mixed exam rehearsal: ordinary course content, no new navigation surface. */
+.rehearsal-open{display:block;width:100%;margin-top:14px;text-align:left}
+.semester-rehearsal{border-top:1px solid var(--line);padding-top:15px}
+.semester-rehearsal>summary{font-size:18px;font-weight:700;color:var(--ink)}
+.rehearsal-topline{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 0}
+.rehearsal-topline p{margin:0;color:var(--muted);font-size:14px}
+.rehearsal-item{border-top:1px solid var(--line);padding:24px 0}
+.rehearsal-meta{font-size:13px!important;color:var(--muted);margin:0 0 6px}
+.rehearsal-title{font-size:17px;line-height:1.35;margin:0 0 10px}
+.rehearsal-question{font-weight:650;margin:0 0 10px}
+.rehearsal-context{margin:0 0 12px}
+.rehearsal-working{width:100%;min-height:100px;resize:vertical;padding:12px;font-size:14px;
+  color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:2px}
+.rehearsal-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+.rehearsal-approach{margin-top:15px;padding:14px 17px;border-left:3px solid var(--accent);
+  background:var(--washed)}
+.rehearsal-approach h4{font-size:15px;margin:0 0 8px}
+.rehearsal-approach ol{margin:0 0 10px;padding-left:20px;font-size:14px}
+.rehearsal-approach p{margin:10px 0 0}
+.rehearsal-warning{font-weight:600}
+@media(max-width:760px){.rehearsal-topline{align-items:stretch;flex-direction:column}
+  .rehearsal-actions>button{flex:1 1 155px}}

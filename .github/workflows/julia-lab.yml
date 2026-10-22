@@ -19,7 +19,7 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -60,6 +60,10 @@ jobs:
         run: node tests/amp-browser.mjs
       - name: Julia depth and proof scaffolds in Chromium desktop/mobile
         run: node tests/completion-browser.mjs
+      - name: Studio navigation and responsive continuity in Chromium desktop/tablet/mobile
+        run: node tests/studio-browser.mjs
+      - name: Mixed-semester rehearsal in Chromium desktop/mobile
+        run: node tests/semester-rehearsal-browser.mjs
       - name: LR/QR method comparison Chromium desktop/mobile
         run: node tests/linear-methods-browser.mjs
       - name: Real local Julia Test suites in Chromium desktop/mobile
