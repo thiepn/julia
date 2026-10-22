@@ -214,10 +214,13 @@ export function initR2Studio({doc=document,lessons,navigate}){
     const target=nextStage||"learn";nextStage=null;showStage(target);
   }
   get("r2-hero-continue").addEventListener("click",()=>get("continue-lesson").click());
+  function openAux(name){
+    const id=get("lesson-jump").value;
+    location.hash=(name==="course"?"#course":"#"+name+"/"+id);
+    show(name);
+  }
   for(const name of ["course","mixed","utilities"]){
-    get("r2-"+name+"-open").addEventListener("click",()=>{
-      location.hash="#"+name;show(name);
-    });
+    get("r2-"+name+"-open").addEventListener("click",()=>openAux(name));
   }
   get("r2-back-course").addEventListener("click",()=>{
     location.hash="#course";show("course");
@@ -233,10 +236,10 @@ export function initR2Studio({doc=document,lessons,navigate}){
   get("r2-run").addEventListener("click",()=>get("local-runner-run").click());
   get("r2-export").addEventListener("click",()=>get("download-draft").click());
   get("r2-exports").addEventListener("click",()=>{
-    location.hash="#utilities";show("utilities");get("submission-workflow").open=true;
+    openAux("utilities");get("submission-workflow").open=true;
   });
   get("semester-rehearsal-open").addEventListener("click",()=>{
-    location.hash="#mixed";show("mixed");
+    openAux("mixed");
   });
   get("lesson-jump").replaceChildren(...lessons.map(l=>{
     const opt=doc.createElement("option");opt.value=l.id;

@@ -100,6 +100,10 @@ try{
       assert.equal(await page.locator("#course-backup-export").isVisible(),true);
       assert.equal(await page.locator("#submission-workflow").isVisible(),true);
       await noOverflow("utilities");await shot("utilities");
+      assert.equal(new URL(page.url()).hash,"#utilities/09");
+      await page.reload();
+      await page.locator("#r2-utilities").waitFor({state:"visible"});
+      assert.equal(await page.locator("#lesson-jump").inputValue(),"09");
       if(device.name==="desktop"&&scheme==="light"){
         for(const id of Array.from({length:16},(_,i)=>String(i+1).padStart(2,"0"))){
           await page.locator("#r2-course-open").click();

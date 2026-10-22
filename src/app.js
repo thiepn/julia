@@ -151,7 +151,7 @@ function renderContinue() {
 }
 
 function lessonIndexFromHash() {
-  const match = location.hash.match(/^#lesson\/(\d{2})$/);
+  const match = location.hash.match(/^#(?:lesson|mixed|utilities)\/(\d{2})$/);
   return Math.max(0, lessons.findIndex(l => l.id === (match?.[1] || "01")));
 }
 function navigate(index) {
@@ -919,8 +919,8 @@ $("#default-embed").addEventListener("click", () => {
 });
 window.addEventListener("hashchange",()=>{
   if(location.hash==="#course")r2.show("course");
-  else if(location.hash==="#mixed")r2.show("mixed");
-  else if(location.hash==="#utilities")r2.show("utilities");
+  else if(/^#mixed(?:\/\d{2})?$/.test(location.hash))r2.show("mixed");
+  else if(/^#utilities(?:\/\d{2})?$/.test(location.hash))r2.show("utilities");
   else render();
 });
 if (!location.hash) location.hash = "#course";
@@ -933,6 +933,8 @@ initProgramTrace();
 initFactorLab();
 initSensitivityLab();
 render();
-if(["#course","#mixed","#utilities"].includes(location.hash))r2.show(location.hash.slice(1));
+if(location.hash==="#course")r2.show("course");
+else if(/^#mixed(?:\/\d{2})?$/.test(location.hash))r2.show("mixed");
+else if(/^#utilities(?:\/\d{2})?$/.test(location.hash))r2.show("utilities");
 setupEmbed();
 initOfflineStudy();
