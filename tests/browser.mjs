@@ -1167,11 +1167,12 @@ try {
     assert.equal(await r2Locator(mobile,"#numerical-explorer").isVisible(),true);
     const overflow=await mobile.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
     assert.ok(overflow<=2,"J10 numerical explorer caused horizontal overflow: "+overflow);
+    await r2Locator(mobile,"#r2-lab-choice").selectOption("repair-lab");
     assert.equal(await r2Role(mobile,"button",{name:"Compare with example"}).isVisible(),true);
-    await r2Role(mobile,"button",{name:"Go to compiler and alternatives"}).click();
+    await r2Locator(mobile,'button[data-r2-stage="code"]').click();
     await r2Locator(mobile,"#compiler-title").waitFor();
-    assert.equal(await mobile.evaluate(()=>document.activeElement.id),"compiler-title");
-    await r2Role(mobile,"button",{name:"Return to my code"}).click();
+    assert.equal(await r2Locator(mobile,"#scratch-code").isVisible(),true);
+    await r2Locator(mobile,"#scratch-code").click();
     assert.equal(await mobile.evaluate(()=>document.activeElement.id),"scratch-code");
     const horizontal = await mobile.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
     assert.ok(horizontal<=2,"Unexpected horizontal page overflow: "+horizontal);
