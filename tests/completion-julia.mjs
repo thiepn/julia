@@ -9,7 +9,12 @@ import {QUALIFIED_EXPERIMENTS} from "../src/completion-experiments.js";
 const references={
  matrix_shapes:"column_energy(A) = vec(sum(abs2.(A);dims=1))",
  control_flow:"function clipped_total(values,cap)\n s=0\n for x in values\n  s+=min(x,cap)\n end\n return s\nend",
- row_means:"row_means(A) = vec(sum(A;dims=2)) ./ size(A,2)"
+ row_means:"row_means(A) = vec(sum(A;dims=2)) ./ size(A,2)",
+ repair_dimensions:"column_totals(A) = vec(sum(A;dims=1))",
+ repair_scope:"positive_count(values) = count(x->x>0,values)",
+ repair_types:"row_energy(A) = vec(sum(abs2.(A);dims=2))",
+ squared_bound:"square_error_bound(x,delta) = 2abs(x)*abs(delta)+delta^2",
+ vector_amplification:"using LinearAlgebra\nvector_amplification(A,x,dx) = (norm(A*(x+dx)-A*x)/norm(A*x))/(norm(dx)/norm(x))"
 };
 const directory=await mkdtemp(join(tmpdir(),"amp-completion-real-julia-"));
 function julia(path){
@@ -26,6 +31,14 @@ try{
    assert.equal(result.status,0,id+"\n"+result.stdout+"\n"+result.stderr);
    assert.match(result.stdout+result.stderr,/Test Summary:/);
    console.log("COMPLETION JULIA PASS",id,COMPLETION_TRACKS[id].checks.length,"unfamiliar function checks");
+ }
+ for(const broken of ["repair_dimensions","repair_scope","repair_types"]){
+   const file=buildCompletionTests(broken,COMPLETION_TRACKS[broken].starter);
+   const path=join(directory,"broken-"+broken+".jl");
+   await writeFile(path,file.content);
+   const failed=julia(path);
+   assert.notEqual(failed.status,0,broken+" faulty starter should fail");
+   console.log("COMPLETION JULIA DEBUG PASS",broken,"genuine Julia failure caught");
  }
  const incomplete=buildCompletionTests("matrix_shapes",COMPLETION_TRACKS.matrix_shapes.starter);
  const failPath=join(directory,"incomplete.jl");
