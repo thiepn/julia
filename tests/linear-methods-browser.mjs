@@ -38,7 +38,7 @@ try{
    assert.equal(download.suggestedFilename(),"amp-depth-qr_fit-tests.jl");
    assert.match(await readFile(await download.path(),"utf8"),/fit_qr\(t,y\)/);
    await page.goto(origin+"/#lesson/12");
-   await page.getByRole("heading",{name:"Gaussian elimination"}).waitFor();
+   await page.getByRole("heading",{name:"Solve linear systems"}).waitFor();
    assert.equal(await page.locator("#linear-methods").isVisible(),false);
    assert.ok((await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth))<=2,spec.name+" horizontal overflow");
    await page.goto(origin+"/#lesson/15");
