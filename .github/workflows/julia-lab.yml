@@ -133,6 +133,8 @@ jobs:
         run: R2_SCREENSHOTS=1 node tests/r2-browser.mjs
       - name: R2 legacy original Chromium learner acceptance (no Julia install needed)
         run: node tests/browser.mjs
+      - name: R2 backup and restore navigation acceptance
+        run: node tests/course-backup-browser.mjs
       - name: Upload screenshot review set
         if: always()
         uses: actions/upload-artifact@v4

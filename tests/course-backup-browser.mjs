@@ -31,8 +31,17 @@ try{
   async function returnToLesson(){
     if(!(await page.locator("#lesson-main").isVisible())){
       await page.locator("#r2-course-open").click();
+      await page.locator("#r2-course").waitFor({state:"visible"});
       await page.locator('.lesson-link[href="#lesson/02"]').click();
     }
+    const observed=await page.evaluate(()=>({
+      route:location.hash,view:document.body.dataset.r2View,
+      mainHidden:document.getElementById("lesson-main").hidden,
+      headingHidden:document.getElementById("lesson-title").hidden,
+      title:document.getElementById("lesson-title").textContent,
+      courseHidden:document.getElementById("r2-course").hidden
+    }));
+    console.log("BACKUP_R2_ROUTE",JSON.stringify(observed));
     await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
   }
   await page.goto(origin+"/#lesson/02");
