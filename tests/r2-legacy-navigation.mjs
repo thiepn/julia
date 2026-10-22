@@ -62,7 +62,7 @@ async function showCanonical(page,locator) {
       await page.locator("#r2-course-open").click();
       await page.locator('.lesson-link[href="#lesson/'+id+'"]').click();
     }
-    const tab=page.locator('[data-r2-stage="'+info.stage+'"]');
+    const tab=page.locator('button[data-r2-stage="'+info.stage+'"]');
     if(await tab.getAttribute("aria-pressed")!=="true") await tab.click();
     if(info.lab) {
       const labChoice=page.locator("#r2-lab-choice");
