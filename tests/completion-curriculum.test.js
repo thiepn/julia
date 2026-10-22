@@ -6,7 +6,7 @@ import {QUALIFIED_EXPERIMENTS,experimentsForLesson} from "../src/completion-expe
 test("completion content preserves canonical lesson identity and authentic sheet references",()=>{
  assert.equal(Object.keys(COMPLETION_TRACKS).length,11);
  assert.equal(COMPLETION_TRACKS.matrix_shapes.lesson,"02");
- assert.equal(completionTracksForLesson("07").length,1);
+ assert.equal(completionTracksForLesson("07").length,2);
  assert.equal(completionTracksForLesson("17").length,0);
  assert.equal(completionTrack("__proto__"),null);
  assert.deepEqual(VERIFIED_SHEETS.map(s=>s.sheet),[1,2]);
