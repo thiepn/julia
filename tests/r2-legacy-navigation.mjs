@@ -84,7 +84,7 @@ async function showCanonical(page,locator) {
     }
   }
 }
-function wrap(page,target){
+function wrap(page,target,sourceSelector=""){
   return new Proxy(target,{get(locator,name){
     const member=locator[name];
     if(typeof member!=="function")return member;
@@ -107,13 +107,17 @@ function wrap(page,target){
     };
     if(browserActions.has(name))return async(...args)=>{
       await showCanonical(page,locator);
+      // R2 hides the redundant embedded runner button on phones and exposes
+      // the same canonical run action through the fixed Code footer.
+      if(name==="click"&&sourceSelector==="#local-runner-run"&&page.viewportSize()?.width<768)
+        return page.locator("#r2-mobile-next").click(...args);
       return member.apply(locator,args);
     };
     if(childLocators.has(name))return (...args)=>wrap(page,member.apply(locator,args));
     return member.bind(locator);
   }});
 }
-export function r2Locator(page,selector,...args){return wrap(page,page.locator(selector,...args));}
+export function r2Locator(page,selector,...args){return wrap(page,page.locator(selector,...args),selector);}
 export function r2Role(page,role,opts){return wrap(page,roleTarget(page,role,opts));}
 
 export function r2Text(page,text,options){return wrap(page,page.getByText(text,options));}
