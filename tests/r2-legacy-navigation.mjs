@@ -9,7 +9,7 @@ const buttonIds=[
   ["run current julia draft","#local-runner-run"],
   ["disable jdoodle and reload for local execution","#local-runner-disable-embed"],
   ["reset experiment","#num-reset"],["next step","#elim-next"],
-  ["use least-squares fit","#fit-best"],["last","#elim-last"]
+  ["use least-squares fit","#fit-apply"],["last","#elim-last"]
 ];
 function roleName(opts){
   return typeof opts?.name==="string"?opts.name.toLowerCase().replace(/[←→↗]/g,"").trim():null;
