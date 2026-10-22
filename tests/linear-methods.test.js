@@ -5,11 +5,11 @@ import {LINEAR_TRACKS,LINEAR_PROOFS,LINEAR_EXPERIMENTS} from "../src/linear-dept
 import {completionTrack,completionTracksForLesson,buildCompletionTests} from "../src/completion-tracks.js";
 import {proofScaffoldsForLesson} from "../src/completion-proofs.js";
 import {experimentsForLesson} from "../src/completion-experiments.js";
-test("well-scaled QR and normal equations agree on an exact line",()=>{
+test("well-scaled QR and normal equations agree on least-squares output",()=>{
  const result=analyzeMethods("balanced");
  assert.ok(result.qr&&result.normal);
- assert.ok(result.qr.residual<1e-12);
- assert.ok(result.normal.residual<1e-12);
+ assert.ok(Math.abs(result.qr.residual-result.normal.residual)<1e-12);
+ assert.ok(result.qr.normalOrthogonality<1e-12);
  assert.ok(Math.abs(result.qr.coefficients[0]-3)<1e-12);
  assert.ok(Math.abs(result.qr.coefficients[1]-1.6)<1e-12);
 });
