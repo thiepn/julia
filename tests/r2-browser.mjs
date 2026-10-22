@@ -95,6 +95,27 @@ try{
       assert.equal(await page.locator("#course-backup-export").isVisible(),true);
       assert.equal(await page.locator("#submission-workflow").isVisible(),true);
       await noOverflow("utilities");await shot("utilities");
+      if(device.name==="desktop"&&scheme==="light"){
+        for(const id of Array.from({length:16},(_,i)=>String(i+1).padStart(2,"0"))){
+          await page.locator("#r2-course-open").click();
+          await page.locator('.lesson-link[href="#lesson/'+id+'"]').click();
+          assert.equal(await page.locator("#lesson-jump").inputValue(),id);
+          assert.equal(await page.locator("#r2-stage-learn").isVisible(),true);
+          await page.locator('[data-r2-stage="check"]').click();
+          assert.equal(await page.locator("#questions .question:visible").count(),1);
+          await page.locator('[data-r2-stage="code"]').click();
+          assert.equal(await page.locator("#scratch-code").isVisible(),true);
+          await page.locator('[data-r2-stage="explore"]').click();
+          assert.ok(await page.locator("#r2-lab-choice option").count()>=1);
+          assert.equal(await page.locator("#repair-lab").count(),1);
+          await noOverflow("all-16-lesson-"+id);
+        }
+        await page.goto(origin+"/#course");
+        await page.locator("#r2-course").waitFor({state:"visible"});
+        const backups=await page.evaluate(()=>Object.keys(localStorage).filter(k=>/draft:v1/.test(k)));
+        assert.ok(backups.includes("amp-julia-lab:draft:v1:09"));
+        console.log("R2 CANONICAL COURSE PASS all 16 lesson IDs, all four stage entries, original drafts intact");
+      }
       assert.deepEqual(errors,[],device.name+" "+scheme+" JavaScript errors");
       console.log("R2 STUDIO PASS",scheme,device.name,
         "course/learn/check/code/explore/mixed/utilities, canonical draft continuity, no horizontal overflow");
