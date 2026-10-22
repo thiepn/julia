@@ -496,3 +496,7 @@
 /* Original Julia numerical experiment output, never a learner grade. */
 #completion-experiment-local-output{max-height:320px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}
 #completion-experiment-local-status{font-size:14px!important;line-height:1.55}
+
+/* Execution evidence directly beside the canonical repair editor. */
+#repair-run-output{max-height:290px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}
+#repair-run-status{font-size:14px!important;line-height:1.55}

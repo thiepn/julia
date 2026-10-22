@@ -741,9 +741,12 @@
         <div class="repair-actions">
           <button type="button" class="secondary" id="repair-compare">Compare with example</button>
           <button type="button" class="secondary" id="repair-copy">Copy repair code</button>
+          <button type="button" class="secondary" id="repair-run-local">Run repair with local Julia</button>
           <button type="button" class="quiet" id="repair-reset">Reset repair</button>
         </div>
         <p class="feedback repair-feedback" id="repair-feedback" role="status" aria-live="polite"></p>
+        <p id="repair-run-status" class="feedback" role="status" aria-live="polite"></p>
+        <pre class="local-runner-console" aria-label="Actual Julia repair execution result"><code id="repair-run-output"></code></pre>
         <details id="repair-hint-1"><summary>Hint 1</summary><p></p></details>
         <details id="repair-hint-2"><summary>Hint 2</summary><p></p></details>
         <details id="repair-reference">

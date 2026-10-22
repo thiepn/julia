@@ -19,3 +19,13 @@ export function localExperimentVerdict(result){
   if(result.ok!==true)return {kind:"failed",message:"Julia experiment failed (exit code "+String(result.exitCode??"unknown")+"). Inspect the terminal output."};
   return {kind:"completed",message:"Original experiment executed with local Julia. Numerical output is shown below; no learner code was tested or graded."};
 }
+
+export function localRepairVerdict(result){
+  if(!result||typeof result!=="object")
+    return {kind:"invalid",message:"No Julia repair result was received."};
+  if(result.timedOut===true)
+    return {kind:"timeout",message:"Repair execution timed out after 120 seconds."};
+  if(result.ok!==true)
+    return {kind:"failed",message:"Julia repair draft failed (exit code "+String(result.exitCode??"unknown")+"). Inspect the error output."};
+  return {kind:"completed",message:"Repair draft executed with local Julia. Compare the output to the expected behavior; correctness is not automatically graded."};
+}

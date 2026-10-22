@@ -1,5 +1,5 @@
 import {hasPngSignature,safeSvgDocument} from "./plot-preview.js";
-import {localTestVerdict,localExperimentVerdict} from "./local-test-result.js";
+import {localTestVerdict,localExperimentVerdict,localRepairVerdict} from "./local-test-result.js";
 export const LOCAL_RUNNER_URL="http://127.0.0.1:8765/run";
 const MAX_BASE64=7_000_000;
 function decodeBase64(encoded) {
@@ -119,7 +119,7 @@ export function initLocalRunner({doc=document, fetcher=fetch, endpoint=LOCAL_RUN
   // publish program output as a submission run or update learning progress.
   async function runPreparedScript({script,validFor=()=>true,statusElement,outputElement,kind}={}){
     if(!statusElement||!outputElement)throw Error("A Julia result target is required.");
-    if(kind!=="test"&&kind!=="experiment")throw Error("Unsupported Julia run type.");
+    if(!["test","experiment","repair"].includes(kind))throw Error("Unsupported Julia run type.");
     if(busy){statusElement.textContent="Julia is already running another task.";return;}
     if(embedActive()){
       statusElement.textContent="Disable JDoodle and reload before using local Julia.";
@@ -139,6 +139,7 @@ export function initLocalRunner({doc=document, fetcher=fetch, endpoint=LOCAL_RUN
     const request=++activeRequest;
     busy=true;run.disabled=true;diagnoseButton.disabled=true;
     statusElement.textContent=kind==="experiment"?"Running original numerical experiment with local Julia…":
+      kind==="repair"?"Running current repair draft with local Julia…":
       "Running Julia Test on your computer…";
     outputElement.textContent="";
     const isLive=()=>request===activeRequest&&identity===getIdentity()&&
@@ -151,8 +152,8 @@ export function initLocalRunner({doc=document, fetcher=fetch, endpoint=LOCAL_RUN
       if(!isLive())return;
       if(!response.ok)throw Error(result.error||"Local runner HTTP "+response.status);
       outputElement.textContent=[result.stdout,result.stderr].filter(Boolean).join("\n")||"(No terminal output)";
-      statusElement.textContent=kind==="experiment"?
-        localExperimentVerdict(result).message:localTestVerdict(result).message;
+      statusElement.textContent=kind==="experiment"?localExperimentVerdict(result).message:
+        kind==="repair"?localRepairVerdict(result).message:localTestVerdict(result).message;
     }catch(error){
       if(isLive())statusElement.textContent="Local Julia unavailable: "+String(error.message||error);
     }finally{
@@ -163,8 +164,9 @@ export function initLocalRunner({doc=document, fetcher=fetch, endpoint=LOCAL_RUN
   }
   const runTestScript=options=>runPreparedScript({...options,kind:"test"});
   const runExperimentScript=options=>runPreparedScript({...options,kind:"experiment"});
+  const runRepairScript=options=>runPreparedScript({...options,kind:"repair"});
   diagnoseButton.addEventListener("click",diagnose);
   run.addEventListener("click",submit);
   doc.querySelector("#local-runner-clear").addEventListener("click",clear);
-  return {clear,run:submit,diagnose,runTestScript,runExperimentScript};
+  return {clear,run:submit,diagnose,runTestScript,runExperimentScript,runRepairScript};
 }

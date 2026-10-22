@@ -66,6 +66,8 @@ jobs:
         run: node tests/local-tests-browser.mjs
       - name: Execute original numerical experiments with genuine Julia in desktop/mobile Chromium
         run: node tests/local-experiments-browser.mjs
+      - name: Run original learner repairs with real local Julia in desktop/mobile Chromium
+        run: node tests/repair-local-browser.mjs
       - name: Genuine offline Julia Lab desktop/mobile service worker acceptance
         run: node tests/offline-browser.mjs
       - name: Portable lesson backup and conflict resolution in Chromium

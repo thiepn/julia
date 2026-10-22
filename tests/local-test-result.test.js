@@ -18,3 +18,14 @@ test("original reference experiments classify actual process exit, not Test Summ
  assert.equal(localExperimentVerdict(null).kind,"invalid");
  assert.match(localExperimentVerdict({ok:true}).message,/no learner code was tested or graded/);
 });
+
+import {localRepairVerdict} from "../src/local-test-result.js";
+test("repair results distinguish runtime success, actual errors and timeout without grading",()=>{
+  assert.equal(localRepairVerdict({ok:true,exitCode:0,stdout:"3\n"}).kind,"completed");
+  assert.equal(localRepairVerdict({ok:true,exitCode:0,stdout:""}).kind,"completed");
+  assert.equal(localRepairVerdict({ok:false,exitCode:1,stderr:"BoundsError"}).kind,"failed");
+  assert.equal(localRepairVerdict({ok:false,timedOut:true}).kind,"timeout");
+  assert.equal(localRepairVerdict(null).kind,"invalid");
+  assert.match(localRepairVerdict({ok:true}).message,/not automatically graded/);
+  assert.doesNotMatch(localRepairVerdict({ok:true}).message,/Test Summary/);
+});
