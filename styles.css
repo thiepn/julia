@@ -524,3 +524,330 @@
 .rehearsal-warning{font-weight:600}
 @media(max-width:760px){.rehearsal-topline{align-items:stretch;flex-direction:column}
   .rehearsal-actions>button{flex:1 1 155px}}
+
+
+/* R2 — single active design system. Canonical numerical component geometry above
+   is retained; app-level composition and tokens are owned here, not layered CSS. */
+:root{
+  --canvas:#f6f6f3;--surface:#fff;--surface-muted:#f0f1ef;
+  --ink:#20232a;--muted:#626873;--line:#dcdfe1;
+  --accent:#6545ce;--accent-soft:#eeeaff;--success:#147d60;
+  --warning:#a36217;--error:#b33740;--code-bg:#151a21;
+  --deep:#20232a;--washed:#f0f1ef;--active:#eeeaff;
+  --r2-header:64px; color-scheme:light;
+  font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif;font-size:16px;
+}
+html{scroll-behavior:smooth;scroll-padding-top:176px}
+body{margin:0;background:var(--canvas);color:var(--ink);line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:clip}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;touch-action:manipulation}
+button:focus-visible,a:focus-visible,select:focus-visible,
+textarea:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden],.r2-question-inactive,.r2-mixed-inactive,.r2-lab-inactive{display:none!important}
+.topbar{height:var(--r2-header);position:sticky;top:0;z-index:60;display:flex;
+  justify-content:space-between;padding:0 clamp(16px,3vw,48px);
+  background:var(--surface);border-bottom:1px solid var(--line);
+  align-items:center;box-shadow:none;min-height:0}
+.brand{gap:12px;min-width:0}
+.brand-mark{background:#292833;color:#fff;border-radius:5px;width:40px;height:40px;
+  font:700 30px Georgia,serif;display:grid;place-items:center}
+.brand-mark span{color:#b5a2ff}
+.brand strong{font-size:16px;letter-spacing:-.035em}
+.brand small{font-size:12px;line-height:1.25;max-width:none;color:var(--muted)}
+.top-right{display:flex;align-items:center;gap:12px}
+.top-right .course,.top-right #settings-toggle{display:none!important}
+.r2-global-nav{display:flex;align-items:center;gap:6px}
+.r2-global-nav button{border:0;background:transparent;padding:10px 15px;
+  min-height:44px;color:var(--muted);font-size:14px;font-weight:650;
+  border-radius:5px;white-space:nowrap}
+.r2-global-nav button:hover{background:var(--surface-muted);color:var(--ink)}
+.r2-global-nav button[aria-current="page"]{background:var(--accent-soft);
+  color:var(--accent)}
+.shell{display:block;max-width:none;min-height:calc(100dvh - var(--r2-header));margin:0}
+.r2-page{max-width:1290px;margin:0 auto;padding:clamp(24px,4vw,64px) clamp(18px,4vw,60px) 110px;
+  min-width:0}
+.r2-kicker{display:block;font-size:12px;font-weight:760;letter-spacing:.12em;
+  color:var(--accent);margin-bottom:13px}
+.r2-course-hero{background:var(--surface);padding:clamp(26px,5vw,68px);
+  border:1px solid var(--line);display:grid;justify-items:start;gap:13px}
+.r2-course-hero h1{font-size:clamp(37px,5.1vw,68px);line-height:1.1;
+  letter-spacing:-.057em;font-weight:750;margin:0}
+.r2-course-hero h1 em{font-style:normal;color:var(--accent)}
+.r2-course-hero p{font-size:17px;color:var(--muted);margin:0 0 9px;max-width:62ch}
+.r2-course-progress{font-size:13px;color:var(--muted)}
+.r2-button,.primary,.secondary{
+  min-height:44px;border:1px solid var(--line);padding:11px 17px;border-radius:5px;
+  font-size:14px;line-height:1.3;font-weight:680;display:inline-flex;
+  justify-content:center;align-items:center;gap:8px;letter-spacing:0;
+}
+.r2-primary,.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.r2-primary:hover,.primary:hover{background:#5034aa;border-color:#5034aa;color:#fff}
+.r2-secondary,.secondary{background:var(--surface);border-color:#bcbec9;color:var(--ink)}
+.r2-secondary:hover,.secondary:hover{background:var(--surface-muted);color:var(--ink)}
+.r2-text{background:transparent;border-color:transparent;color:var(--accent)}
+.r2-text:hover{background:var(--accent-soft)}
+.r2-course-heading{display:flex;align-items:baseline;gap:24px;margin:42px 0 19px}
+.r2-course-heading h2{font-size:27px;letter-spacing:-.04em;margin:0}
+.r2-course-heading p{color:var(--muted);font-size:14px;margin:0}
+.r2-course-list.sidebar{position:static;height:auto;max-height:none;overflow:visible;
+  width:auto;background:transparent;border:0;padding:0;display:block}
+.r2-course-list .sidebar-head{display:flex;flex-wrap:wrap;align-items:center;
+  gap:14px 23px;padding:18px 22px;border:1px solid var(--line);
+  background:var(--surface);margin-bottom:15px}
+.r2-course-list .sidebar-head h2{display:none}
+.r2-course-list .progress-bar{width:120px;max-width:120px;flex:0 0 120px;
+  height:5px;background:var(--surface-muted)}
+.r2-course-list #progress-label{font-size:14px;color:var(--muted);margin:0}
+.r2-course-list #continue-lesson{display:none}
+.r2-course-list #continue-detail,.r2-course-list .sidebar-foot{display:none}
+.r2-course-list #semester-rehearsal-open{margin:0 0 0 auto}
+.r2-course-list #mobile-course-toggle{display:none}
+.r2-course-list #nav-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px;max-height:none;overflow:visible}
+.r2-course-list .nav-group{display:block;overflow:visible;
+  padding:0;background:var(--surface);border:1px solid var(--line)}
+.r2-course-list .nav-group h3{margin:0;padding:22px 20px 17px;
+  font-size:14px;font-weight:760;color:var(--ink);letter-spacing:0;
+  line-height:1.4;border-bottom:1px solid var(--line)}
+.r2-course-list .lesson-link{min-height:58px;width:100%;display:flex;gap:13px;
+  padding:14px 17px;border-left:3px solid transparent;border-bottom:1px solid var(--line);
+  text-decoration:none;white-space:normal;align-items:center;
+  font-size:14px;color:var(--ink)}
+.r2-course-list .lesson-link:hover,.r2-course-list .lesson-link.active{
+  border-left-color:var(--accent);background:var(--accent-soft)}
+.r2-course-list .lesson-number{font:700 13px/1.6 "Cascadia Code",monospace;
+  color:var(--muted);min-width:22px}
+.r2-course-list .lesson-link-name{flex:1;min-width:0}
+.r2-course-list .nav-score{font-size:12px}
+main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
+  padding:28px clamp(18px,3.8vw,60px) 120px;min-width:0}
+.r2-lesson-head{position:relative;display:grid;justify-items:start;gap:5px;
+  padding:18px 0 25px}
+.r2-breadcrumb{display:flex;align-items:center;gap:10px;
+  font-size:13px;color:var(--muted);margin-bottom:12px}
+.r2-breadcrumb button{border:0;padding:6px 0;background:transparent;
+  font-weight:700;color:var(--accent)}
+.r2-lesson-picker{position:absolute;right:0;top:13px;display:flex;
+  gap:12px;align-items:center;font-size:13px;color:var(--muted);max-width:285px}
+.r2-lesson-picker select{width:230px;min-height:44px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);border-radius:4px;padding:8px;font-size:14px}
+.r2-lesson-head .lesson-meta{font-size:12px;letter-spacing:0;color:var(--muted)}
+.r2-lesson-head h1{font-size:clamp(32px,3.5vw,49px);
+  line-height:1.15;letter-spacing:-.05em;font-weight:740;margin:9px 0 4px}
+.r2-lesson-head .lead{font-size:16px;line-height:1.65;color:var(--muted);margin:0;max-width:68ch}
+.r2-stage-tabs{position:sticky;top:var(--r2-header);z-index:40;display:flex;gap:0;
+  border-bottom:1px solid var(--line);background:var(--surface);
+  padding:0 clamp(6px,1.5vw,18px);min-height:56px;margin:0 0 33px}
+.r2-stage-tabs button{font-size:14px;font-weight:700;color:var(--muted);
+  background:transparent;border:0;border-bottom:3px solid transparent;
+  margin-bottom:-1px;padding:14px 21px;min-width:116px;min-height:56px}
+.r2-stage-tabs button span{margin-left:5px}
+.r2-stage-tabs button[aria-current="step"]{color:var(--accent);border-bottom-color:var(--accent)}
+.r2-stage-tabs button:hover{color:var(--ink);background:var(--surface-muted)}
+.r2-stage-content{min-width:0}
+.r2-activity{min-width:0;min-height:calc(100dvh - 345px)}
+.r2-learn,.r2-check{max-width:910px;margin:0 auto}
+.r2-learn .paper,.r2-check .paper{background:var(--surface);
+  border:1px solid var(--line);padding:clamp(22px,4vw,48px);margin:0}
+.r2-learn .section-title,.r2-check .section-title{border-bottom:1px solid var(--line);
+  margin-bottom:25px;padding-bottom:16px}
+.r2-learn .section-title h2,.r2-check .section-title h2{
+  font-size:23px;font-weight:720;letter-spacing:-.035em}
+.r2-learn #lesson-theory{font-size:18px;line-height:1.85;max-width:70ch;
+  color:var(--ink);margin:0 0 28px}
+.r2-learn .code{padding:25px;background:var(--code-bg);color:#e8eaf4;
+  border-radius:5px;border:0;font:15px/1.7 "Cascadia Code",Consolas,monospace}
+.r2-stage-footer{display:flex;align-items:center;justify-content:space-between;
+  gap:15px;border-top:1px solid var(--line);
+  padding:18px 0;margin-top:24px;font-size:13px;color:var(--muted)}
+.r2-inner-head{margin:12px 0 21px}
+.r2-inner-head h2{font-size:25px;letter-spacing:-.035em;margin:0 0 4px}
+.r2-inner-head p,.r2-inner-head span:not(.r2-kicker){font-size:14px;color:var(--muted)}
+.r2-check .question{border:0;padding:0}
+.r2-check .question-head{font-size:13px;color:var(--muted)}
+.r2-check .question h3{font-size:clamp(19px,2.2vw,26px);font-weight:670;
+  letter-spacing:-.02em;margin:15px 0 25px;line-height:1.5}
+.r2-check .choices{display:grid;grid-template-columns:1fr;gap:12px}
+.r2-check .choice{min-height:59px;padding:14px 20px;border:1px solid var(--line);
+  background:var(--surface);font-size:16px;text-align:left;border-radius:5px}
+.r2-check .choice:hover{border-color:var(--accent)}
+.r2-check .choice.selected{border-color:var(--accent);background:var(--accent-soft)}
+.r2-check .answer-reason{font-size:15px;line-height:1.65}
+.r2-check #concept-brief{font-size:13px;color:var(--muted)}
+.r2-code-layout{display:grid;grid-template-columns:minmax(280px,39%) minmax(0,61%);
+  gap:0;background:var(--surface);border:1px solid var(--line);
+  min-height:650px;align-items:start}
+.r2-instructions{padding:30px 29px;border-right:1px solid var(--line);
+  min-width:0;overflow-wrap:anywhere}
+.r2-instructions>.paper{padding:0;margin:0;border:0;box-shadow:none;background:transparent}
+.r2-instructions .section-title h2{font-size:22px;letter-spacing:-.035em}
+.r2-instructions #challenge-text{font-size:17px;line-height:1.75}
+.r2-instructions .code{font-size:13px;padding:15px;border:0;border-radius:4px;
+  color:#e8eaf4;background:var(--code-bg)}
+.r2-instructions .section-intro{font-size:13px;color:var(--muted)}
+.r2-instructions #go-to-compiler{display:none!important}
+.r2-instructions #external-tests,.r2-instructions #integration-handoff{font-size:14px}
+.r2-editor{background:var(--surface);min-width:0;padding:25px}
+.r2-editor-head{display:flex;justify-content:space-between;gap:12px;align-items:center;
+  border-bottom:1px solid var(--line);padding:5px 0 19px;margin-bottom:21px;
+  font:700 14px "Cascadia Code",Consolas,monospace}
+#r2-editor-status{font:500 13px/1.5 "Segoe UI",sans-serif;color:var(--muted)}
+.r2-editor .scratch-editor{width:100%;display:block;min-height:420px;
+  border:1px solid #383e48;border-radius:5px;background:var(--code-bg);
+  color:#eef0f6;padding:21px;font:15px/1.68 "Cascadia Code",Consolas,monospace;
+  tab-size:4;resize:vertical;white-space:pre;overflow:auto}
+.r2-editor .draft-title{display:none}
+.r2-editor .draft-actions{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}
+.r2-editor .draft-actions button{font-size:13px}
+.r2-editor-actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 26px}
+.r2-editor>.compiler{position:relative;top:auto;max-height:none;overflow:visible;
+  width:auto;padding:0;border:0;background:transparent;box-shadow:none;
+  border-top:1px solid var(--line);padding-top:23px}
+.r2-editor>.compiler .compiler-heading{display:flex;margin:0 0 15px}
+.r2-editor>.compiler .compiler-heading h2{font-size:18px;letter-spacing:-.025em}
+.r2-editor .local-runner{padding:0;background:transparent;border:0}
+.r2-editor .local-runner h3{font-size:16px}
+.r2-editor .local-runner-console{background:var(--code-bg);color:#e3e9f0;
+  border:0;border-radius:4px;min-height:58px;max-width:100%;font-size:13px}
+.r2-compiler-extras{margin-top:25px;border-top:1px solid var(--line);padding:17px 0}
+.r2-compiler-extras>summary{font-size:14px;font-weight:650;color:var(--accent)}
+.r2-page-heading{margin:10px 0 32px}
+.r2-page-heading h1{font-size:clamp(31px,3.5vw,47px);line-height:1.15;
+  letter-spacing:-.048em;margin:0 0 10px}
+.r2-page-heading h2{font-size:27px;letter-spacing:-.035em;margin:0 0 8px}
+.r2-page-heading p{max-width:66ch;color:var(--muted);margin:0}
+.r2-explore{max-width:1190px;margin:0 auto}
+.r2-explore .r2-lab-picker{display:flex;gap:12px;align-items:center;
+  padding:13px 16px;margin:0 0 22px;background:var(--surface);
+  border:1px solid var(--line)}
+.r2-lab-picker label{font-weight:700;font-size:14px}
+.r2-lab-picker select{flex:1;min-width:0;max-width:650px;min-height:44px;
+  padding:9px 11px;border:1px solid var(--line);color:var(--ink);
+  background:var(--surface);font-size:14px}
+.r2-explore>.r2-lab:not(.r2-lab-inactive){padding:clamp(20px,3vw,42px);
+  background:var(--surface);border:1px solid var(--line);width:100%;
+  max-width:none;overflow:visible}
+.r2-explore>.r2-lab h2{font-size:22px;letter-spacing:-.025em}
+.r2-explore .numerical-layout,.r2-explore .factor-matrices,.r2-explore .fitting-layout{
+  max-width:100%}
+.r2-mixed{max-width:950px}
+.r2-mixed #semester-rehearsal{background:var(--surface);border:1px solid var(--line);
+  padding:clamp(19px,3vw,40px);margin:0}
+.r2-mixed #semester-rehearsal>summary{display:none}
+.r2-mixed .rehearsal-item{border:0;padding:10px 0}
+.r2-mixed .rehearsal-title{font-size:25px;letter-spacing:-.025em}
+.r2-mixed .rehearsal-question{font-size:17px}
+.r2-mixed .rehearsal-working{font-size:16px;min-height:165px}
+.r2-mixed-navigation{display:flex;align-items:center;justify-content:space-between;
+  padding:22px 0;gap:12px}
+.r2-mixed-navigation span{font-size:14px;color:var(--muted)}
+.r2-utilities{max-width:970px}
+.r2-utilities>details,.r2-utilities>#settings-panel{display:block;max-width:none;
+  padding:24px;margin:0 0 18px;background:var(--surface);border:1px solid var(--line)}
+.r2-utilities>details summary{font-size:17px;font-weight:700;cursor:pointer}
+.r2-utilities #settings-panel{position:static;max-height:none}
+.r2-utilities .privacy-note{color:var(--muted);font-size:13px}
+#r2-stage-code .privacy-note,#r2-stage-code .compiler-explainer{font-size:13px}
+.lesson-footer{max-width:1280px;margin:44px auto 0;border-top:1px solid var(--line)}
+.r2-mobile-action{display:none}
+@media(max-width:900px){
+  .r2-course-list #nav-items{grid-template-columns:1fr 1fr}
+  .r2-code-layout{grid-template-columns:minmax(0,1fr)}
+  .r2-instructions{border-right:0;border-bottom:1px solid var(--line)}
+  .r2-editor{padding:24px}
+  .r2-lesson-picker{position:static;order:1;margin-top:12px;max-width:none}
+  .r2-lesson-picker select{width:min(80vw,350px)}
+}
+@media(max-width:767px){
+  :root{--r2-header:56px}
+  body{padding-bottom:calc(68px + env(safe-area-inset-bottom))}
+  .topbar{padding:0 12px;height:var(--r2-header)}
+  .brand-mark{width:34px;height:34px;font-size:25px}
+  .brand strong{font-size:15px}
+  .brand small{display:none}
+  .top-right #offline-indicator{font-size:12px}
+  .r2-global-nav{gap:0}
+  .r2-global-nav button{font-size:12px;min-height:42px;padding:8px 9px}
+  .r2-page{padding:23px 16px 110px}
+  .r2-course-hero{padding:29px 20px;gap:12px}
+  .r2-course-hero h1{font-size:clamp(30px,9vw,42px)}
+  .r2-course-hero p{font-size:15px}
+  .r2-course-heading{display:block;margin:27px 0 15px}
+  .r2-course-heading h2{font-size:24px}
+  .r2-course-heading p{font-size:13px;margin:5px 0 0}
+  .r2-course-list .sidebar-head{padding:14px;gap:12px}
+  .r2-course-list #nav-items{grid-template-columns:1fr;gap:12px}
+  .r2-course-list .nav-group h3{padding:15px}
+  .r2-course-list .lesson-link{min-height:52px;padding:12px 14px}
+  main#lesson-main{padding:17px 13px 95px}
+  .r2-lesson-head{padding:9px 4px 15px}
+  .r2-breadcrumb{font-size:12px;margin-bottom:4px}
+  .r2-lesson-head .lesson-meta{font-size:12px;display:flex;flex-wrap:wrap;gap:8px}
+  .r2-lesson-head h1{font-size:clamp(26px,7.4vw,32px);margin:5px 0}
+  .r2-lesson-head .lead{font-size:14px}
+  .r2-lesson-picker{width:100%;margin:9px 0}
+  .r2-lesson-picker select{width:100%}
+  .r2-stage-tabs{top:var(--r2-header);padding:0;
+    min-height:48px;margin:0 0 17px;display:grid;grid-template-columns:repeat(4,1fr)}
+  .r2-stage-tabs button{min-width:0;min-height:48px;white-space:nowrap;
+    padding:11px 0;font-size:11px}
+  .r2-stage-tabs button span{font-size:13px;margin:0 0 0 2px}
+  .r2-activity{min-height:calc(100dvh - 320px)}
+  .r2-learn .paper,.r2-check .paper{padding:23px 18px}
+  .r2-learn #lesson-theory{font-size:16px;line-height:1.7}
+  .r2-learn .code{font-size:13px;padding:16px}
+  .r2-check .choice{min-height:53px;font-size:15px}
+  .r2-check .question h3{font-size:20px}
+  .r2-stage-footer{margin:20px 0 0;gap:12px}
+  .r2-code-layout{border:0;background:transparent}
+  .r2-instructions,.r2-editor{padding:19px 15px;background:var(--surface);
+    border:1px solid var(--line)}
+  .r2-instructions{border-bottom:0}
+  .r2-instructions #challenge-text{font-size:16px}
+  .r2-editor .scratch-editor{min-height:clamp(275px,40dvh,450px);
+    font-size:14px;padding:15px}
+  .r2-editor-actions{display:none}
+  .r2-editor .draft-actions{gap:8px}
+  .r2-editor>.compiler .local-runner-actions{margin-bottom:12px}
+  .r2-editor>.compiler #local-runner-run{display:none}
+  .r2-explore>.r2-lab:not(.r2-lab-inactive){padding:18px 14px}
+  .r2-explore .r2-lab-picker{display:block}
+  .r2-lab-picker label{display:block;margin-bottom:7px}
+  .r2-lab-picker select{width:100%;max-width:none}
+  .r2-mixed-navigation{gap:6px}
+  .r2-mixed-navigation .r2-button{padding:10px}
+  .r2-mobile-action{display:flex;position:fixed;z-index:80;bottom:0;left:0;
+    right:0;min-height:64px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+    background:var(--surface);border-top:1px solid var(--line)}
+  .r2-mobile-action button{width:100%;min-height:46px;font-size:15px}
+  .lesson-footer{padding-bottom:40px}
+}
+@media(max-width:365px){
+  .r2-global-nav button{font-size:11px;padding:7px 6px}
+  .r2-stage-tabs button{font-size:10px}
+  .r2-stage-tabs button span{font-size:12px}
+  .r2-mixed-navigation span{font-size:12px}
+  .r2-lesson-head .lead{font-size:14px}
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --canvas:#111317;--surface:#1b1e23;--surface-muted:#23272d;
+    --ink:#f1f2f4;--muted:#aeb5c0;--line:#353b44;--accent:#b5a2ff;
+    --accent-soft:#2e2845;--success:#6ec9a5;--warning:#f1be72;
+    --error:#f19aa1;--deep:#f1f2f4;--washed:#23272d;--active:#2e2845;
+    --code-bg:#0d1015;color-scheme:dark;
+  }
+  .r2-primary,.primary{color:#15121f;background:#b5a2ff;border-color:#b5a2ff}
+  .r2-primary:hover,.primary:hover{background:#cabaff;border-color:#cabaff;color:#15121f}
+  .r2-secondary,.secondary{color:var(--ink);background:var(--surface);border-color:#525764}
+  .r2-global-nav button{color:var(--muted)}
+  .r2-course-hero h1 em{color:var(--accent)}
+  .r2-learn .code,.r2-instructions .code{background:var(--code-bg)}
+  .r2-editor .scratch-editor{background:var(--code-bg);color:#f0eff6}
+  .r2-check .choice.selected{background:var(--accent-soft)}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}
+@media print{.r2-global-nav,.r2-stage-tabs,.r2-mobile-action,.r2-lesson-picker,
+  .r2-code-layout,.r2-course,.r2-mixed,.r2-utilities{display:none!important}
+  body{padding:0;background:#fff}}
