@@ -712,7 +712,10 @@
           <select id="completion-experiment-choice"></select>
           <p id="completion-experiment-intent"></p>
           <pre class="code"><code id="completion-experiment-code"></code></pre>
-          <button type="button" class="secondary" id="completion-experiment-download">Download executable Julia experiment</button>
+          <div class="completion-actions"><button type="button" class="secondary" id="completion-experiment-download">Download executable Julia experiment</button>
+          <button type="button" class="secondary" id="completion-experiment-local-run">Run original experiment with local Julia</button></div>
+          <p class="feedback" id="completion-experiment-local-status" role="status" aria-live="polite"></p>
+          <pre class="local-runner-console" aria-label="Real Julia numerical experiment output"><code id="completion-experiment-local-output"></code></pre>
           <p id="completion-experiment-status" role="status"></p>
         </div>
         <div id="completion-proofs" hidden>

@@ -257,3 +257,10 @@ After one successful online load on HTTPS or localhost, Julia Lab registers a ve
 For each static-app release, update `OFFLINE_CACHE_NAME` and `OFFLINE_ASSETS` in `src/offline-assets.js` if source files change or new first-party assets are added. This branch adds no remote account, sync, progress/grade engine or second compiler.
 
 Chromium-compatible install icons include first-party 192×192 and 512×512 PNG fallbacks alongside the SVG mark; all three are precached so installation artwork can resolve while disconnected. Browser install controls appear only when the browser supplies its own install prompt.
+
+
+## Live numerical experiments in existing local Julia companion
+
+The **Deeper Julia and numerical reasoning → Numerical experiment** panel can now execute each original, fixed-source experiment with the existing authenticated localhost Julia runner. Choose an experiment, disable JDoodle, start `node local-runner/server.mjs`, enter the session code, then select **Run original experiment with local Julia**. The selected experiment's Julia 1.11 source executes without importing or overwriting your lesson draft. The panel shows real stdout/stderr and an execution result; a failing assertion is displayed as an error, **not a learning grade**. Switching the selected experiment, lesson or editing the draft invalidates pending results. The download action remains available for independent/manual Julia execution.
+
+The existing companion's token, origin restrictions, one-run-at-a-time gate, source limit and timeout apply. It is not sandboxed; original experiments execute with your OS account's permissions. No second compiler, grader, score, saved execution history, data upload, progress change or assignment-output reuse was added. The static offline PWA can display experiment descriptions but cannot execute local Julia unless its companion is available separately.

@@ -51,7 +51,9 @@ const plottingPractice = initPlottingPractice();
 const ue02Practice = initUe02Practice();
 const ampWorkshops = initAmpWorkshops({download:downloadLocalJulia,getDraft:()=>$("#scratch-code").value});
 const depthPractice=initCompletionDepth({download:downloadLocalJulia,getDraft:()=>$("#scratch-code").value,
-  runLocalTests:options=>localRunner.runTestScript(options),getIdentity:()=>current().id+":"+practiceVariant});
+  runLocalTests:options=>localRunner.runTestScript(options),
+  runLocalExperiment:options=>localRunner.runExperimentScript(options),
+  getIdentity:()=>current().id+":"+practiceVariant});
 const courseBackup=initCourseBackup({download:downloadLocalJulia,isEmbedActive:()=>Boolean(readEmbedUrl()),
   disableEmbed:()=>$("#local-runner-disable-embed").click()});
 const progress = readProgress();

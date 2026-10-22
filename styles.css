@@ -492,3 +492,7 @@
 .offline-actions button{min-height:42px;font-size:14px}
 .offline-actions button[hidden],#offline-indicator[hidden]{display:none}
 @media(max-width:760px){#offline-indicator{font-size:14px}.offline-actions button{flex:1 1 100%}}
+
+/* Original Julia numerical experiment output, never a learner grade. */
+#completion-experiment-local-output{max-height:320px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}
+#completion-experiment-local-status{font-size:14px!important;line-height:1.55}
