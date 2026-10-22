@@ -19,9 +19,14 @@ const browser=await chromium.launch({headless:true,args:["--no-sandbox"]});
 const origin="http://127.0.0.1:"+server.address().port;
 const viewports=[
   {name:"mobile-320",width:320,height:700},
+  {name:"mobile-360",width:360,height:800},
   {name:"mobile-390",width:390,height:844},
-  {name:"tablet",width:768,height:1024},
-  {name:"desktop",width:1440,height:900}
+  {name:"mobile-430",width:430,height:932},
+  {name:"tablet-768",width:768,height:1024},
+  {name:"tablet-1024",width:1024,height:768},
+  {name:"desktop-1280",width:1280,height:800},
+  {name:"desktop",width:1440,height:900},
+  {name:"desktop-1920",width:1920,height:1080}
 ];
 const shots=process.env.R2_SCREENSHOTS==="1";
 try{
