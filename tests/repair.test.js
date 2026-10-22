@@ -51,3 +51,14 @@ test("unavailable storage and oversized text are fail-closed",()=>{
   assert.equal(writeRepair("01","x".repeat(MAX_DRAFT_LENGTH+1),storage),false);
   assert.equal(readRepair("17","sentinel",storage),"sentinel");
 });
+
+test("plot repair keeps original conceptual contrast and writes an inspectable local figure",()=>{
+  const plot=repairForLesson("04");
+  assert.match(plot.broken,/plot\(x, x; label=/);
+  assert.match(plot.reference,/plot!\(x, x; label=/);
+  for(const code of [plot.broken,plot.reference]){
+    assert.match(code,/savefig\("repair-curves\.png"\)/);
+    assert.match(code,/Plots\.current\(\)\.series_list/);
+    assert.match(code,/series=/);
+  }
+});
