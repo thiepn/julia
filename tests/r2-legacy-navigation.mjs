@@ -93,8 +93,8 @@ function wrap(page,target){
       // reachable through the Explore picker; test that real route first.
       const lab=await locator.first().evaluate(el=>{
         const parent=el.closest(".r2-lab");
-        const eligible=el===parent||el.id==="compiler-panel";
-        return {eligible:!!eligible, available:parent?!parent.hidden:true};
+        const eligible=Boolean(el.closest(".r2-activity")||el.closest("#r2-utilities")||el.closest("#r2-mixed"));
+        return {eligible,available:!el.hidden&&(!parent||!parent.hidden)};
       });
       if(lab.eligible&&lab.available)await showCanonical(page,locator);
       return member.apply(locator,args);
