@@ -30,32 +30,32 @@ try{
     assert.equal(await page.locator(".lesson-link").count(),16);
     assert.equal(await page.locator("#lesson-jump option").count(),16);
     assert.equal(await page.locator("#lesson-jump").inputValue(),"01");
-    assert.equal(await page.locator("#lab-directory").isVisible(),true);
-    assert.ok(await page.locator("#lab-count").innerText()!=="0");
-    assert.equal(await page.locator(".study-mobile-dock").isVisible(),viewport.width<=760);
+    assert.equal(await page.locator("#r2-stage-learn").isVisible(),true);
+    assert.equal(await page.locator("#r2-stage-code").isVisible(),false);
+    assert.equal(await page.locator(".r2-mobile-action").isVisible(),viewport.width<=767);
     const title=page.locator("#lesson-title");
-    const version=await page.locator("head link[href='./studio.css']").count();
+    const version=await page.locator("head link[href='./styles.css']").count();
     assert.equal(version,1);
     await page.locator("#lesson-jump").selectOption("09");
     await page.getByRole("heading",{name:"Floating-point numbers"}).waitFor();
     assert.equal(await page.locator("#lesson-jump").inputValue(),"09");
-    assert.equal(await page.locator("#lab-directory").isVisible(),true);
-    await page.locator("#lab-directory summary").click();
-    assert.ok(await page.locator("#lab-shortcuts button").count()>0);
+    await page.locator('[data-r2-stage="explore"]').click();
+    assert.equal(await page.locator("#r2-stage-explore").isVisible(),true);
+    assert.ok(await page.locator("#r2-lab-choice option").count()>0);
     const before=await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1"));
-    await page.locator('[data-study-jump="code"]:visible').first().click();
+    await page.locator('[data-r2-stage="code"]').click();
     assert.equal(await page.locator("#coding-title").isVisible(),true);
     await page.locator("#scratch-code").fill('println("studio draft")');
-    await page.locator('[data-study-jump="run"]:visible').first().click();
     assert.equal(await page.locator("#compiler-panel").isVisible(),true);
     assert.equal(await page.locator("#scratch-code").inputValue(),'println("studio draft")');
     assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1")),before);
-    if(viewport.width<=760){
+    if(viewport.width<=767){
       assert.equal(await page.locator("#nav-items").isVisible(),false);
-      await page.locator("#mobile-course-toggle").click();
+      await page.locator("#r2-course-open").click();
       assert.equal(await page.locator("#nav-items").isVisible(),true);
-      await page.locator("#mobile-course-toggle").click();
-      assert.equal(await page.locator("#nav-items").isVisible(),false);
+      await page.locator('.lesson-link[href="#lesson/09"]').click();
+      await page.locator('[data-r2-stage="code"]').click();
+      assert.equal(await page.locator("#scratch-code").inputValue(),'println("studio draft")');
     }
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
     assert.ok(overflow<=2,viewport.name+" overflow "+overflow);
