@@ -29,6 +29,9 @@ try{
   // Backup or embed-setting actions can leave R2 in Tools after a reload.
   // Re-enter through the actual Course/lesson navigation before asserting.
   async function returnToLesson(){
+    // The settings and restore actions reload the page asynchronously.
+    // Wait for the original R2 controller to mount before navigating.
+    await page.locator("#r2-course").waitFor({state:"attached"});
     if(!(await page.locator("#lesson-main").isVisible())){
       await page.locator("#r2-course-open").click();
       await page.locator("#r2-course").waitFor({state:"visible"});
