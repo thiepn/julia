@@ -16,6 +16,8 @@ function roleName(opts){
 }
 function roleTarget(page,role,opts){
   const name=roleName(opts);
+  if(role==="button"&&name==="run current julia draft"&&page.viewportSize()?.width<768)
+    return page.locator("#r2-mobile-next");
   if(role==="button"&&name?.startsWith("continue lesson"))
     return page.locator("#r2-hero-continue");
   const mapping=role==="button"&&buttonIds.find(([key])=>key===name);
@@ -29,6 +31,8 @@ async function showCanonical(page,locator) {
     const lab=el.closest(".r2-lab")?.id||null;
     const question=el.closest(".question");
     const questionIndex=question?[...question.parentElement.children].indexOf(question):null;
+    const mixedTask=el.closest(".rehearsal-item");
+    const mixedIndex=mixedTask?[...mixedTask.parentElement.children].indexOf(mixedTask):null;
     const closed=[];
     for(let parent=el.parentElement;parent;parent=parent.parentElement)
       if(parent.tagName==="DETAILS"&&!parent.open){
@@ -38,12 +42,17 @@ async function showCanonical(page,locator) {
     if(el.closest("#r2-course"))view="course";
     else if(el.closest("#r2-mixed"))view="mixed";
     else if(el.closest("#r2-utilities"))view="utilities";
-    return {stage,lab,questionIndex,closed,view};
+    return {stage,lab,questionIndex,mixedIndex,closed,view};
   });
   if(info.view==="course" && !(await page.locator("#r2-course").isVisible()))
     await page.locator("#r2-course-open").click();
   if(info.view==="mixed" && !(await page.locator("#r2-mixed").isVisible()))
     await page.locator("#r2-mixed-open").click();
+  if(info.mixedIndex!==null&&info.mixedIndex>=0){
+    let current=Number((await page.locator("#r2-mixed-progress").innerText()).match(/\d+/)?.[0]||1)-1;
+    while(current<info.mixedIndex){await page.locator("#r2-mixed-next").click();current++;}
+    while(current>info.mixedIndex){await page.locator("#r2-mixed-prev").click();current--;}
+  }
   if(info.view==="utilities" && !(await page.locator("#r2-utilities").isVisible()))
     await page.locator("#r2-utilities-open").click();
   if(info.stage) {
