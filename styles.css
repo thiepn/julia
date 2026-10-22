@@ -583,7 +583,7 @@ textarea:focus-visible,summary:focus-visible{outline:3px solid var(--accent);out
   letter-spacing:-.052em;font-weight:770;margin:0;color:var(--ink)}
 .r2-course-hero p{font-size:15px;color:var(--muted);margin:13px 0 0}
 .r2-course-hero-actions{display:grid;justify-items:end;gap:12px;flex:none}
-.r2-course-progress{font:600 13px/1.5 "Cascadia Code",Consolas,monospace;
+#r2-course-progress{font:600 13px/1.5 "Cascadia Code",Consolas,monospace;
   color:var(--muted);text-align:right}
 .r2-button,.primary,.secondary{
   min-height:44px;border:1px solid var(--line);padding:11px 17px;border-radius:3px;
@@ -598,7 +598,7 @@ textarea:focus-visible,summary:focus-visible{outline:3px solid var(--accent);out
 .r2-text:hover{background:var(--accent-soft)}
 .r2-course-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(310px,39%);
   align-items:start;gap:clamp(23px,3.3vw,48px);margin-top:28px}
-.r2-course-path{min-width:0}
+.r2-course-path{min-width:0;grid-column:1;grid-row:1}
 .r2-course-heading{margin:0 0 16px}
 .r2-course-heading h2{font-size:22px;line-height:1.35;letter-spacing:-.035em;margin:0}
 .r2-course-list.sidebar{position:static;height:auto;max-height:none;overflow:visible;
@@ -624,6 +624,7 @@ textarea:focus-visible,summary:focus-visible{outline:3px solid var(--accent);out
 .r2-course-list .nav-score{font:600 12px/1.5 "Cascadia Code",Consolas,monospace;
   color:var(--accent);white-space:nowrap}
 .r2-next-lesson{position:sticky;top:calc(var(--r2-header) + 20px);min-width:0;
+  grid-column:2;grid-row:1;
   background:#121821;color:#e8edf5;border:1px solid #293447;overflow:hidden}
 .r2-preview-header{display:flex;align-items:center;justify-content:space-between;
   gap:12px;padding:17px 21px;border-bottom:1px solid #303a49;
@@ -807,7 +808,6 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   .r2-course-progress{font-size:12px;text-align:left}
   .r2-course-layout{gap:22px;margin-top:21px;display:flex;flex-direction:column}
   .r2-course-path,.r2-next-lesson{width:100%}
-  .r2-next-lesson{order:-1}
   .r2-course-heading{margin:0 0 14px}
   .r2-course-heading h2{font-size:22px}
   .r2-course-list .nav-group h3{padding:19px 9px 9px}
