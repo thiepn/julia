@@ -12,13 +12,29 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const course=node("section","r2-page r2-course"),mixed=node("section","r2-page r2-mixed"),
     utils=node("section","r2-page r2-utilities");
   course.id="r2-course";mixed.id="r2-mixed";utils.id="r2-utilities";
-  course.append(node("header","r2-course-hero",
-    '<div class="r2-kicker">AMP · JULIA</div><h1>Algorithmische Mathematik<br><em>und Programmieren.</em></h1>'+
-    '<p>16 lessons · Julia programming and numerical mathematics</p>'+
-    '<button type="button" id="r2-hero-continue" class="r2-button r2-primary">Continue learning →</button>'+
-    '<span id="r2-course-progress" role="status"></span>'),
-    node("header","r2-course-heading",'<h2>Course curriculum</h2><p>Choose a lesson to begin.</p>'),sidebar);
+  // Course home is a syllabus and a preview of real lesson source, not a dashboard.
+  const courseHero=node("header","r2-course-hero",
+    '<div class="r2-course-identity"><span class="r2-course-language">Julia</span>'+
+    '<span>AMP · Universität zu Köln</span></div>'+
+    '<div class="r2-course-hero-main"><div><h1>Algorithmische Mathematik<br>und Programmieren</h1>'+
+    '<p>16 lessons · Julia programming and numerical methods</p></div>'+
+    '<div class="r2-course-hero-actions"><span id="r2-course-progress" role="status"></span>'+
+    '<button type="button" id="r2-hero-continue" class="r2-button r2-primary">Continue learning →</button></div></div>');
+  const coursePath=node("section","r2-course-path");
+  coursePath.append(node("header","r2-course-heading",'<h2>Course curriculum</h2>'),sidebar);
   sidebar.classList.add("r2-course-list");
+  const nextPreview=node("aside","r2-next-lesson");
+  nextPreview.setAttribute("aria-labelledby","r2-next-lesson-title");
+  nextPreview.innerHTML=
+    '<div class="r2-preview-header"><span>UP NEXT · LESSON SOURCE</span><span>Julia</span></div>'+
+    '<h2 id="r2-next-lesson-title"></h2><p id="r2-next-lesson-goal"></p>'+
+    '<div class="r2-preview-file"><span>example.jl</span><span>Read-only</span></div>'+
+    '<pre class="r2-preview-code"><code id="r2-next-lesson-code"></code></pre>'+
+    '<div class="r2-preview-footer"><span id="r2-next-lesson-source"></span>'+
+    '<button type="button" id="r2-next-code" class="r2-button r2-primary">Open code workspace →</button></div>';
+  const courseLayout=node("div","r2-course-layout");
+  courseLayout.append(coursePath,nextPreview);
+  course.append(courseHero,courseLayout);
   mixed.append(node("header","r2-page-heading",'<span class="r2-kicker">CUMULATIVE PRACTICE</span>'+
     '<h1>Mixed semester practice</h1><p>Six original source-linked reasoning and Julia coding exercises.</p>'),
     get("semester-rehearsal"),
@@ -209,11 +225,22 @@ export function initR2Studio({doc=document,lessons,navigate}){
       "r2-lab-inactive",n.id!==choice.value));
   }
   get("r2-lab-choice").addEventListener("change",syncLabs);
+  function updateCoursePreview(){
+    // Follow the existing course Continue policy; do not calculate another progress state.
+    const index=Number(get("continue-lesson").dataset.index);
+    const lesson=lessons[Number.isInteger(index)&&index>=0&&index<lessons.length?index:0];
+    get("r2-next-lesson-title").textContent=lesson.id+" · "+lesson.title;
+    get("r2-next-lesson-goal").textContent=lesson.goal;
+    get("r2-next-lesson-code").textContent=lesson.example;
+    get("r2-next-lesson-source").textContent=lesson.source;
+    nextPreview.dataset.lessonId=lesson.id;
+  }
   function update(id){
     const lesson=lessons.find(l=>l.id===id)||lessons[0];
     get("r2-lesson-unit").textContent=lesson.stage+" / "+lesson.id;
     get("r2-course-progress").textContent=get("progress-label").textContent;
     get("r2-hero-continue").textContent=get("continue-lesson").textContent+" →";
+    updateCoursePreview();
     get("r2-task-summary-text").textContent=get("challenge-text").textContent;
     const lessonChanged=currentLesson!==id;
     if(lessonChanged){question=0;currentLesson=id;}
@@ -222,6 +249,10 @@ export function initR2Studio({doc=document,lessons,navigate}){
     if(lessonChanged)get("lesson-title").focus({preventScroll:true});
   }
   get("r2-hero-continue").addEventListener("click",()=>get("continue-lesson").click());
+  get("r2-next-code").addEventListener("click",()=>{
+    const index=lessons.findIndex(l=>l.id===nextPreview.dataset.lessonId);
+    if(index>=0){nextStage="code";navigate(index);}
+  });
   function openAux(name){
     const id=get("lesson-jump").value;
     location.hash=(name==="course"?"#course":"#"+name+"/"+id);
