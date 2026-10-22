@@ -36,6 +36,8 @@ try{
       await page.locator("#r2-course-open").click();
       await page.locator("#r2-course").waitFor({state:"visible"});
       await page.locator('.lesson-link[href="#lesson/02"]').click();
+      // The lesson click changes the hash before the view finishes rendering.
+      await page.locator("#lesson-main").waitFor({state:"visible"});
     }
     const observed=await page.evaluate(()=>({
       route:location.hash,view:document.body.dataset.r2View,

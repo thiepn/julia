@@ -62,6 +62,8 @@ async function showCanonical(page,locator) {
       const id=await page.locator("#lesson-jump").inputValue();
       await page.locator("#r2-course-open").click();
       await page.locator('.lesson-link[href="#lesson/'+id+'"]').click();
+      // Hash-route changes render asynchronously; wait for the visible lesson view.
+      await page.locator("#lesson-main").waitFor({state:"visible"});
     }
     const tab=page.locator('button[data-r2-stage="'+info.stage+'"]');
     if(await tab.getAttribute("aria-pressed")!=="true") await tab.click();
