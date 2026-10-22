@@ -50,10 +50,11 @@ try{
       route.fulfill({status:200,contentType:"text/javascript",body:"window.__jdoodleTestStub=true;"}));
     await page.goto(origin+"/#lesson/04");
     await page.getByRole("heading",{name:"Plot mathematical functions"}).waitFor();
+    await page.locator("#r2-utilities-open").click();
     await page.locator("#submission-workflow").evaluate(el=>el.open=true);
     assert.equal(await page.locator("#submission-name").isDisabled(),true);
     await page.locator("#submission-disable-embed").click();
-    await page.getByRole("heading",{name:"Plot mathematical functions"}).waitFor();
+    await page.getByRole("heading",{name:"Tools & settings"}).waitFor();
     await page.locator("#submission-workflow").evaluate(el=>el.open=true);
     assert.equal(await page.locator("#submission-name").isEnabled(),true);
     await page.evaluate(()=>window.print=()=>{window.__didPrint=true;});
@@ -67,10 +68,14 @@ try{
       'savefig(p, "real.svg")',
       'println("AMP-REAL-PLOT-OK")'
     ].join("\n"): '# UTF-8: α, ε, π\nprintln("AMP-REAL-CODE-OK")\nprintln(6 * 7)';
+    await page.goto(origin+"/#lesson/04");
+    await page.locator('[data-r2-stage="code"]').click();
     await page.locator("#scratch-code").fill(source);
     await page.locator("#local-runner-token").fill("fixture-session-code-only-in-ci");
     await page.locator("#local-runner-run").click();
     await page.locator("#local-runner-status").getByText("Executed with local Julia. Results are not graded.").waitFor({timeout:180000});
+    await page.locator("#r2-utilities-open").click();
+    await page.locator("#submission-workflow").evaluate(el=>el.open=true);
     assert.equal(await page.locator("#submission-include-results").isEnabled(),true);
     await page.locator("#submission-include-results").check();
     await page.locator("#submission-print-button").click();
@@ -97,11 +102,16 @@ try{
     assert.match(await page.locator("#submission-status").innerText(),/Pair staged locally/);
     await page.goto(origin+"/#lesson/09");
     await page.getByRole("heading",{name:"Floating-point numbers"}).waitFor();
+    await page.locator("#r2-utilities-open").click();
     await page.locator("#submission-workflow").evaluate(el=>el.open=true);
     assert.match(await page.locator("#submission-count").innerText(),/1 code\/PDF pair/);
     await page.locator("#submission-task").fill("2.2b");
     const nextSource='function f(t)\n    return sqrt(1+t) - 1\nend\n# Print exactly this source in PDF';
+    await page.goto(origin+"/#lesson/09");
+    await page.locator('[data-r2-stage="code"]').click();
     await page.locator("#scratch-code").fill(nextSource);
+    await page.locator("#r2-utilities-open").click();
+    await page.locator("#submission-workflow").evaluate(el=>el.open=true);
     await page.evaluate(()=>window.print=()=>{window.__didPrint=true;});
     await page.locator("#submission-print-button").click();
     assert.equal(await page.locator("#submission-print-source").textContent(),nextSource);
