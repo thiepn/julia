@@ -294,3 +294,10 @@ mixed sets change the selection without touching saved drafts, grades, backups,
 the Julia runner or ILIAS. Actual Julia coding validation remains in the
 original local Test workflow. This is ungraded independent exam practice,
 not a replacement for official exercises or a predictor of examination results.
+
+Continuing the mixed-set workflow, **Return to mixed set** revisits the active
+question with its in-tab working text intact. A new mixed set requires confirmation
+before discarding written reasoning. For coding transfers, **Use starter in lesson
+editor** explicitly loads the selected original depth starter via the canonical
+lesson draft saving path; edited drafts require confirmation and storage failures
+never overwrite the editor. No new progress or execution data is persisted.

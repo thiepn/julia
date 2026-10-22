@@ -54,12 +54,45 @@ const ampWorkshops = initAmpWorkshops({download:downloadLocalJulia,getDraft:()=>
 const depthPractice=initCompletionDepth({download:downloadLocalJulia,getDraft:()=>$("#scratch-code").value,
   runLocalTests:options=>localRunner.runTestScript(options),
   runLocalExperiment:options=>localRunner.runExperimentScript(options),
-  getIdentity:()=>current().id+":"+practiceVariant});
+  getIdentity:()=>current().id+":"+practiceVariant,
+  applyStarter:track=>{
+    if(unsavedPractice)return {ok:false,message:"Current lesson draft could not be saved. Copy it before changing source."};
+    const editor=$("#scratch-code"),draft=editor.value;
+    if(draft===track.starter){
+      editor.scrollIntoView({behavior:"auto",block:"center"});
+      editor.focus({preventScroll:true});
+      return {ok:true,message:"This starter is already in the lesson editor."};
+    }
+    const baseline=activePractice().starter;
+    if(draft.trim()&&draft!==baseline&&!window.confirm("Replace this lesson's saved Julia draft with the selected depth starter? This cannot be undone automatically.")){
+      return {ok:false,message:"Existing lesson draft retained."};
+    }
+    if(!writePracticeCode(current().id,practiceVariant,track.starter)){
+      return {ok:false,message:"Starter was not loaded because the browser could not save it."};
+    }
+    editor.value=track.starter;
+    editor.dispatchEvent(new Event("input",{bubbles:true}));
+    editor.scrollIntoView({behavior:"auto",block:"center"});
+    editor.focus({preventScroll:true});
+    return {ok:true,message:"Starter loaded into the existing lesson editor. Complete the function before running tests."};
+  }});
 let pendingRehearsal=null;
-const semesterRehearsal=initSemesterRehearsal({onOpen:task=>{
-  pendingRehearsal=task;
-  navigate(lessons.findIndex(l=>l.id===task.lesson));
-}});
+const semesterRehearsal=initSemesterRehearsal({
+  onOpen:task=>{
+    pendingRehearsal=task;
+    $("#semester-rehearsal-return").hidden=false;
+    navigate(lessons.findIndex(l=>l.id===task.lesson));
+  },
+  onNewSet:()=>{
+    pendingRehearsal=null;
+    $("#semester-rehearsal-return").hidden=true;
+  }
+});
+$("#semester-rehearsal-return").addEventListener("click",()=>{
+  if(!semesterRehearsal.returnToActive()){
+    $("#semester-rehearsal-return").hidden=true;
+  }
+});
 const courseBackup=initCourseBackup({download:downloadLocalJulia,isEmbedActive:()=>Boolean(readEmbedUrl()),
   disableEmbed:()=>$("#local-runner-disable-embed").click()});
 const progress = readProgress();

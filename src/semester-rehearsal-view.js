@@ -1,7 +1,7 @@
 import {createSemesterRehearsal} from "./semester-rehearsal.js";
 
 // This is an in-page rehearsal, not a second editor, grader or progress store.
-export function initSemesterRehearsal({doc=document,onOpen=()=>{},initialSeed=Date.now()}={}){
+export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{},initialSeed=Date.now()}={}){
   const panel=doc.getElementById("semester-rehearsal");
   const items=doc.getElementById("semester-rehearsal-items");
   const status=doc.getElementById("semester-rehearsal-status");
@@ -10,7 +10,7 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},initialSeed=Da
   if(!panel||!items||!status||!regenerate||!launch)
     throw Error("Mixed rehearsal controls are missing.");
   let seed=Number.isSafeInteger(initialSeed)&&initialSeed>=0?initialSeed:0;
-  let current=[];
+  let current=[],activeId=null;
 
   const node=(tag,cls,text)=>{
     const el=doc.createElement(tag);
@@ -62,19 +62,36 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},initialSeed=Da
         reveal.textContent=approach.hidden?"Show approach":"Hide approach";
         reveal.setAttribute("aria-expanded",String(!approach.hidden));
       });
-      work.addEventListener("click",()=>onOpen({...task}));
+      work.addEventListener("click",()=>{activeId=task.id;onOpen({...task});});
       controls.append(reveal,work);
       article.append(controls,approach);
       items.append(article);
     }
     status.textContent="Six exercises · three syllabus areas · no automatic grade";
   }
-  regenerate.addEventListener("click",()=>{seed=(seed+1)>>>0;render();});
+  regenerate.addEventListener("click",()=>{
+    const hasWork=[...items.querySelectorAll(".rehearsal-working")].some(input=>input.value.trim());
+    if(hasWork&&!doc.defaultView.confirm("Discard your written rehearsal attempts and create a new set?"))return;
+    seed=(seed+1)>>>0;
+    activeId=null;
+    render();
+    onNewSet();
+  });
   launch.addEventListener("click",()=>{
     panel.open=true;
     panel.scrollIntoView({behavior:"auto",block:"start"});
     regenerate.focus({preventScroll:true});
   });
   render();
-  return {current:()=>[...current]};
+  return {
+    current:()=>[...current],
+    returnToActive(){
+      panel.open=true;
+      const target=[...items.children].find(item=>item.dataset.sourceId===activeId);
+      if(!target){panel.scrollIntoView({behavior:"auto",block:"start"});return false;}
+      target.scrollIntoView({behavior:"auto",block:"start"});
+      target.querySelector(".rehearsal-work")?.focus({preventScroll:true});
+      return true;
+    }
+  };
 }
