@@ -53,6 +53,8 @@ jobs:
         run: node tests/amp-browser.mjs
       - name: Julia depth and proof scaffolds in Chromium desktop/mobile
         run: node tests/completion-browser.mjs
+      - name: Portable lesson backup and conflict resolution in Chromium
+        run: node tests/course-backup-browser.mjs
       - name: AMP private PDF/ZIP submission and real Julia results in Chromium
         run: node tests/submission-browser.mjs
 
