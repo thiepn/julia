@@ -152,6 +152,12 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const validStages=["learn","check","code","explore"];
   function showView(view){
     currentView=view;doc.body.dataset.r2View=view;
+    // Reuse the canonical Continue choice whenever the syllabus is reopened.
+    if(view==="course"){
+      get("r2-course-progress").textContent=get("progress-label").textContent;
+      get("r2-hero-continue").textContent=get("continue-lesson").textContent+" →";
+      updateCoursePreview();
+    }
     // Settings are a first-class Tools destination, not a hidden compiler toggle.
     if(view==="utilities")get("settings-panel").hidden=false;
     for(const [name,item] of [["course",course],["lesson",main],["mixed",mixed],["utilities",utils]])
