@@ -205,6 +205,24 @@
           <p class="submission-caveat">Both AMP Übung 1 and Übung 2 require a .jl file and a PDF of its code per program, bundled as a ZIP for ILIAS. Use your actual name and matriculation number. ZIP assembly does not verify program correctness, PDF/source identity or ILIAS submission. No identity, selected PDF or ZIP is stored by Julia Lab.</p>
         </div>
       </details>
+      <details class="paper course-backup" id="course-backup">
+        <summary>Export or restore Julia Lab learning data</summary>
+        <p>Export saved lesson drafts, transfer/debug drafts, trace positions and quiz answers. Excludes JDoodle settings, runner session codes and submission identity.</p>
+        <button type="button" class="secondary" id="course-backup-disable-embed">Disable JDoodle and reload for private data</button>
+        <button type="button" class="secondary" id="course-backup-export">Download course backup JSON</button>
+        <label for="course-backup-file">Choose a course backup to inspect</label>
+        <input type="file" id="course-backup-file" accept=".json,application/json">
+        <p id="course-backup-preview" role="status"></p>
+        <label for="course-backup-mode">When local records already exist</label>
+        <select id="course-backup-mode">
+          <option value="keep">Keep existing; restore only missing records</option>
+          <option value="replace">Replace conflicts with imported values</option>
+        </select>
+        <label class="backup-confirm"><input type="checkbox" id="course-backup-approval">
+          I confirm that I want to replace existing local records if Replace is selected.</label>
+        <button type="button" class="secondary" id="course-backup-restore" disabled>Restore selected records</button>
+        <p id="course-backup-status" role="status" aria-live="polite"></p>
+      </details>
       <section class="paper numerical-explorer" id="numerical-explorer" aria-labelledby="numerical-heading" hidden>
         <div class="section-title"><span class="section-num">04</span><h2 id="numerical-heading">Explore norms and transformations</h2></div>
         <div class="numerical-controls">

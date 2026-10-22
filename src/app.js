@@ -6,6 +6,7 @@ import {initPlottingPractice} from "./plotting-practice.js";
 import {initUe02Practice} from "./ue02-practice.js";
 import {initAmpWorkshops} from "./amp-workshops.js";
 import {initCompletionDepth} from "./completion-view.js";
+import {initCourseBackup} from "./course-backup-ui.js";
 import {readProgress, writeProgress, readEmbedUrl, writeEmbedUrl,
   validateEmbedUrl, checkChoice, countCorrect, readyForChallenge, checkPastedOutput} from "./checks.js";
 import {readDraft, writeDraft, clearDraft} from "./workspace.js";
@@ -48,6 +49,8 @@ const plottingPractice = initPlottingPractice();
 const ue02Practice = initUe02Practice();
 const ampWorkshops = initAmpWorkshops({download:downloadLocalJulia,getDraft:()=>$("#scratch-code").value});
 const depthPractice=initCompletionDepth({download:downloadLocalJulia,getDraft:()=>$("#scratch-code").value});
+const courseBackup=initCourseBackup({download:downloadLocalJulia,isEmbedActive:()=>Boolean(readEmbedUrl()),
+  disableEmbed:()=>$("#local-runner-disable-embed").click()});
 const progress = readProgress();
 // Diagnostics are opt-in and ephemeral. No provider code/output is retained.
 let diagnosticCount = 0;
