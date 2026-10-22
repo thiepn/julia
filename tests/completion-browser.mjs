@@ -56,7 +56,9 @@ try{
    await page.getByRole("heading",{name:"Norms & geometry"}).waitFor();
    assert.equal(await page.locator("#completion-tracks").isVisible(),false);
    assert.equal(await page.locator("#completion-proofs").isVisible(),true);
-   assert.equal(await page.locator("#scratch-code").inputValue(),originalDraft===undefined?"":await page.locator("#scratch-code").inputValue());
+   await page.goto(origin+"/#lesson/02");
+   await page.getByRole("heading",{name:"Vectors & indexing"}).waitFor();
+   assert.equal(await page.locator("#scratch-code").inputValue(),"column_energy(A)=vec(sum(abs2.(A);dims=1))");
    assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1")),progress);
    assert.ok((await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth))<=2,spec.name+" overflow");
    assert.deepEqual(errors,[]);
