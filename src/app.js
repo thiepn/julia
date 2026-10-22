@@ -174,6 +174,7 @@ function renderRepair() {
   $("#repair-expected").textContent=r.expected;
   $("#repair-editor").value=readRepair(r.id,r.broken);
   $("#repair-feedback").textContent="Draft not executed or graded.";
+  clearRepairExecution();
   $("#repair-feedback").dataset.status="";
   $("#repair-hint-1").open=false;
   $("#repair-hint-1").querySelector("p").textContent=r.hints[0];
@@ -471,7 +472,26 @@ function setupEmbed() {
   };
   document.body.append(script);
 }
+function clearRepairExecution(){
+  $("#repair-run-status").textContent="";
+  $("#repair-run-output").textContent="";
+}
+$("#repair-run-local").addEventListener("click",async()=>{
+  try{
+    const id=current().id,code=$("#repair-editor").value,variant=practiceVariant;
+    await localRunner.runRepairScript({
+      script:{content:code},
+      validFor:()=>current().id===id&&practiceVariant===variant&&
+        $("#repair-editor").value===code,
+      statusElement:$("#repair-run-status"),
+      outputElement:$("#repair-run-output")
+    });
+  }catch(error){
+    $("#repair-run-status").textContent=String(error.message||error);
+  }
+});
 $("#repair-editor").addEventListener("input",()=>{
+  clearRepairExecution();
   const r=repairForLesson(current().id);
   const saved=writeRepair(r.id,$("#repair-editor").value);
   $("#repair-feedback").textContent=saved
@@ -503,6 +523,7 @@ $("#repair-reset").addEventListener("click",()=>{
     return;
   }
   $("#repair-editor").value=r.broken;
+  clearRepairExecution();
   $("#repair-reference").open=false;
   $("#repair-feedback").textContent="Buggy example restored for this lesson.";
   $("#repair-feedback").dataset.status="";
