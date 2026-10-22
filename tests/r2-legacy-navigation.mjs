@@ -88,6 +88,12 @@ function wrap(page,target){
   return new Proxy(target,{get(locator,name){
     const member=locator[name];
     if(typeof member!=="function")return member;
+    if(name==="waitFor")return async(...args)=>{
+      // A visible-element wait in old acceptance must traverse R2 disclosure
+      // controls. A hidden/detached wait keeps its original negative meaning.
+      if(!["hidden","detached"].includes(args[0]?.state))await showCanonical(page,locator);
+      return member.apply(locator,args);
+    };
     if(name==="isVisible")return async(...args)=>{
       // An existing lab was previously always on-screen. R2 makes it
       // reachable through the Explore picker; test that real route first.
