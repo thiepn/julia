@@ -33,7 +33,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     '<div class="r2-preview-footer"><span id="r2-next-lesson-source"></span>'+
     '<button type="button" id="r2-next-code" class="r2-button r2-primary">Open code workspace →</button></div>';
   const courseLayout=node("div","r2-course-layout");
-  courseLayout.append(coursePath,nextPreview);
+  courseLayout.append(nextPreview,coursePath);
   course.append(courseHero,courseLayout);
   mixed.append(node("header","r2-page-heading",'<span class="r2-kicker">CUMULATIVE PRACTICE</span>'+
     '<h1>Mixed semester practice</h1><p>Six original source-linked reasoning and Julia coding exercises.</p>'),
@@ -250,8 +250,11 @@ export function initR2Studio({doc=document,lessons,navigate}){
   }
   get("r2-hero-continue").addEventListener("click",()=>get("continue-lesson").click());
   get("r2-next-code").addEventListener("click",()=>{
-    const index=lessons.findIndex(l=>l.id===nextPreview.dataset.lessonId);
-    if(index>=0){nextStage="code";navigate(index);}
+    const id=nextPreview.dataset.lessonId;
+    if(!lessons.some(l=>l.id===id))return;
+    const target="#lesson/"+id;
+    if(location.hash===target)showStage("code");
+    else{nextStage="code";location.hash=target;}
   });
   function openAux(name){
     const id=get("lesson-jump").value;
