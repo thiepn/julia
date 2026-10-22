@@ -3,6 +3,7 @@ import {createServer} from "node:http";
 import {readFile} from "node:fs/promises";
 import {resolve,extname,sep} from "node:path";
 import {chromium} from "playwright";
+import {r2Locator,r2Role} from "./r2-legacy-navigation.mjs";
 import {createLocalRunner} from "../local-runner/server.mjs";
 const root=resolve(".");
 const types={".html":"text/html; charset=utf-8",".css":"text/css; charset=utf-8",".js":"text/javascript; charset=utf-8"};
@@ -25,14 +26,14 @@ try{
     page.on("pageerror",error=>errors.push(error.message));
     await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>route.fulfill({status:200,contentType:"text/javascript",body:"window.__jdoodleStub=true;"}));
     await page.goto(origin+"/#lesson/04");
-    await page.getByRole("heading",{name:"Plot mathematical functions"}).waitFor();
-    await page.locator('[data-r2-stage="code"]').click();
-    await page.getByRole("button",{name:"Disable JDoodle and reload for local execution"}).click();
-    await page.getByRole("heading",{name:"Plot mathematical functions"}).waitFor();
-    await page.locator('[data-r2-stage="code"]').click();
+    await r2Role(page,"heading",{name:"Plot mathematical functions"}).waitFor();
+    await r2Locator(page,'[data-r2-stage="code"]').click();
+    await r2Role(page,"button",{name:"Disable JDoodle and reload for local execution"}).click();
+    await r2Role(page,"heading",{name:"Plot mathematical functions"}).waitFor();
+    await r2Locator(page,'[data-r2-stage="code"]').click();
     const noEmbed=await page.evaluate(()=>document.querySelector("#embed-slot .jdoodle-embed")===null);
     assert.equal(noEmbed,true);
-    await page.locator("#local-runner-token").fill("test-only-access-code-not-secret");
+    await r2Locator(page,"#local-runner-token").fill("test-only-access-code-not-secret");
     const source=[
       "using Plots",
       'p = plot(1:4,[1,4,2,3]; label="real Julia", xlabel="x", ylabel="value")',
@@ -40,21 +41,21 @@ try{
       'savefig(p, "source.svg")',
       'println("REAL-JULIA-PLOT-EXECUTED")'
     ].join("\n");
-    await page.locator("#scratch-code").fill(source);
+    await r2Locator(page,"#scratch-code").fill(source);
     const progressBefore=await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1"));
-    await page.getByRole("button",{name:"Run current Julia draft"}).click();
-    await page.locator("#local-runner-status").getByText("Executed with local Julia. Results are not graded.").waitFor({timeout:160000});
-    assert.match(await page.locator("#local-runner-output").innerText(),/REAL-JULIA-PLOT-EXECUTED/);
-    assert.equal(await page.locator("#local-runner-images img").count(),2);
-    const info=await page.locator("#local-runner-images img").evaluateAll(imgs=>imgs.map(i=>({src:i.getAttribute("src"),width:i.naturalWidth,height:i.naturalHeight})));
+    await r2Role(page,"button",{name:"Run current Julia draft"}).click();
+    await r2Locator(page,"#local-runner-status").getByText("Executed with local Julia. Results are not graded.").waitFor({timeout:160000});
+    assert.match(await r2Locator(page,"#local-runner-output").innerText(),/REAL-JULIA-PLOT-EXECUTED/);
+    assert.equal(await r2Locator(page,"#local-runner-images img").count(),2);
+    const info=await r2Locator(page,"#local-runner-images img").evaluateAll(imgs=>imgs.map(i=>({src:i.getAttribute("src"),width:i.naturalWidth,height:i.naturalHeight})));
     assert.ok(info.every(i=>i.src.startsWith("blob:")&&i.width>=100&&i.height>=100),JSON.stringify(info));
-    assert.equal(await page.locator("#scratch-code").inputValue(),source);
+    assert.equal(await r2Locator(page,"#scratch-code").inputValue(),source);
     assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1")),progressBefore);
     assert.ok((await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth))<=2,spec.label+" overflow");
     await page.goto(origin+"/#lesson/05");
-    await page.getByRole("heading",{name:"Norms & geometry"}).waitFor();
-    assert.equal(await page.locator("#local-runner-images img").count(),0);
-    assert.equal(await page.locator("#local-runner-output").innerText(),"");
+    await r2Role(page,"heading",{name:"Norms & geometry"}).waitFor();
+    assert.equal(await r2Locator(page,"#local-runner-images img").count(),0);
+    assert.equal(await r2Locator(page,"#local-runner-output").innerText(),"");
     assert.deepEqual(errors,[]);
     passed++;
     console.log("LOCAL RUNNER BROWSER PASS",spec.label,"actual PNG and SVG, real stdout, preserved progress");
