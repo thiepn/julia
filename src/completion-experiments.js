@@ -1,3 +1,4 @@
+import {LINEAR_EXPERIMENTS} from "./linear-depth.js";
 // Real Julia sources; no browser-side Julia execution or synthetic learning scores.
 export const QUALIFIED_EXPERIMENTS=Object.freeze({
  floating_range:Object.freeze({id:"floating_range",lesson:"09",title:"Range, operation order and subnormals",
@@ -103,5 +104,6 @@ export const QUALIFIED_EXPERIMENTS=Object.freeze({
     "    println((delta=delta,condition=cond(A),change=norm(y-x),residual=norm(A*y-(b+db))))",
     "end"
   ].join("\n")})
+ ,...LINEAR_EXPERIMENTS
 });
 export function experimentsForLesson(lesson){return Object.values(QUALIFIED_EXPERIMENTS).filter(e=>e.lesson===lesson);}

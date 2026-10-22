@@ -461,3 +461,20 @@
 .course-backup select{border:1px solid var(--line);color:var(--ink);background:var(--surface);padding:8px}
 .course-backup .backup-confirm{display:flex;align-items:start;gap:10px;font-weight:500}
 @media(max-width:760px){.course-backup button{width:100%}}
+
+/* Independent QR/normal-equation comparison: readable data and horizontal mobile tables. */
+.linear-methods[hidden]{display:none}
+.linear-methods label{display:block;font-size:15px;font-weight:650;margin-bottom:7px}
+.linear-methods select{color:var(--ink);background:var(--surface);border:1px solid var(--line);min-height:44px;font-size:15px;padding:9px 12px;max-width:100%;width:100%}
+.linear-method-grid{display:grid;grid-template-columns:minmax(180px,1fr) minmax(200px,1fr);gap:20px;align-items:start;margin:17px 0}
+.linear-method-grid p{font-size:15px;line-height:1.55}
+.linear-method-rank{font-weight:650}
+.linear-method-scroll{max-width:100%;overflow-x:auto}
+.linear-method-table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.linear-method-table th,.linear-method-table td{padding:10px;text-align:left;border-bottom:1px solid var(--line)}
+.linear-method-table tbody th{font-weight:650}
+.linear-methods details{margin-top:20px}
+.linear-methods details summary{font-size:15px}
+.linear-methods pre{max-width:100%;white-space:pre;overflow-x:auto}
+.linear-method-boundary{font-size:14px!important;line-height:1.5;color:var(--muted);margin-top:17px}
+@media(max-width:650px){.linear-method-grid{grid-template-columns:1fr;gap:0}}

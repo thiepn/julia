@@ -1,3 +1,4 @@
+import {LINEAR_PROOFS} from "./linear-depth.js";
 // Original scaffolds anchored to supplied WS26/27 sheets. Never reproduce an answer key.
 export const VERIFIED_SHEETS=Object.freeze([
  Object.freeze({id:"AMP-WS2627-UE01",sheet:1,source:"Uebung_01.pdf",due:"2026-10-22T08:00:00+02:00",parts:Object.freeze(["1.1","1.2","1.3"])}),
@@ -48,5 +49,6 @@ export const PROOF_SCAFFOLDS=Object.freeze([
  "Relate continuity to o(1), derive Lipschitz big-O bounds and compare sum with maximum for nonnegative functions.",
  ["Translate little-o of 1 into a limit of a remainder.","Use an explicit Lipschitz constant.","Compare g+h with max(g,h) using nonnegativity.","Explain the role of positive multiplicative constants in big-O."],
  "Generalize the sum/max comparison to three nonnegative functions.")
+ ,...LINEAR_PROOFS
 ]);
 export function proofScaffoldsForLesson(lesson){return PROOF_SCAFFOLDS.filter(p=>p.lesson===lesson);}

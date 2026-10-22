@@ -652,6 +652,36 @@
         </div>
         <p id="amp-mission-status" class="feedback" role="status"></p>
       </section>
+      <section class="paper linear-methods" id="linear-methods" aria-labelledby="linear-method-heading" hidden>
+        <div class="section-title"><span class="section-num">04</span><h2 id="linear-method-heading">Least-squares methods: QR and normal equations</h2></div>
+        <label for="linear-method-case">Design matrix</label>
+        <select id="linear-method-case"></select>
+        <div class="linear-method-grid">
+          <div class="linear-method-scroll">
+            <table aria-label="Least-squares observations" class="linear-method-table">
+              <thead><tr><th scope="col">Row</th><th scope="col">t</th><th scope="col">y</th></tr></thead>
+              <tbody id="linear-method-data"></tbody>
+            </table>
+          </div>
+          <div>
+            <p id="linear-method-rank" class="linear-method-rank" role="status"></p>
+            <p id="linear-method-caution"></p>
+          </div>
+        </div>
+        <div class="linear-method-scroll">
+          <table aria-label="QR and normal equation results" class="linear-method-table">
+            <thead><tr><th scope="col">Method</th><th scope="col">[Intercept, slope]</th><th scope="col">||A·c−y||₂</th><th scope="col">||Aᵀ(A·c−y)||₂</th></tr></thead>
+            <tbody id="linear-method-results"></tbody>
+          </table>
+        </div>
+        <details>
+          <summary>Run the same comparison in Julia</summary>
+          <pre class="code"><code id="linear-method-julia"></code></pre>
+          <button type="button" class="secondary" id="linear-method-copy">Copy Julia source</button>
+          <p class="feedback" id="linear-method-status" role="status" aria-live="polite"></p>
+        </details>
+        <p class="linear-method-boundary">Browser computations use JavaScript binary64, not Julia. QR is computed with Householder reflections. The rank warning uses a numerical tolerance and does not prove mathematical rank.</p>
+      </section>
       <section class="paper completion-depth" id="completion-depth" aria-labelledby="completion-title" hidden>
         <h2 id="completion-title">Deeper Julia and numerical reasoning</h2>
         <div id="completion-tracks" hidden>

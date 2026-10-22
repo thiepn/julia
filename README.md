@@ -213,3 +213,27 @@ For a selected project, review Project.toml / Manifest.toml and decide
 separately if and when to activate/instantiate/install dependencies.
 Successful CI on Linux does not establish a real Windows/VS Code setup;
 native Windows execution is still a human acceptance requirement.
+
+
+## AMP Completion B — LR/QR and least-squares depth
+
+After the existing G1/G2 depth work, lessons 12, 14 and 15 add independent
+pivoted LR reconstruction, QR least-squares programming and rank-aware
+regression exercises using the **original course editor** and generated
+Julia Test files. Three original proof plans cover pivoting, QR projection
+and the squared spectral condition number of normal equations; three
+executable Julia experiments verify actual factorization/fit diagnostics.
+
+Lesson 15 includes a browser-computed **Householder QR versus normal equations**
+comparison on separated, noisy, nearly dependent and rank-deficient data.
+The browser uses JavaScript binary64 and displays both the coefficient vector,
+the original residual and the normal-equation orthogonality residual.
+Numerical rank tolerance is not a theorem about exact matrix rank. The
+downloadable Julia source recomputes these cases independently with actual
+LinearAlgebra, including singular normal-equation handling.
+
+No canonical lesson ID, saved draft, prior review/progress record, backup
+format, existing external editor/local Julia runner or submission workflow
+is replaced. Nothing here claims automated Julia grading or official worksheet
+solutions. Genuine Julia executions and desktop/mobile browser regressions
+must be verified in CI before this branch can be considered qualified.

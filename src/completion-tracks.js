@@ -1,3 +1,4 @@
+import {LINEAR_TRACKS} from "./linear-depth.js";
 // Independently authored AMP depth practice. Lesson IDs and saved drafts remain canonical.
 const T=(id,lesson,title,concept,starter,steps,question,source,checks=[])=>Object.freeze({
  id,lesson,title,concept,starter,steps:Object.freeze(steps),question,source,
@@ -110,6 +111,7 @@ export const COMPLETION_TRACKS=Object.freeze({
  ["Check the solution difference separately from the residual.","Compare perturbation magnitudes across three diagonal scales.","Distinguish a backward-stable algorithm from a well-conditioned problem.","Explain why explicitly computing inv(A)*b is not the standard preferred solve."],
  "Can the computed residual be near zero while the true solution changes substantially?",
  "AMP conditioning and linear systems scope")
+ ,...LINEAR_TRACKS
 });
 export function completionTracksForLesson(id){return Object.values(COMPLETION_TRACKS).filter(t=>t.lesson===id);}
 export function completionTrack(id){return Object.hasOwn(COMPLETION_TRACKS,id)?COMPLETION_TRACKS[id]:null;}
