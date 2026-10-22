@@ -1,7 +1,7 @@
 name: Julia Lab checks
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feature/julia-amp-ue02-numerical-workshops]
     paths:
       - "index.html"
       - "styles.css"
@@ -40,6 +40,8 @@ jobs:
         run: node tests/local-runner-qualification.mjs
       - name: Execute AMP numerical function missions with genuine Julia Test
         run: node tests/amp-julia-qualification.mjs
+      - name: Run independent Julia depth and machine-arithmetic checks
+        run: node tests/completion-julia.mjs
       - name: Install Playwright runner for browser acceptance
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
@@ -49,6 +51,8 @@ jobs:
         run: node tests/browser.mjs
       - name: AMP workshops Chromium desktop/mobile
         run: node tests/amp-browser.mjs
+      - name: Julia depth and proof scaffolds in Chromium desktop/mobile
+        run: node tests/completion-browser.mjs
       - name: AMP private PDF/ZIP submission and real Julia results in Chromium
         run: node tests/submission-browser.mjs
 
