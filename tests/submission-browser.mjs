@@ -4,6 +4,7 @@ import {readFile} from "node:fs/promises";
 import {resolve,extname,sep} from "node:path";
 import {spawnSync} from "node:child_process";
 import {chromium} from "playwright";
+import {r2Locator,r2Role} from "./r2-legacy-navigation.mjs";
 import {crc32} from "../src/submission-package.js";
 import {createLocalRunner} from "../local-runner/server.mjs";
 const root=resolve(".");
@@ -49,18 +50,18 @@ try{
     await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>
       route.fulfill({status:200,contentType:"text/javascript",body:"window.__jdoodleTestStub=true;"}));
     await page.goto(origin+"/#lesson/04");
-    await page.getByRole("heading",{name:"Plot mathematical functions"}).waitFor();
-    await page.locator("#r2-utilities-open").click();
-    await page.locator("#submission-workflow").evaluate(el=>el.open=true);
-    assert.equal(await page.locator("#submission-name").isDisabled(),true);
-    await page.locator("#submission-disable-embed").click();
-    await page.getByRole("heading",{name:"Tools & settings"}).waitFor();
-    await page.locator("#submission-workflow").evaluate(el=>el.open=true);
-    assert.equal(await page.locator("#submission-name").isEnabled(),true);
+    await r2Role(page,"heading",{name:"Plot mathematical functions"}).waitFor();
+    await r2Locator(page,"#r2-utilities-open").click();
+    await r2Locator(page,"#submission-workflow").evaluate(el=>el.open=true);
+    assert.equal(await r2Locator(page,"#submission-name").isDisabled(),true);
+    await r2Locator(page,"#submission-disable-embed").click();
+    await r2Role(page,"heading",{name:"Tools & settings"}).waitFor();
+    await r2Locator(page,"#submission-workflow").evaluate(el=>el.open=true);
+    assert.equal(await r2Locator(page,"#submission-name").isEnabled(),true);
     await page.evaluate(()=>window.print=()=>{window.__didPrint=true;});
-    await page.locator("#submission-name").fill("Mustermann");
-    await page.locator("#submission-number").fill("123456");
-    await page.locator("#submission-task").fill("1.2");
+    await r2Locator(page,"#submission-name").fill("Mustermann");
+    await r2Locator(page,"#submission-number").fill("123456");
+    await r2Locator(page,"#submission-task").fill("1.2");
     const source=withPlots?[
       "using Plots",
       'p = plot(1:4,[2,5,3,6]; label="Test Julia", xlabel="x", ylabel="y")',
@@ -69,18 +70,18 @@ try{
       'println("AMP-REAL-PLOT-OK")'
     ].join("\n"): '# UTF-8: α, ε, π\nprintln("AMP-REAL-CODE-OK")\nprintln(6 * 7)';
     await page.goto(origin+"/#lesson/04");
-    await page.locator('[data-r2-stage="code"]').click();
-    await page.locator("#scratch-code").fill(source);
-    await page.locator("#local-runner-token").fill("fixture-session-code-only-in-ci");
-    await page.locator("#local-runner-run").click();
-    await page.locator("#local-runner-status").getByText("Executed with local Julia. Results are not graded.").waitFor({timeout:180000});
-    await page.locator("#r2-utilities-open").click();
-    await page.locator("#submission-workflow").evaluate(el=>el.open=true);
-    assert.equal(await page.locator("#submission-include-results").isEnabled(),true);
-    await page.locator("#submission-include-results").check();
-    await page.locator("#submission-print-button").click();
+    await r2Locator(page,'[data-r2-stage="code"]').click();
+    await r2Locator(page,"#scratch-code").fill(source);
+    await r2Locator(page,"#local-runner-token").fill("fixture-session-code-only-in-ci");
+    await r2Locator(page,"#local-runner-run").click();
+    await r2Locator(page,"#local-runner-status").getByText("Executed with local Julia. Results are not graded.").waitFor({timeout:180000});
+    await r2Locator(page,"#r2-utilities-open").click();
+    await r2Locator(page,"#submission-workflow").evaluate(el=>el.open=true);
+    assert.equal(await r2Locator(page,"#submission-include-results").isEnabled(),true);
+    await r2Locator(page,"#submission-include-results").check();
+    await r2Locator(page,"#submission-print-button").click();
     assert.equal(await page.evaluate(()=>window.__didPrint===true),true);
-    assert.equal(await page.locator("#submission-print-source").textContent(),source);
+    assert.equal(await r2Locator(page,"#submission-print-source").textContent(),source);
     const pdf=await page.pdf({format:"A4",printBackground:true});
     assert.equal(pdf.subarray(0,5).toString("ascii"),"%PDF-");
     assert.ok(pdf.length>3000);
@@ -93,39 +94,39 @@ try{
       if(!withPlots)assert.match(pdftotext.stdout,/α|ε|π/);
       console.log("SUBMISSION PRINT PASS",device.name,"searchable browser PDF",pdf.length);
     }
-    await page.locator("#submission-pdf").setInputFiles({name:"code.pdf",mimeType:"application/pdf",buffer:pdf});
-    await page.locator("#submission-stage").click();
-    assert.match(await page.locator("#submission-status").innerText(),/Confirm/);
-    await page.locator("#submission-confirm").check();
-    await page.locator("#submission-stage").click();
+    await r2Locator(page,"#submission-pdf").setInputFiles({name:"code.pdf",mimeType:"application/pdf",buffer:pdf});
+    await r2Locator(page,"#submission-stage").click();
+    assert.match(await r2Locator(page,"#submission-status").innerText(),/Confirm/);
+    await r2Locator(page,"#submission-confirm").check();
+    await r2Locator(page,"#submission-stage").click();
     await page.waitForFunction(()=>document.getElementById("submission-count").textContent.includes("1 code/PDF pair"),null,{timeout:15000});
-    assert.match(await page.locator("#submission-status").innerText(),/Pair staged locally/);
+    assert.match(await r2Locator(page,"#submission-status").innerText(),/Pair staged locally/);
     await page.goto(origin+"/#lesson/09");
-    await page.getByRole("heading",{name:"Floating-point numbers"}).waitFor();
-    await page.locator("#r2-utilities-open").click();
-    await page.locator("#submission-workflow").evaluate(el=>el.open=true);
-    assert.match(await page.locator("#submission-count").innerText(),/1 code\/PDF pair/);
-    await page.locator("#submission-task").fill("2.2b");
+    await r2Role(page,"heading",{name:"Floating-point numbers"}).waitFor();
+    await r2Locator(page,"#r2-utilities-open").click();
+    await r2Locator(page,"#submission-workflow").evaluate(el=>el.open=true);
+    assert.match(await r2Locator(page,"#submission-count").innerText(),/1 code\/PDF pair/);
+    await r2Locator(page,"#submission-task").fill("2.2b");
     const nextSource='function f(t)\n    return sqrt(1+t) - 1\nend\n# Print exactly this source in PDF';
     await page.goto(origin+"/#lesson/09");
-    await page.locator('[data-r2-stage="code"]').click();
-    await page.locator("#scratch-code").fill(nextSource);
-    await page.locator("#r2-utilities-open").click();
-    await page.locator("#submission-workflow").evaluate(el=>el.open=true);
+    await r2Locator(page,'[data-r2-stage="code"]').click();
+    await r2Locator(page,"#scratch-code").fill(nextSource);
+    await r2Locator(page,"#r2-utilities-open").click();
+    await r2Locator(page,"#submission-workflow").evaluate(el=>el.open=true);
     await page.evaluate(()=>window.print=()=>{window.__didPrint=true;});
-    await page.locator("#submission-print-button").click();
-    assert.equal(await page.locator("#submission-print-source").textContent(),nextSource);
+    await r2Locator(page,"#submission-print-button").click();
+    assert.equal(await r2Locator(page,"#submission-print-source").textContent(),nextSource);
     const pdfTwo=await page.pdf({format:"A4"});
-    await page.locator("#submission-pdf").setInputFiles({name:"second.pdf",mimeType:"application/pdf",buffer:pdfTwo});
-    await page.locator("#submission-confirm").check();
-    await page.locator("#submission-stage").click();
+    await r2Locator(page,"#submission-pdf").setInputFiles({name:"second.pdf",mimeType:"application/pdf",buffer:pdfTwo});
+    await r2Locator(page,"#submission-confirm").check();
+    await r2Locator(page,"#submission-stage").click();
     await page.waitForFunction(()=>document.getElementById("submission-count").textContent.includes("2 code/PDF pairs"),null,{timeout:15000});
-    assert.match(await page.locator("#submission-status").innerText(),/Pair staged locally/);
+    assert.match(await r2Locator(page,"#submission-status").innerText(),/Pair staged locally/);
     const before=await page.evaluate(()=>Object.entries(localStorage));
     assert.ok(!JSON.stringify(before).includes("Mustermann")&&!JSON.stringify(before).includes("123456"));
     const [archive]=await Promise.all([
       page.waitForEvent("download"),
-      page.locator("#submission-download-zip").click()
+      r2Locator(page,"#submission-download-zip").click()
     ]);
     assert.equal(archive.suggestedFilename(),"AMP_Uebungen_Julia_Abgabe.zip");
     const contents=inspectZip(new Uint8Array(await readFile(await archive.path())));

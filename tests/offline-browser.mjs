@@ -4,6 +4,7 @@ import {createServer} from "node:http";
 import {readFile} from "node:fs/promises";
 import {resolve,extname,sep} from "node:path";
 import {chromium} from "playwright";
+import {r2Locator,r2Role} from "./r2-legacy-navigation.mjs";
 const root=resolve("."),types={".html":"text/html; charset=utf-8",".css":"text/css; charset=utf-8",".js":"text/javascript; charset=utf-8",".svg":"image/svg+xml",".png":"image/png",".webmanifest":"application/manifest+json"};
 const server=createServer(async(req,res)=>{
  const path=decodeURIComponent(new URL(req.url,"http://127.0.0.1").pathname);
@@ -23,11 +24,11 @@ try{
    await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>
      route.fulfill({status:200,contentType:"text/javascript",body:"window.__stubJDoodle=true;"}));
    await page.goto(origin+"/#lesson/02");
-   await page.getByRole("heading",{name:"Vectors & indexing"}).waitFor();
-   await page.locator("#local-runner-disable-embed").click();
-   await page.getByRole("heading",{name:"Vectors & indexing"}).waitFor();
-   await page.locator("#offline-access").evaluate(el=>el.open=true);
-   await page.locator("#offline-status").getByText("Lessons and browser-based practice available offline on this device.").waitFor({timeout:30000});
+   await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
+   await r2Locator(page,"#local-runner-disable-embed").click();
+   await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
+   await r2Locator(page,"#offline-access").evaluate(el=>el.open=true);
+   await r2Locator(page,"#offline-status").getByText("Lessons and browser-based practice available offline on this device.").waitFor({timeout:30000});
    await page.waitForFunction(()=>navigator.serviceWorker.controller!==null,null,{timeout:30000});
    const cached=await page.evaluate(async()=>{
      const worker=await navigator.serviceWorker.ready;
@@ -46,29 +47,29 @@ try{
    assert.ok(cached.urls.every(x=>x.startsWith(origin+"/")));
    assert.ok(!cached.urls.some(x=>x.includes("jdoodle.com")||x.endsWith("/run")||x.includes("token=")));
    const source='println("offline-δ")';
-   await page.locator("#scratch-code").fill(source);
+   await r2Locator(page,"#scratch-code").fill(source);
    const saved=await page.evaluate(()=>localStorage.getItem("amp-julia-lab:draft:v1:02"));
    assert.equal(saved,source);
    await context.setOffline(true);
    await page.goto(origin+"/#lesson/09");
-   await page.getByRole("heading",{name:"Floating-point numbers"}).waitFor();
-   await page.locator("#offline-access").evaluate(el=>el.open=true);
-   await page.locator("#offline-status").getByText("Offline: cached lessons and practice available. External Julia services may be unavailable.").waitFor();
-   assert.equal(await page.locator("#offline-indicator").isVisible(),true);
-   assert.equal(await page.locator("#runtime-state").innerText(),"Embed disabled");
+   await r2Role(page,"heading",{name:"Floating-point numbers"}).waitFor();
+   await r2Locator(page,"#offline-access").evaluate(el=>el.open=true);
+   await r2Locator(page,"#offline-status").getByText("Offline: cached lessons and practice available. External Julia services may be unavailable.").waitFor();
+   assert.equal(await r2Locator(page,"#offline-indicator").isVisible(),true);
+   assert.equal(await r2Locator(page,"#runtime-state").innerText(),"Embed disabled");
    // Re-enable the default course embed setting while disconnected. The app
    // must suppress external JDoodle loading without disturbing the local source.
    await page.evaluate(()=>localStorage.removeItem("amp-julia-lab:jdoodle-embed-v1"));
    await page.reload();
-   await page.getByRole("heading",{name:"Floating-point numbers"}).waitFor();
-   assert.match(await page.locator("#runtime-state").innerText(),/Offline/);
-   assert.equal(await page.locator("#embed-slot .jdoodle-embed").count(),0);
-   assert.equal(await page.locator('script[src^="https://www.jdoodle.com/"]').count(),0);
+   await r2Role(page,"heading",{name:"Floating-point numbers"}).waitFor();
+   assert.match(await r2Locator(page,"#runtime-state").innerText(),/Offline/);
+   assert.equal(await r2Locator(page,"#embed-slot .jdoodle-embed").count(),0);
+   assert.equal(await r2Locator(page,'script[src^="https://www.jdoodle.com/"]').count(),0);
    await page.goto(origin+"/#lesson/02");
-   await page.getByRole("heading",{name:"Vectors & indexing"}).waitFor();
-   assert.equal(await page.locator("#scratch-code").inputValue(),source);
+   await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
+   assert.equal(await r2Locator(page,"#scratch-code").inputValue(),source);
    assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:draft:v1:02")),saved);
-   const [download]=await Promise.all([page.waitForEvent("download"),page.locator("#download-draft").click()]);
+   const [download]=await Promise.all([page.waitForEvent("download"),r2Locator(page,"#download-draft").click()]);
    assert.match(download.suggestedFilename(),/\.jl$/);
    const output=await readFile(await download.path(),"utf8");
    assert.match(output,/offline-δ/);
@@ -80,7 +81,7 @@ try{
    });
    assert.deepEqual(icon,{ok:true,width:192,height:192,type:"image/png"});
    await page.goto(origin+"/#lesson/15");
-   await page.getByRole("heading",{name:"Least-squares fitting"}).waitFor();
+   await r2Role(page,"heading",{name:"Least-squares fitting"}).waitFor();
    assert.ok((await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth))<=2,device.name+" overflow");
    assert.deepEqual(errors,[]);
    await context.setOffline(false);
