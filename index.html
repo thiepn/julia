@@ -726,9 +726,12 @@
         <label for="local-runner-token">Runner session code</label>
         <input type="password" id="local-runner-token" autocomplete="off" spellcheck="false">
         <div class="local-runner-actions">
+          <button type="button" class="secondary" id="local-runner-diagnose">Check local Julia environment</button>
           <button type="button" class="primary" id="local-runner-run">Run current Julia draft</button>
           <button type="button" class="secondary" id="local-runner-clear">Clear results</button>
         </div>
+        <p id="local-runner-diagnostic-status" class="feedback" role="status" aria-live="polite"></p>
+        <pre class="local-runner-console" aria-label="Julia installation and package diagnostics"><code id="local-runner-diagnostic-output"></code></pre>
         <p id="local-runner-status" class="feedback" role="status" aria-live="polite">No execution in this task.</p>
         <pre class="local-runner-console" aria-label="Julia standard output and errors"><code id="local-runner-output"></code></pre>
         <div id="local-runner-images" class="local-runner-images" aria-label="Locally generated Julia plots"></div>
