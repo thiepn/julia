@@ -59,8 +59,17 @@ try{
       await page.goto(origin+"/#course");
       await page.locator("#r2-course").waitFor({state:"visible"});
       assert.equal(await page.locator(".lesson-link").count(),16);
+      assert.equal(await page.locator("#r2-next-lesson-title").innerText(),"01 · Variables & numbers");
+      assert.match(await page.locator("#r2-next-lesson-code").innerText(),/println\(a \+ b\)/);
       assert.equal(await page.locator("#r2-stage-code").isVisible(),false);
       await noOverflow("course");await shot("course");
+      if(scheme==="light"&&device.name==="desktop"){
+        await page.locator("#r2-next-code").click();
+        await page.locator("#r2-stage-code").waitFor({state:"visible"});
+        assert.equal(await page.locator("#lesson-jump").inputValue(),"01");
+        await page.locator("#r2-course-open").click();
+        await page.locator("#r2-course").waitFor({state:"visible"});
+      }
       await page.locator('.lesson-link[href="#lesson/09"]').click();
       await page.getByRole("heading",{name:"Floating-point numbers"}).waitFor();
       assert.equal(await page.locator("#r2-stage-learn").isVisible(),true);
