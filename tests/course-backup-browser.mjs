@@ -26,12 +26,21 @@ try{
   page.on("pageerror",e=>errors.push(e.message));
   await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",r=>
    r.fulfill({status:200,contentType:"text/javascript",body:"window.__mockJDoodle=true;"}));
+  // Backup or embed-setting actions can leave R2 in Tools after a reload.
+  // Re-enter through the actual Course/lesson navigation before asserting.
+  async function returnToLesson(){
+    if(!(await page.locator("#lesson-main").isVisible())){
+      await page.locator("#r2-course-open").click();
+      await page.locator('.lesson-link[href="#lesson/02"]').click();
+    }
+    await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
+  }
   await page.goto(origin+"/#lesson/02");
-  await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
+  await returnToLesson();
   await r2Locator(page,"#course-backup").evaluate(el=>el.open=true);
   assert.equal(await r2Locator(page,"#course-backup-export").isDisabled(),true);
   await r2Locator(page,"#course-backup-disable-embed").click();
-  await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
+  await returnToLesson();
   await r2Locator(page,"#course-backup").evaluate(el=>el.open=true);
   assert.equal(await r2Locator(page,"#course-backup-export").isEnabled(),true);
   const code='println("δ, π, α")';
@@ -48,7 +57,7 @@ try{
   await page.waitForFunction(()=>document.getElementById("course-backup-preview").textContent.includes("conflict"));
   assert.match(await r2Locator(page,"#course-backup-preview").innerText(),/1 conflict/);
   await r2Locator(page,"#course-backup-restore").click();
-  await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
+  await returnToLesson();
   assert.equal(await r2Locator(page,"#scratch-code").inputValue(),'println("new work")');
   await r2Locator(page,"#course-backup").evaluate(el=>el.open=true);
   await r2Locator(page,"#course-backup-file").setInputFiles({name:"course.json",mimeType:"application/json",buffer:Buffer.from(backupText)});
@@ -58,7 +67,7 @@ try{
   assert.match(await r2Locator(page,"#course-backup-status").innerText(),/Confirm replacing/);
   await r2Locator(page,"#course-backup-approval").check();
   await r2Locator(page,"#course-backup-restore").click();
-  await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
+  await returnToLesson();
   assert.equal(await r2Locator(page,"#scratch-code").inputValue(),code);
   assert.ok((await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth))<=2,device.name+" overflow");
   assert.deepEqual(errors,[]);
