@@ -42,6 +42,8 @@ jobs:
         run: node tests/amp-julia-qualification.mjs
       - name: Run independent Julia depth and machine-arithmetic checks
         run: node tests/completion-julia.mjs
+      - name: Execute authentic LR/QR and least-squares depth
+        run: node tests/linear-depth-julia.mjs
       - name: Execute actual Julia environment diagnostic
         run: node tests/completion-diagnostics-julia.mjs
       - name: Install Playwright runner for browser acceptance
@@ -55,6 +57,8 @@ jobs:
         run: node tests/amp-browser.mjs
       - name: Julia depth and proof scaffolds in Chromium desktop/mobile
         run: node tests/completion-browser.mjs
+      - name: LR/QR method comparison Chromium desktop/mobile
+        run: node tests/linear-methods-browser.mjs
       - name: Portable lesson backup and conflict resolution in Chromium
         run: node tests/course-backup-browser.mjs
       - name: Julia G1/G2 three-engine desktop/mobile acceptance
