@@ -30,7 +30,7 @@ try{
     await r2Role(page,"heading",{name:"Variables & numbers"}).waitFor();
     const before=await page.evaluate(()=>JSON.stringify({...localStorage}));
     assert.equal(await r2Locator(page,"#semester-rehearsal").evaluate(el=>el.open),false);
-    await r2Locator(page,"#semester-rehearsal-open").click();
+    await page.locator("#r2-mixed-open").click();
     assert.equal(await r2Locator(page,"#semester-rehearsal").evaluate(el=>el.open),true);
     assert.equal(await r2Locator(page,".rehearsal-item").count(),6);
     for(const area of ["arithmetic","solvers","least-squares"]){
