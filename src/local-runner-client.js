@@ -1,4 +1,5 @@
 import {hasPngSignature,safeSvgDocument} from "./plot-preview.js";
+import {localTestVerdict} from "./local-test-result.js";
 export const LOCAL_RUNNER_URL="http://127.0.0.1:8765/run";
 const MAX_BASE64=7_000_000;
 function decodeBase64(encoded) {
@@ -113,8 +114,49 @@ export function initLocalRunner({doc=document, fetcher=fetch, endpoint=LOCAL_RUN
       if(request===activeRequest){busy=false;diagnoseButton.disabled=false;run.disabled=false;}
     }
   }
+  async function runTestScript({script,validFor=()=>true,statusElement,outputElement}={}){
+    if(!statusElement||!outputElement)throw Error("A Julia test result target is required.");
+    if(busy){statusElement.textContent="Julia is already running another task.";return;}
+    if(embedActive()){
+      statusElement.textContent="Disable JDoodle and reload before running local tests.";
+      return;
+    }
+    if(!token.value||token.value.length<16){
+      statusElement.textContent="Enter the local runner session code in Compiler settings.";
+      return;
+    }
+    const code=getDraft(),identity=getIdentity();
+    if(typeof script?.content!=="string"||!script.content.trim()||
+      new TextEncoder().encode(script.content).length>50000||
+      typeof code!=="string"||!code.trim()||typeof validFor!=="function"){
+      statusElement.textContent="Current Julia test source is missing or exceeds the 50 KB local-runner limit.";
+      return;
+    }
+    const request=++activeRequest;
+    busy=true;run.disabled=true;diagnoseButton.disabled=true;
+    statusElement.textContent="Running Julia Test on your computer…";
+    outputElement.textContent="";
+    const isLive=()=>request===activeRequest&&identity===getIdentity()&&
+      code===getDraft()&&validFor();
+    try{
+      const response=await fetcher(endpoint,{method:"POST",headers:{
+        "Content-Type":"application/json","Authorization":"Bearer "+token.value},
+        body:JSON.stringify({code:script.content}),cache:"no-store"});
+      const result=await response.json();
+      if(!isLive())return;
+      if(!response.ok)throw Error(result.error||"Local runner HTTP "+response.status);
+      outputElement.textContent=[result.stdout,result.stderr].filter(Boolean).join("\n")||"(No terminal output)";
+      statusElement.textContent=localTestVerdict(result).message;
+    }catch(error){
+      if(isLive())statusElement.textContent="Local tests unavailable: "+String(error.message||error);
+    }finally{
+      if(request===activeRequest){
+        busy=false;run.disabled=false;diagnoseButton.disabled=false;
+      }
+    }
+  }
   diagnoseButton.addEventListener("click",diagnose);
   run.addEventListener("click",submit);
   doc.querySelector("#local-runner-clear").addEventListener("click",clear);
-  return {clear,run:submit,diagnose};
+  return {clear,run:submit,diagnose,runTestScript};
 }

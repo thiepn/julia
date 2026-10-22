@@ -90,13 +90,16 @@
           <div class="external-test-actions" role="group" aria-label="External Julia test script">
             <button id="external-test-download" type="button" class="secondary">Download Julia test file</button>
             <button id="external-test-copy" type="button" class="secondary">Copy Julia test file</button>
+            <button id="external-test-local-run" type="button" class="secondary">Run tests with local Julia</button>
           </div>
           <details id="external-test-details">
             <summary>View generated Julia tests</summary>
             <pre class="code"><code id="external-test-preview"></code></pre>
           </details>
-          <p class="external-test-run">Open the downloaded .jl file with Julia to run its Test assertions. This app only prepares the file; it does not execute your code, receive the results, or award mastery. A test failure identifies a case to investigate, not the only possible defect.</p>
+          <p class="external-test-run">Run the downloaded test in Julia, or use the local companion after disabling JDoodle. Local execution runs the Test assertions on your computer without awarding a course grade. A failure identifies a case to investigate, not the only possible defect.</p>
           <p id="external-test-feedback" class="feedback" role="status" aria-live="polite"></p>
+          <p id="external-test-local-status" class="feedback" role="status" aria-live="polite"></p>
+          <pre class="local-runner-console" aria-label="Actual Julia test terminal result"><code id="external-test-local-output"></code></pre>
           <div class="external-focus">
             <label for="external-focus-case">Reproduce one test case</label>
             <select id="external-focus-case"><option value="">Choose a case</option></select>
@@ -696,8 +699,11 @@
           <div class="completion-actions">
             <button type="button" class="secondary" id="completion-starter-copy">Copy starter</button>
             <button type="button" class="secondary" id="completion-test-download">Download Julia tests for current editor</button>
+            <button type="button" class="secondary" id="completion-test-local-run">Run tests with local Julia</button>
           </div>
           <p id="completion-track-status" class="feedback" role="status" aria-live="polite"></p>
+          <p id="completion-test-local-status" class="feedback" role="status" aria-live="polite"></p>
+          <pre class="local-runner-console" aria-label="Actual Julia depth test result"><code id="completion-test-local-output"></code></pre>
         </div>
         <div id="completion-experiments" hidden>
           <h3>Numerical experiment</h3>

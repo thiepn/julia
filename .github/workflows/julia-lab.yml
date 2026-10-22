@@ -59,6 +59,8 @@ jobs:
         run: node tests/completion-browser.mjs
       - name: LR/QR method comparison Chromium desktop/mobile
         run: node tests/linear-methods-browser.mjs
+      - name: Real local Julia Test suites in Chromium desktop/mobile
+        run: node tests/local-tests-browser.mjs
       - name: Portable lesson backup and conflict resolution in Chromium
         run: node tests/course-backup-browser.mjs
       - name: Julia G1/G2 three-engine desktop/mobile acceptance

@@ -49,7 +49,8 @@ const plotPreview = initPlotPreview();
 const plottingPractice = initPlottingPractice();
 const ue02Practice = initUe02Practice();
 const ampWorkshops = initAmpWorkshops({download:downloadLocalJulia,getDraft:()=>$("#scratch-code").value});
-const depthPractice=initCompletionDepth({download:downloadLocalJulia,getDraft:()=>$("#scratch-code").value});
+const depthPractice=initCompletionDepth({download:downloadLocalJulia,getDraft:()=>$("#scratch-code").value,
+  runLocalTests:options=>localRunner.runTestScript(options),getIdentity:()=>current().id+":"+practiceVariant});
 const courseBackup=initCourseBackup({download:downloadLocalJulia,isEmbedActive:()=>Boolean(readEmbedUrl()),
   disableEmbed:()=>$("#local-runner-disable-embed").click()});
 const progress = readProgress();
@@ -258,10 +259,12 @@ function renderExternalTestHandoff(){
     $("#external-test-preview").textContent=file.content;
     $("#external-test-download").disabled=false;
     $("#external-test-copy").disabled=false;
+    $("#external-test-local-run").disabled=false;
   }catch{
     $("#external-test-preview").textContent="";
     $("#external-test-download").disabled=true;
     $("#external-test-copy").disabled=true;
+    $("#external-test-local-run").disabled=true;
   }
   renderFocusedCase();
   renderPropertyTransfer();
@@ -363,6 +366,8 @@ function renderPractice(){
     ?"Independent "+practiceVariant.toUpperCase()+" draft saved separately in this browser; not executed or graded."
     :"Saved only in this browser; not executed or automatically graded.";
   $("#external-test-feedback").textContent="";
+  $("#external-test-local-status").textContent="";
+  $("#external-test-local-output").textContent="";
   $("#external-test-details").open=false;
   $("#external-focus-case").value="";
   $("#property-choice").value="";
@@ -521,6 +526,10 @@ $("#scratch-code").addEventListener("input", () => {
   unsavedPractice=!saved;
   $("#external-report-results").replaceChildren();
   $("#external-report-input").value="";
+  $("#external-test-local-status").textContent="";
+  $("#external-test-local-output").textContent="";
+  $("#completion-test-local-status").textContent="";
+  $("#completion-test-local-output").textContent="";
   $("#external-focus-feedback").textContent="";
   $("#property-feedback").textContent="";
   renderExternalTestHandoff();
@@ -640,6 +649,18 @@ $("#external-focus-copy").addEventListener("click",async()=>{
     $("#external-focus-feedback").textContent="Focused Julia test copied. Run it externally, then rerun the full suite after repair.";
   }catch{
     $("#external-focus-feedback").textContent="Clipboard or selected case unavailable. Use the file preview.";
+  }
+});
+$("#external-test-local-run").addEventListener("click",async()=>{
+  try{
+    const lessonId=current().id,variant=practiceVariant,source=$("#scratch-code").value;
+    const script=buildExternalTestFile(lessonId,variant,source);
+    await localRunner.runTestScript({script,
+      validFor:()=>current().id===lessonId&&practiceVariant===variant,
+      statusElement:$("#external-test-local-status"),
+      outputElement:$("#external-test-local-output")});
+  }catch(error){
+    $("#external-test-local-status").textContent=String(error.message||error);
   }
 });
 $("#external-test-download").addEventListener("click",()=>{

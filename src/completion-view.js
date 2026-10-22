@@ -3,7 +3,7 @@
 import {completionTracksForLesson,buildCompletionTests} from "./completion-tracks.js";
 import {proofScaffoldsForLesson} from "./completion-proofs.js";
 import {experimentsForLesson} from "./completion-experiments.js";
-export function initCompletionDepth({doc=document,download,getDraft}={}){
+export function initCompletionDepth({doc=document,download,getDraft,runLocalTests,getIdentity}={}){
  if(typeof download!=="function"||typeof getDraft!=="function")throw Error("Depth practice requires canonical editor and download.");
  const by=id=>doc.getElementById(id),section=by("completion-depth");
  const trackSelect=by("completion-track-choice"),proofSelect=by("completion-proof-choice"),
@@ -33,6 +33,9 @@ export function initCompletionDepth({doc=document,download,getDraft}={}){
       ?track.checks.length+" independent Julia assertions available for the current editor draft."
       :"Exploration only; no automatic Julia assertions for this topic.");
    by("completion-test-download").disabled=!track.checks.length;
+   by("completion-test-local-run").disabled=!track.checks.length;
+   by("completion-test-local-status").textContent="";
+   by("completion-test-local-output").textContent="";
  }
  function renderProof(){
    const proof=currentProofs.find(t=>t.id===proofSelect.value);
@@ -64,6 +67,18 @@ export function initCompletionDepth({doc=document,download,getDraft}={}){
      set("completion-track-status","Test source downloaded for the current Julia editor. It was not executed or graded in the browser.");
    }catch(err){set("completion-track-status",String(err.message||err));}
  });
+ by("completion-test-local-run").addEventListener("click",async()=>{
+   try{
+     const track=currentTracks.find(t=>t.id===trackSelect.value);
+     if(!track||!track.checks.length)throw Error("Select a Julia function exercise with tests.");
+     if(typeof runLocalTests!=="function"||typeof getIdentity!=="function")throw Error("Local Julia companion is unavailable.");
+     const id=track.id,lesson=selectedLesson,identity=getIdentity(),script=buildCompletionTests(id,getDraft());
+     await runLocalTests({script,validFor:()=>selectedLesson===lesson&&
+       trackSelect.value===id&&getIdentity()===identity,
+       statusElement:by("completion-test-local-status"),
+       outputElement:by("completion-test-local-output")});
+   }catch(error){by("completion-test-local-status").textContent=String(error.message||error);}
+ });
  by("completion-starter-copy").addEventListener("click",async()=>{
    const track=currentTracks.find(t=>t.id===trackSelect.value);
    if(!track)return;
@@ -84,6 +99,8 @@ export function initCompletionDepth({doc=document,download,getDraft}={}){
    currentProofs=proofScaffoldsForLesson(id);
    currentExperiments=experimentsForLesson(id);
    section.hidden=!(currentTracks.length||currentProofs.length||currentExperiments.length);
+   by("completion-test-local-status").textContent="";
+   by("completion-test-local-output").textContent="";
    tracks.hidden=!currentTracks.length;
    proofs.hidden=!currentProofs.length;
    experiments.hidden=!currentExperiments.length;

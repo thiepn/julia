@@ -237,3 +237,12 @@ format, existing external editor/local Julia runner or submission workflow
 is replaced. Nothing here claims automated Julia grading or official worksheet
 solutions. Genuine Julia executions and desktop/mobile browser regressions
 must be verified in CI before this branch can be considered qualified.
+
+
+## Local Julia Test execution — original-source acceptance
+
+Where an existing exercise exposes Julia `Test` assertions, select **Run tests with local Julia** to execute the test script generated from the **current original lesson editor**. The same previously established loopback-only Julia companion, explicit temporary session code, approved origin, 50 KB source limit and 120-second timeout are used; no new compiler, account, backend, grader or stored evidence is introduced.
+
+First disable JDoodle and reload, start `node local-runner/server.mjs`, enter its session code in the Compiler section, and only run code you trust. The test output and execution status are displayed beside the relevant exercise; PASS requires a genuine successful local process and a `Test Summary`. No score or official mastery is recorded. Editing the source, switching the exercise or navigating discards pending results. Pasted terminal text is not treated as verified execution. For supported function tasks, the same test file can still be downloaded and run manually in Julia.
+
+Local Julia **is not a sandbox** and runs with your OS permissions. The app does not install packages, send source to a hosted provider or change saved drafts/progress. Tests only exercise their listed cases, not all possible inputs.
