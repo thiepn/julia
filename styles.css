@@ -478,3 +478,7 @@
 .linear-methods pre{max-width:100%;white-space:pre;overflow-x:auto}
 .linear-method-boundary{font-size:14px!important;line-height:1.5;color:var(--muted);margin-top:17px}
 @media(max-width:650px){.linear-method-grid{grid-template-columns:1fr;gap:0}}
+
+/* Actual local Julia test output sits beside the corresponding generated test contract. */
+#external-test-local-output,#completion-test-local-output{max-height:280px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}
+#external-test-local-status,#completion-test-local-status{font-size:14px!important;line-height:1.55}
