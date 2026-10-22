@@ -213,9 +213,11 @@ export function initR2Studio({doc=document,lessons,navigate}){
     get("r2-course-progress").textContent=get("progress-label").textContent;
     get("r2-hero-continue").textContent=get("continue-lesson").textContent+" →";
     get("r2-task-summary-text").textContent=get("challenge-text").textContent;
-    if(currentLesson!==id){question=0;currentLesson=id;}
+    const lessonChanged=currentLesson!==id;
+    if(lessonChanged){question=0;currentLesson=id;}
     get("lesson-jump").value=id;syncLabs();syncQuestions();
     const target=nextStage||"learn";nextStage=null;showStage(target);
+    if(lessonChanged)get("lesson-title").focus({preventScroll:true});
   }
   get("r2-hero-continue").addEventListener("click",()=>get("continue-lesson").click());
   function openAux(name){
