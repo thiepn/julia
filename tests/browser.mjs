@@ -1037,7 +1037,10 @@ try {
     await r2Role(mobile,"heading",{name:"Plot mathematical functions"}).waitFor();
     assert.equal(await r2Locator(mobile,".question").count(),3);
     assert.equal(await r2Locator(mobile,".compiler-links a").count(),2);
-    assert.equal(await r2Locator(mobile,"#continue-lesson").isVisible(),true);
+    await r2Locator(mobile,"#r2-course-open").click();
+    assert.equal(await r2Locator(mobile,"#r2-hero-continue").isVisible(),true);
+    await r2Locator(mobile,'.lesson-link[href="#lesson/04"]').click();
+    await r2Locator(mobile,'button[data-r2-stage="check"]').click();
     assert.equal(await r2Locator(mobile,"#concept-brief").isVisible(),true);
     assert.equal(await r2Locator(mobile,"#repair-editor").count(),1);
     await mobile.goto("http://127.0.0.1:"+port+"/#lesson/16");
