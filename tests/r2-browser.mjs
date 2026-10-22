@@ -98,6 +98,7 @@ try{
       await page.locator("#r2-utilities-open").click();
       await page.locator("#course-backup summary").click();
       assert.equal(await page.locator("#course-backup-export").isVisible(),true);
+      assert.equal(await page.locator("#embed-url").isVisible(),true);
       assert.equal(await page.locator("#submission-workflow").isVisible(),true);
       await noOverflow("utilities");await shot("utilities");
       assert.equal(new URL(page.url()).hash,"#utilities/09");

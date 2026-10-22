@@ -136,6 +136,8 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const validStages=["learn","check","code","explore"];
   function showView(view){
     currentView=view;doc.body.dataset.r2View=view;
+    // Settings are a first-class Tools destination, not a hidden compiler toggle.
+    if(view==="utilities")get("settings-panel").hidden=false;
     for(const [name,item] of [["course",course],["lesson",main],["mixed",mixed],["utilities",utils]])
       item.hidden=name!==view;
     action.hidden=view!=="lesson";
