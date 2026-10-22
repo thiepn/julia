@@ -86,11 +86,15 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const extras=node("details","r2-compiler-extras");
   extras.append(node("summary",null,"External compiler, comparison and other tools"));
   const runner=compiler.querySelector(".local-runner");
+  const preview=get("local-plot-preview");
   for(const item of [...compiler.children]){
-    if(item===runner||item.classList?.contains("compiler-heading"))continue;
+    if(item===runner||item===preview||item.classList?.contains("compiler-heading"))continue;
     extras.append(item);
   }
-  if(runner)compiler.append(runner,extras);
+  if(runner)compiler.append(runner);
+  // A genuine local plot preview is primary output, not a technical diagnostic.
+  if(preview)compiler.append(preview);
+  compiler.append(extras);
   editor.append(compiler);
   instructions.append(node("summary","r2-task-summary",
     '<strong>Coding task</strong><span id="r2-task-summary-text"></span>'),codePanel);
