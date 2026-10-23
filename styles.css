@@ -793,7 +793,13 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 .r2-editor>.compiler{position:relative;top:auto;max-height:none;overflow:visible;
   width:auto;padding:0 16px 22px;border:0;background:#1b2534;
   box-shadow:none;border-top:1px solid #394456}
-.r2-editor>.compiler .compiler-heading{display:none}
+.r2-editor>.compiler .compiler-heading{display:flex;align-items:center;
+  justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 10px}
+.r2-editor>.compiler .compiler-heading h2{font-size:16px;line-height:1.4;
+  color:#edf1fa;letter-spacing:-.02em;margin:0}
+.r2-editor>.compiler .compiler-heading .eyebrow{font-size:12px;color:#b7c4d8}
+.r2-editor>.compiler .runtime-tag{color:#c9d7eb;background:#253347;
+  border:1px solid #50617a;font-size:12px}
 .r2-editor>.compiler .compiler-explainer,.r2-editor>.compiler .privacy-note{
   color:#c2ccdb;font-size:14px}
 .r2-editor>.compiler .local-runner-console{background:#111823;color:#e3e9f0;
