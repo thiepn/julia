@@ -674,34 +674,99 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 .r2-stage-tabs button:hover{color:var(--ink);background:var(--surface-muted)}
 .r2-stage-content{min-width:0}
 .r2-activity{min-width:0;min-height:calc(100dvh - 345px)}
-.r2-learn,.r2-check{max-width:910px;margin:0 auto}
-.r2-learn .paper,.r2-check .paper{background:var(--surface);
-  border:1px solid var(--line);padding:clamp(22px,4vw,48px);margin:0}
-.r2-learn .section-title,.r2-check .section-title{border-bottom:1px solid var(--line);
-  margin-bottom:25px;padding-bottom:16px}
-.r2-learn .section-title h2,.r2-check .section-title h2{
-  font-size:23px;font-weight:720;letter-spacing:-.035em}
-.r2-learn #lesson-theory{font-size:18px;line-height:1.85;max-width:70ch;
-  color:var(--ink);margin:0 0 28px}
-.r2-learn .code{padding:25px;background:var(--code-bg);color:#e8eaf4;
-  border-radius:5px;border:0;font:15px/1.7 "Cascadia Code",Consolas,monospace}
+/* Learning article and canonical read-only Julia source. */
+.r2-learn,.r2-check{max-width:1260px;margin:0 auto;min-width:0}
+.r2-learn .r2-learn-paper{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(330px,.95fr);
+  background:var(--surface);border:1px solid var(--line);padding:0;margin:0;min-width:0}
+.r2-learn-reading{min-width:0;padding:clamp(24px,3.6vw,48px)}
+.r2-learn-reading .section-title{border-bottom:1px solid var(--line);padding:0 0 19px;
+  margin:0 0 25px}
+.r2-learn-reading .section-title h2{font-size:clamp(22px,2.4vw,29px);
+  letter-spacing:-.04em;line-height:1.3}
+.r2-learn #lesson-theory{font-size:clamp(17px,1.45vw,19px);line-height:1.8;
+  max-width:65ch;color:var(--ink);margin:0;white-space:pre-line}
+.r2-example-pane{background:#101722;color:#e7edf8;border-left:1px solid #344154;
+  display:flex;flex-direction:column;min-width:0}
+.r2-example-head{padding:16px 19px;display:flex;justify-content:space-between;
+  align-items:center;flex-wrap:wrap;gap:10px;border-bottom:1px solid #344154;
+  background:#1e2938;font:650 14px/1.5 "Cascadia Code",Consolas,monospace}
+.r2-example-mode{font:500 13px/1.5 system-ui,sans-serif;color:#bbc8dd;margin-left:9px}
+#r2-copy-example{border:1px solid #62728d;border-radius:3px;color:#e7edf8;
+  background:transparent;min-height:37px;padding:7px 12px;font-size:14px}
+#r2-copy-example:hover{background:#35445a}
+.r2-example-pane pre.code{background:#101722;color:#e3edfc;border:0;border-radius:0;
+  margin:0;max-width:100%;min-width:0;overflow:auto;
+  padding:27px 23px;font:15px/1.85 "Cascadia Code",Consolas,monospace;
+  white-space:pre;tab-size:4;flex:1}
+.r2-example-actions{border-top:1px solid #344154;padding:16px 19px;
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+#r2-example-source{color:#bbc8dd;font-size:14px;line-height:1.5}
+#r2-example-code{background:#aa99ec;color:#191529;border-color:#aa99ec}
+#r2-example-code:hover{background:#cec3fc;border-color:#cec3fc}
+#r2-example-feedback{flex:1 1 100%;color:#d8e4f3;font-size:14px}
 .r2-stage-footer{display:flex;align-items:center;justify-content:space-between;
-  gap:15px;border-top:1px solid var(--line);
-  padding:18px 0;margin-top:24px;font-size:13px;color:var(--muted)}
-.r2-inner-head{margin:12px 0 21px}
-.r2-inner-head h2{font-size:25px;letter-spacing:-.035em;margin:0 0 4px}
-.r2-inner-head p,.r2-inner-head span:not(.r2-kicker){font-size:14px;color:var(--muted)}
-.r2-check .question{border:0;padding:0}
-.r2-check .question-head{font-size:13px;color:var(--muted)}
-.r2-check .question h3{font-size:clamp(19px,2.2vw,26px);font-weight:670;
-  letter-spacing:-.02em;margin:15px 0 25px;line-height:1.5}
-.r2-check .choices{display:grid;grid-template-columns:1fr;gap:12px}
-.r2-check .choice{min-height:59px;padding:14px 20px;border:1px solid var(--line);
-  background:var(--surface);font-size:16px;text-align:left;border-radius:5px}
-.r2-check .choice:hover{border-color:var(--accent)}
+  flex-wrap:wrap;gap:15px;border-top:1px solid var(--line);
+  padding:17px 0;margin-top:18px;font-size:14px;color:var(--muted)}
+.r2-question-tools{display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;margin:0 0 19px;padding:0 0 16px;
+  border-bottom:1px solid var(--line)}
+#r2-question-index{font:650 14px/1.5 "Cascadia Code",Consolas,monospace;color:var(--ink)}
+#r2-question-steps{display:flex;align-items:center;gap:8px}
+#r2-question-steps button{width:45px;height:43px;min-height:43px;
+  border:1px solid var(--line);border-radius:3px;background:var(--surface);
+  color:var(--ink);font:650 14px "Cascadia Code",Consolas,monospace}
+#r2-question-steps button[aria-current="step"]{border-color:var(--accent);
+  background:var(--accent-soft);box-shadow:inset 0 -3px var(--accent)}
+#r2-question-steps button[data-state="Correct"]{color:var(--success);border-color:var(--success)}
+#r2-question-steps button[data-state="Try again"]{color:var(--error);border-color:var(--error)}
+.r2-check-layout{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(280px,.72fr);
+  gap:0;align-items:stretch;min-width:0;border:1px solid var(--line);background:var(--surface)}
+.r2-check .r2-check-paper{min-width:0;margin:0;border:0;padding:clamp(23px,3.5vw,44px);
+  background:var(--surface)}
+.r2-check .section-title{border-bottom:1px solid var(--line);margin:0 0 21px;padding:0 0 16px}
+.r2-check .section-title h2{font-size:23px;font-weight:720;letter-spacing:-.035em}
+.r2-check .section-intro{font-size:15px;line-height:1.6;color:var(--muted);margin-bottom:20px}
+.r2-check .question{border:0;padding:0;margin:0}
+.r2-check .question-head{display:flex;align-items:center;gap:14px;
+  font-size:14px;color:var(--muted);font-weight:650}
+.r2-check .question h3{font-size:clamp(21px,2.4vw,29px);font-weight:670;
+  letter-spacing:-.025em;margin:20px 0 26px;line-height:1.46}
+.r2-check .choices{display:grid;grid-template-columns:1fr;gap:10px}
+.r2-check .choice{min-height:58px;padding:13px 16px;border:1px solid var(--line);
+  background:var(--surface);font-size:16px;text-align:left;border-radius:3px;
+  display:flex;gap:14px;align-items:center;line-height:1.5}
+.r2-check .choice>span{flex:0 0 31px;display:grid;place-items:center;
+  min-height:31px;border:1px solid var(--line);
+  color:var(--muted);font:700 14px "Cascadia Code",Consolas,monospace}
+.r2-check .choice:hover{border-color:var(--accent);background:var(--surface-muted)}
 .r2-check .choice.selected{border-color:var(--accent);background:var(--accent-soft)}
-.r2-check .answer-reason{font-size:15px;line-height:1.65}
-.r2-check #concept-brief{font-size:13px;color:var(--muted)}
+.r2-check .choice.selected>span{border-color:var(--accent);color:var(--accent)}
+.r2-check .answer-reason{font-size:16px;line-height:1.7;padding:16px 18px;
+  border-left:3px solid var(--line);background:var(--surface-muted)}
+.r2-check .answer-reason.right{border-left-color:var(--success)}
+.r2-check .answer-reason.wrong{border-left-color:var(--error)}
+.r2-check .question-hint{margin-top:18px;font-size:15px;line-height:1.6}
+.r2-check .question-hint summary{cursor:pointer;min-height:40px;padding:8px 0}
+.r2-check #concept-brief{font-size:15px;color:var(--muted);line-height:1.6;
+  border-top:1px solid var(--line);padding:16px 0 0;margin-top:27px}
+.r2-check-reference{min-width:0;display:flex;flex-direction:column;
+  background:#111923;color:#e7edf8;border-left:1px solid #344154}
+.r2-check-reference-head{display:flex;align-items:center;justify-content:space-between;
+  gap:12px;flex-wrap:wrap;padding:16px 20px;background:#202a39;border-bottom:1px solid #344154;
+  font:650 14px/1.5 "Cascadia Code",Consolas,monospace}
+.r2-check-reference-head span:last-child{font:500 13px/1.5 system-ui,sans-serif;color:#bbc8dd}
+.r2-check-reference-code{flex:1;min-width:0;max-width:100%;margin:0;
+  padding:24px 20px;color:#d8e8fc;background:#111923;overflow:auto;
+  font:14px/1.8 "Cascadia Code",Consolas,monospace;tab-size:4;white-space:pre}
+.r2-check-reference-actions{display:flex;align-items:center;flex-wrap:wrap;gap:11px;
+  padding:15px 20px;border-top:1px solid #344154}
+.r2-check-reference-actions span{flex:1 1 100%;color:#c4cfe0;font-size:14px}
+.r2-check-reference-actions button{min-height:42px;padding:9px 14px;
+  border:1px solid #62728d;border-radius:3px;background:#28374c;
+  color:#f0f3fb;font-size:14px;font-weight:650}
+.r2-check-reference-actions button:hover{background:#364c67}
+#r2-check-code-button{background:#ae9aec;color:#20182b;border-color:#ae9aec}
+#r2-check-code-button:hover{background:#d1c3fc}
 /* One Julia workspace: canonical editor, terminal, source tools and task reference. */
 .r2-code-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(285px,.8fr);
   min-width:0;align-items:start;background:var(--surface);border:1px solid var(--line);
@@ -846,6 +911,9 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 .lesson-footer{max-width:1280px;margin:44px auto 0;border-top:1px solid var(--line)}
 .r2-mobile-action{display:none}
 @media(max-width:900px){
+  .r2-learn .r2-learn-paper,.r2-check-layout{grid-template-columns:minmax(0,1fr)}
+  .r2-example-pane,.r2-check-reference{border-left:0;border-top:1px solid #344154}
+  .r2-check-reference-code{max-height:280px}
   .r2-course-layout{grid-template-columns:minmax(0,1fr);gap:24px}
   .r2-next-lesson{position:static}
   .r2-code-layout{display:flex;flex-direction:column;min-height:0}
@@ -898,11 +966,20 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
     padding:11px 0;font-size:11px}
   .r2-stage-tabs button span{font-size:13px;margin:0 0 0 2px}
   .r2-activity{min-height:calc(100dvh - 320px)}
-  .r2-learn .paper,.r2-check .paper{padding:23px 18px}
-  .r2-learn #lesson-theory{font-size:16px;line-height:1.7}
-  .r2-learn .code{font-size:13px;padding:16px}
-  .r2-check .choice{min-height:53px;font-size:15px}
-  .r2-check .question h3{font-size:20px}
+  .r2-learn .r2-learn-paper,.r2-check-layout{border:0}
+  .r2-learn-reading{padding:24px 18px}
+  .r2-learn #lesson-theory{font-size:17px;line-height:1.8}
+  .r2-example-head{padding:14px 16px}
+  .r2-example-pane pre.code{font-size:14px;padding:19px 16px;min-height:170px}
+  .r2-example-actions{padding:15px 16px}
+  .r2-check .r2-check-paper{padding:21px 17px}
+  .r2-check .choice{min-height:54px;font-size:15px}
+  .r2-check .question h3{font-size:21px}
+  .r2-check-reference-code{font-size:13px;padding:18px 16px;max-height:230px}
+  .r2-check-reference-actions{padding:15px 16px}
+  .r2-question-tools{margin-top:5px}
+  .r2-stage-footer{align-items:stretch}
+  .r2-stage-footer .r2-button{min-width:0}
   .r2-stage-footer{margin:20px 0 0;gap:12px}
   .r2-code-layout{border:1px solid var(--line);background:transparent}
   .r2-instructions{padding:0;background:var(--surface);border:0;
@@ -985,15 +1062,6 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 
 /* The worked Julia example belongs next to the mathematical explanation
    at widths where both remain legible. Small screens retain linear reading. */
-@media(min-width:1100px){
-  .r2-learn{max-width:1090px}
-  .r2-learn .paper{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);
-    grid-template-rows:auto auto 1fr;column-gap:43px;row-gap:12px}
-  .r2-learn .section-title{grid-column:1 / -1}
-  .r2-learn #lesson-theory{grid-column:1;grid-row:2 / span 2}
-  .r2-learn .code-label{grid-column:2;grid-row:2;margin:0}
-  .r2-learn pre.code{grid-column:2;grid-row:3;margin:0;align-self:start}
-}
 .r2-mobile-action.r2-keyboard-visible{display:none!important}
 
 
