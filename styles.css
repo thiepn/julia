@@ -529,11 +529,11 @@
 /* R2 — single active design system. Canonical numerical component geometry above
    is retained; app-level composition and tokens are owned here, not layered CSS. */
 :root{
-  --canvas:#f6f6f3;--surface:#fff;--surface-muted:#f0f1ef;
-  --ink:#20232a;--muted:#626873;--line:#dcdfe1;
-  --accent:#6545ce;--accent-soft:#eeeaff;--success:#147d60;
-  --warning:#a36217;--error:#b33740;--code-bg:#151a21;
-  --deep:#20232a;--washed:#f0f1ef;--active:#eeeaff;
+  --canvas:#f8f7f5;--surface:#fff;--surface-muted:#f0efed;
+  --ink:#1c222c;--muted:#596270;--line:#d9dce0;
+  --accent:#6543b2;--accent-soft:#f0ebfb;--success:#147d60;
+  --warning:#a36217;--error:#b33740;--code-bg:#111823;
+  --deep:#1c222c;--washed:#f0efed;--active:#f0ebfb;
   --r2-header:64px; color-scheme:light;
   font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif;font-size:16px;
 }
@@ -547,79 +547,148 @@ textarea:focus-visible,summary:focus-visible{outline:3px solid var(--accent);out
 [hidden],.r2-question-inactive,.r2-mixed-inactive,.r2-lab-inactive{display:none!important}
 .topbar{height:var(--r2-header);position:sticky;top:0;z-index:60;display:flex;
   justify-content:space-between;padding:0 clamp(16px,3vw,48px);
-  background:var(--surface);border-bottom:1px solid var(--line);
+  background:#141820;color:#edf0f6;border-bottom:1px solid #272d39;
   align-items:center;box-shadow:none;min-height:0}
 .brand{gap:12px;min-width:0}
-.brand-mark{background:#292833;color:#fff;border-radius:5px;width:40px;height:40px;
-  font:700 30px Georgia,serif;display:grid;place-items:center}
+.brand-mark{background:#6543b2;color:#fff;border-radius:3px;width:40px;height:40px;
+  font:800 27px "Cascadia Code",Consolas,monospace;display:grid;place-items:center}
 .brand-mark span{color:#b5a2ff}
-.brand strong{font-size:16px;letter-spacing:-.035em}
-.brand small{font-size:12px;line-height:1.25;max-width:none;color:var(--muted)}
+.brand strong{font-size:16px;letter-spacing:-.035em;color:#f4f4f7}
+.brand small{font-size:12px;line-height:1.25;max-width:none;color:#bbc3d0}
 .top-right{display:flex;align-items:center;gap:12px}
 .top-right .course,.top-right #settings-toggle{display:none!important}
 .r2-global-nav{display:flex;align-items:center;gap:6px}
 .r2-global-nav button{border:0;background:transparent;padding:10px 15px;
-  min-height:44px;color:var(--muted);font-size:14px;font-weight:650;
-  border-radius:5px;white-space:nowrap}
-.r2-global-nav button:hover{background:var(--surface-muted);color:var(--ink)}
-.r2-global-nav button[aria-current="page"]{background:var(--accent-soft);
-  color:var(--accent)}
+  min-height:44px;color:#b9c2ce;font-size:14px;font-weight:650;
+  border-radius:2px;white-space:nowrap}
+.r2-global-nav button:hover{background:#252c39;color:#fff}
+.r2-global-nav button[aria-current="page"]{background:#332b4c;color:#f0e9ff}
 .shell{display:block;max-width:none;min-height:calc(100dvh - var(--r2-header));margin:0}
 .r2-page{max-width:1290px;margin:0 auto;padding:clamp(24px,4vw,64px) clamp(18px,4vw,60px) 110px;
   min-width:0}
 .r2-kicker{display:block;font-size:12px;font-weight:760;letter-spacing:.12em;
   color:var(--accent);margin-bottom:13px}
-.r2-course-hero{background:var(--surface);padding:clamp(26px,5vw,68px);
-  border:1px solid var(--line);display:grid;justify-items:start;gap:13px}
-.r2-course-hero h1{font-size:clamp(37px,5.1vw,68px);line-height:1.1;
-  letter-spacing:-.057em;font-weight:750;margin:0}
-.r2-course-hero h1 em{font-style:normal;color:var(--accent)}
-.r2-course-hero p{font-size:17px;color:var(--muted);margin:0 0 9px;max-width:62ch}
-.r2-course-progress{font-size:13px;color:var(--muted)}
+
+/* Course path uses a syllabus and a real Julia example, not a grid of dashboard cards. */
+.r2-course{max-width:1250px}
+.r2-course-hero{background:transparent;border:0;border-bottom:1px solid var(--line);
+  padding:12px 0 28px;display:block}
+.r2-course-identity{display:flex;align-items:center;flex-wrap:wrap;gap:12px;
+  font-size:13px;font-weight:700;color:var(--muted)}
+.r2-course-language{background:#6543b2;color:#fff;font:800 13px/1 "Cascadia Code",Consolas,monospace;
+  padding:9px 12px;letter-spacing:.02em}
+.r2-course-hero-main{display:flex;justify-content:space-between;align-items:end;
+  gap:32px;margin-top:21px}
+.r2-course-hero h1{font-size:clamp(32px,4vw,49px);line-height:1.13;
+  letter-spacing:-.052em;font-weight:770;margin:0;color:var(--ink)}
+.r2-course-hero p{font-size:15px;color:var(--muted);margin:13px 0 0}
+.r2-course-hero-actions{display:grid;justify-items:end;gap:12px;flex:none}
+#r2-course-progress{font:600 13px/1.5 "Cascadia Code",Consolas,monospace;
+  color:var(--muted);text-align:right}
 .r2-button,.primary,.secondary{
-  min-height:44px;border:1px solid var(--line);padding:11px 17px;border-radius:5px;
+  min-height:44px;border:1px solid var(--line);padding:11px 17px;border-radius:3px;
   font-size:14px;line-height:1.3;font-weight:680;display:inline-flex;
   justify-content:center;align-items:center;gap:8px;letter-spacing:0;
 }
 .r2-primary,.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.r2-primary:hover,.primary:hover{background:#5034aa;border-color:#5034aa;color:#fff}
-.r2-secondary,.secondary{background:var(--surface);border-color:#bcbec9;color:var(--ink)}
+.r2-primary:hover,.primary:hover{background:#4d328d;border-color:#4d328d;color:#fff}
+.r2-secondary,.secondary{background:var(--surface);border-color:#b7bec9;color:var(--ink)}
 .r2-secondary:hover,.secondary:hover{background:var(--surface-muted);color:var(--ink)}
 .r2-text{background:transparent;border-color:transparent;color:var(--accent)}
 .r2-text:hover{background:var(--accent-soft)}
-.r2-course-heading{display:flex;align-items:baseline;gap:24px;margin:42px 0 19px}
-.r2-course-heading h2{font-size:27px;letter-spacing:-.04em;margin:0}
-.r2-course-heading p{color:var(--muted);font-size:14px;margin:0}
+.r2-course-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(310px,39%);
+  align-items:start;gap:clamp(23px,3.3vw,48px);margin-top:28px}
+.r2-course-path{min-width:0;grid-column:1;grid-row:1}
+.r2-course-heading{margin:0 0 16px}
+.r2-course-heading h2{font-size:22px;line-height:1.35;letter-spacing:-.035em;margin:0}
 .r2-course-list.sidebar{position:static;height:auto;max-height:none;overflow:visible;
   width:auto;background:transparent;border:0;padding:0;display:block}
-.r2-course-list .sidebar-head{display:flex;flex-wrap:wrap;align-items:center;
-  gap:14px 23px;padding:18px 22px;border:1px solid var(--line);
-  background:var(--surface);margin-bottom:15px}
-.r2-course-list .sidebar-head h2{display:none}
-.r2-course-list .progress-bar{width:120px;max-width:120px;flex:0 0 120px;
-  height:5px;background:var(--surface-muted)}
-.r2-course-list #progress-label{font-size:14px;color:var(--muted);margin:0}
-.r2-course-list #continue-lesson{display:none}
-.r2-course-list #continue-detail,.r2-course-list .sidebar-foot{display:none}
-.r2-course-list #semester-rehearsal-open{margin:0 0 0 auto}
+.r2-course-list .sidebar-head{display:none}
 .r2-course-list #mobile-course-toggle{display:none}
-.r2-course-list #nav-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:16px;max-height:none;overflow:visible}
-.r2-course-list .nav-group{display:block;overflow:visible;
-  padding:0;background:var(--surface);border:1px solid var(--line)}
-.r2-course-list .nav-group h3{margin:0;padding:22px 20px 17px;
-  font-size:14px;font-weight:760;color:var(--ink);letter-spacing:0;
-  line-height:1.4;border-bottom:1px solid var(--line)}
-.r2-course-list .lesson-link{min-height:58px;width:100%;display:flex;gap:13px;
-  padding:14px 17px;border-left:3px solid transparent;border-bottom:1px solid var(--line);
-  text-decoration:none;white-space:normal;align-items:center;
-  font-size:14px;color:var(--ink)}
+.r2-course-list #nav-items{display:block;max-height:none;overflow:visible;border-top:1px solid var(--line)}
+.r2-course-list .nav-group{display:block;overflow:visible;padding:0;margin:0;
+  background:transparent;border:0}
+.r2-course-list .nav-group h3{margin:0;padding:22px 12px 10px;font-size:14px;
+  font-weight:760;color:var(--ink);letter-spacing:0;line-height:1.4;
+  border-top:1px solid var(--line)}
+.r2-course-list .nav-group:first-child h3{border-top:0}
+.r2-course-list .lesson-link{min-height:58px;width:100%;display:flex;gap:16px;
+  padding:11px 12px;border-left:3px solid transparent;border-bottom:1px solid #e5e7eb;
+  text-decoration:none;white-space:normal;align-items:center;font-size:15px;
+  color:var(--ink)}
 .r2-course-list .lesson-link:hover,.r2-course-list .lesson-link.active{
   border-left-color:var(--accent);background:var(--accent-soft)}
-.r2-course-list .lesson-number{font:700 13px/1.6 "Cascadia Code",monospace;
-  color:var(--muted);min-width:22px}
-.r2-course-list .lesson-link-name{flex:1;min-width:0}
-.r2-course-list .nav-score{font-size:12px}
+.r2-course-list .lesson-number{font:700 13px/1.6 "Cascadia Code",Consolas,monospace;
+  color:var(--muted);min-width:24px}
+.r2-course-list .lesson-link-name{flex:1;min-width:0;line-height:1.4}
+.r2-course-list .nav-score{font:600 12px/1.5 "Cascadia Code",Consolas,monospace;
+  color:var(--accent);white-space:nowrap}
+/* Canonical 16-lesson syllabus: progress reads the original concept evaluator only. */
+.r2-course-list .nav-group h3{display:flex;align-items:baseline;justify-content:space-between;
+  flex-wrap:wrap;gap:7px 16px}
+.r2-group-progress{font-size:13px;color:var(--muted);font-weight:600;letter-spacing:0}
+.r2-course-list .lesson-link{align-items:flex-start}
+.r2-course-list .lesson-link-name{display:flex;flex-direction:column;gap:5px;
+  font-weight:650;line-height:1.45;min-width:0}
+.r2-syllabus-details{font-size:14px;line-height:1.5;font-weight:450;color:var(--muted);
+  white-space:normal}
+.r2-course-list .nav-score{min-width:76px;max-width:105px;white-space:normal;
+  text-align:right;font-size:13px;line-height:1.4;font-weight:650}
+.r2-course-list .lesson-link[data-checkpoint="reviewed"] .nav-score{color:var(--success)}
+.r2-course-list .lesson-link[data-checkpoint="started"] .nav-score{color:var(--accent)}
+.r2-preview-checkpoint{margin:0 21px 14px;color:#c9bbff;
+  font-size:14px;line-height:1.5;font-weight:650}
+.r2-preview-prereqs{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 12px;
+  margin:0 21px 22px;font-size:14px;line-height:1.5}
+.r2-preview-prereqs[hidden]{display:none}
+.r2-preview-prereqs span{color:#b3c0d2}
+.r2-preview-prereqs a{color:#d4c6ff;text-decoration:underline;text-underline-offset:3px}
+.r2-preview-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.r2-preview-actions .r2-secondary{background:transparent;color:#ede6ff;border-color:#7f75a3}
+.r2-preview-actions .r2-secondary:hover{background:#342c4e;color:#fff}
+.r2-preview-actions button[hidden]{display:none}
+.r2-lesson-path{display:flex;align-items:center;justify-content:space-between;
+  gap:13px 22px;flex-wrap:wrap;width:100%;min-width:0;
+  margin-top:13px;padding:16px 0 0;border-top:1px solid var(--line)}
+#r2-lesson-prereqs{display:flex;align-items:baseline;flex-wrap:wrap;gap:7px 11px;
+  font-size:14px;line-height:1.5}
+#r2-lesson-prereqs[hidden]{display:none}
+#r2-lesson-prereqs span{color:var(--muted);font-weight:600}
+#r2-lesson-prereqs a{color:var(--accent);font-weight:650;text-decoration:underline;
+  text-underline-offset:3px}
+.r2-lesson-path-actions{display:flex;align-items:center;flex-wrap:wrap;
+  gap:10px;min-width:0;margin-left:auto}
+#r2-lesson-checkpoint{font-size:14px;color:var(--muted);font-weight:600;margin-right:7px}
+.r2-lesson-path-actions button{background:var(--surface);color:var(--ink);
+  border:1px solid #b9bdc8;min-height:40px;padding:8px 12px;
+  border-radius:3px;font-size:14px;font-weight:650}
+.r2-lesson-path-actions button:hover:not(:disabled){border-color:var(--accent);
+  background:var(--accent-soft);color:var(--accent)}
+.r2-lesson-path-actions button:disabled{opacity:.45;cursor:not-allowed}
+.r2-next-lesson{position:sticky;top:calc(var(--r2-header) + 20px);min-width:0;
+  grid-column:2;grid-row:1;
+  background:#121821;color:#e8edf5;border:1px solid #293447;overflow:hidden}
+.r2-preview-header{display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:17px 21px;border-bottom:1px solid #303a49;
+  font:700 12px/1.4 "Cascadia Code",Consolas,monospace;color:#b6acd6}
+.r2-preview-header span:last-child{color:#91d3a5}
+.r2-next-lesson .r2-preview-lesson{font-size:clamp(21px,2.3vw,28px);line-height:1.28;
+  letter-spacing:-.035em;margin:24px 21px 9px;color:#faf9ff}
+.r2-next-lesson>p{font-size:15px;line-height:1.65;color:#bbc4d2;
+  margin:0 21px 22px}
+.r2-preview-file{display:flex;justify-content:space-between;gap:10px;
+  padding:11px 19px;border-top:1px solid #303a49;border-bottom:1px solid #303a49;
+  background:#1b2330;font:600 13px/1.5 "Cascadia Code",Consolas,monospace}
+.r2-preview-file span:last-child{font:500 12px/1.5 system-ui,sans-serif;color:#a7b5c7}
+.r2-preview-code{margin:0;padding:24px 21px;min-height:155px;max-width:100%;
+  overflow:auto;tab-size:4;font:14px/1.75 "Cascadia Code",Consolas,monospace;
+  color:#d6eacb;background:#121821;white-space:pre}
+.r2-preview-footer{border-top:1px solid #303a49;padding:19px 21px 21px;
+  display:flex;flex-wrap:wrap;justify-content:space-between;gap:14px;align-items:center}
+.r2-preview-footer>span{font-size:13px;color:#acb8c9}
+.r2-preview-footer .r2-button{background:#a793ee;color:#181320;
+  border-color:#a793ee;font-size:13px}
+.r2-preview-footer .r2-button:hover{background:#c6bbfa;border-color:#c6bbfa}
 main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   padding:28px clamp(18px,3.8vw,60px) 120px;min-width:0}
 .r2-lesson-head{position:relative;display:grid;justify-items:start;gap:5px;
@@ -647,71 +716,203 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 .r2-stage-tabs button:hover{color:var(--ink);background:var(--surface-muted)}
 .r2-stage-content{min-width:0}
 .r2-activity{min-width:0;min-height:calc(100dvh - 345px)}
-.r2-learn,.r2-check{max-width:910px;margin:0 auto}
-.r2-learn .paper,.r2-check .paper{background:var(--surface);
-  border:1px solid var(--line);padding:clamp(22px,4vw,48px);margin:0}
-.r2-learn .section-title,.r2-check .section-title{border-bottom:1px solid var(--line);
-  margin-bottom:25px;padding-bottom:16px}
-.r2-learn .section-title h2,.r2-check .section-title h2{
-  font-size:23px;font-weight:720;letter-spacing:-.035em}
-.r2-learn #lesson-theory{font-size:18px;line-height:1.85;max-width:70ch;
-  color:var(--ink);margin:0 0 28px}
-.r2-learn .code{padding:25px;background:var(--code-bg);color:#e8eaf4;
-  border-radius:5px;border:0;font:15px/1.7 "Cascadia Code",Consolas,monospace}
+/* Learning article and canonical read-only Julia source. */
+.r2-learn,.r2-check{max-width:1260px;margin:0 auto;min-width:0}
+.r2-learn .r2-learn-paper{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(330px,.95fr);
+  background:var(--surface);border:1px solid var(--line);padding:0;margin:0;min-width:0}
+.r2-learn-reading{min-width:0;padding:clamp(24px,3.6vw,48px)}
+.r2-learn-reading .section-title{border-bottom:1px solid var(--line);padding:0 0 19px;
+  margin:0 0 25px}
+.r2-learn-reading .section-title h2{font-size:clamp(22px,2.4vw,29px);
+  letter-spacing:-.04em;line-height:1.3}
+.r2-learn #lesson-theory{font-size:clamp(17px,1.45vw,19px);line-height:1.8;
+  max-width:65ch;color:var(--ink);margin:0;white-space:pre-line}
+.r2-example-pane{background:#101722;color:#e7edf8;border-left:1px solid #344154;
+  display:flex;flex-direction:column;min-width:0}
+.r2-example-head{padding:16px 19px;display:flex;justify-content:space-between;
+  align-items:center;flex-wrap:wrap;gap:10px;border-bottom:1px solid #344154;
+  background:#1e2938;font:650 14px/1.5 "Cascadia Code",Consolas,monospace}
+.r2-example-mode{font:500 13px/1.5 system-ui,sans-serif;color:#bbc8dd;margin-left:9px}
+#r2-copy-example{border:1px solid #62728d;border-radius:3px;color:#e7edf8;
+  background:transparent;min-height:37px;padding:7px 12px;font-size:14px}
+#r2-copy-example:hover{background:#35445a}
+.r2-example-pane pre.code{background:#101722;color:#e3edfc;border:0;border-radius:0;
+  margin:0;max-width:100%;min-width:0;width:100%;box-sizing:border-box;overflow:auto;
+  padding:27px 23px;font:15px/1.85 "Cascadia Code",Consolas,monospace;
+  white-space:pre;tab-size:4;flex:1}
+.r2-example-actions{border-top:1px solid #344154;padding:16px 19px;
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+#r2-example-source{color:#bbc8dd;font-size:14px;line-height:1.5}
+#r2-example-code{background:#aa99ec;color:#191529;border-color:#aa99ec}
+#r2-example-code:hover{background:#cec3fc;border-color:#cec3fc}
+#r2-example-feedback{flex:1 1 100%;color:#d8e4f3;font-size:14px}
 .r2-stage-footer{display:flex;align-items:center;justify-content:space-between;
-  gap:15px;border-top:1px solid var(--line);
-  padding:18px 0;margin-top:24px;font-size:13px;color:var(--muted)}
-.r2-inner-head{margin:12px 0 21px}
-.r2-inner-head h2{font-size:25px;letter-spacing:-.035em;margin:0 0 4px}
-.r2-inner-head p,.r2-inner-head span:not(.r2-kicker){font-size:14px;color:var(--muted)}
-.r2-check .question{border:0;padding:0}
-.r2-check .question-head{font-size:13px;color:var(--muted)}
-.r2-check .question h3{font-size:clamp(19px,2.2vw,26px);font-weight:670;
-  letter-spacing:-.02em;margin:15px 0 25px;line-height:1.5}
-.r2-check .choices{display:grid;grid-template-columns:1fr;gap:12px}
-.r2-check .choice{min-height:59px;padding:14px 20px;border:1px solid var(--line);
-  background:var(--surface);font-size:16px;text-align:left;border-radius:5px}
-.r2-check .choice:hover{border-color:var(--accent)}
+  flex-wrap:wrap;gap:15px;border-top:1px solid var(--line);
+  padding:17px 0;margin-top:18px;font-size:14px;color:var(--muted)}
+.r2-question-tools{display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;margin:0 0 19px;padding:0 0 16px;
+  border-bottom:1px solid var(--line)}
+#r2-question-index{font:650 14px/1.5 "Cascadia Code",Consolas,monospace;color:var(--ink)}
+#r2-question-steps{display:flex;align-items:center;gap:8px}
+#r2-question-steps button{width:45px;height:43px;min-height:43px;
+  border:1px solid var(--line);border-radius:3px;background:var(--surface);
+  color:var(--ink);font:650 14px "Cascadia Code",Consolas,monospace}
+#r2-question-steps button[aria-current="step"]{border-color:var(--accent);
+  background:var(--accent-soft);box-shadow:inset 0 -3px var(--accent)}
+#r2-question-steps button[data-state="Correct"]{color:var(--success);border-color:var(--success)}
+#r2-question-steps button[data-state="Try again"]{color:var(--error);border-color:var(--error)}
+.r2-check-layout{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(280px,.72fr);
+  gap:0;align-items:stretch;min-width:0;border:1px solid var(--line);background:var(--surface)}
+.r2-check .r2-check-paper{min-width:0;margin:0;border:0;padding:clamp(23px,3.5vw,44px);
+  background:var(--surface)}
+.r2-check .section-title{border-bottom:1px solid var(--line);margin:0 0 21px;padding:0 0 16px}
+.r2-check .section-title h2{font-size:23px;font-weight:720;letter-spacing:-.035em}
+.r2-check .section-intro{font-size:15px;line-height:1.6;color:var(--muted);margin-bottom:20px}
+.r2-check .question{border:0;padding:0;margin:0}
+.r2-check .question-head{display:flex;align-items:center;gap:14px;
+  font-size:14px;color:var(--muted);font-weight:650}
+.r2-check .question h3{font-size:clamp(21px,2.4vw,29px);font-weight:670;
+  letter-spacing:-.025em;margin:20px 0 26px;line-height:1.46}
+.r2-check .choices{display:grid;grid-template-columns:1fr;gap:10px}
+.r2-check .choice{min-height:58px;padding:13px 16px;border:1px solid var(--line);
+  background:var(--surface);font-size:16px;text-align:left;border-radius:3px;
+  display:flex;gap:14px;align-items:center;line-height:1.5}
+.r2-check .choice>span{flex:0 0 31px;display:grid;place-items:center;
+  min-height:31px;border:1px solid var(--line);
+  color:var(--muted);font:700 14px "Cascadia Code",Consolas,monospace}
+.r2-check .choice:hover{border-color:var(--accent);background:var(--surface-muted)}
 .r2-check .choice.selected{border-color:var(--accent);background:var(--accent-soft)}
-.r2-check .answer-reason{font-size:15px;line-height:1.65}
-.r2-check #concept-brief{font-size:13px;color:var(--muted)}
-.r2-code-layout{display:grid;grid-template-columns:minmax(280px,39%) minmax(0,61%);
-  gap:0;background:var(--surface);border:1px solid var(--line);
-  min-height:650px;align-items:start}
-.r2-instructions{padding:30px 29px;border-right:1px solid var(--line);
-  min-width:0;overflow-wrap:anywhere}
-.r2-instructions>.paper{padding:0;margin:0;border:0;box-shadow:none;background:transparent}
-.r2-instructions .section-title h2{font-size:22px;letter-spacing:-.035em}
-.r2-instructions #challenge-text{font-size:17px;line-height:1.75}
-.r2-instructions .code{font-size:13px;padding:15px;border:0;border-radius:4px;
-  color:#e8eaf4;background:var(--code-bg)}
-.r2-instructions .section-intro{font-size:13px;color:var(--muted)}
+.r2-check .choice.selected>span{border-color:var(--accent);color:var(--accent)}
+.r2-check .answer-reason{font-size:16px;line-height:1.7;padding:16px 18px;
+  border-left:3px solid var(--line);background:var(--surface-muted)}
+.r2-check .answer-reason.right{border-left-color:var(--success)}
+.r2-check .answer-reason.wrong{border-left-color:var(--error)}
+.r2-check .question-hint{margin-top:18px;font-size:15px;line-height:1.6}
+.r2-check .question-hint summary{cursor:pointer;min-height:40px;padding:8px 0}
+.r2-check #concept-brief{font-size:15px;color:var(--muted);line-height:1.6;
+  border-top:1px solid var(--line);padding:16px 0 0;margin-top:27px}
+.r2-check-reference{min-width:0;display:flex;flex-direction:column;
+  background:#111923;color:#e7edf8;border-left:1px solid #344154}
+.r2-check-reference-head{display:flex;align-items:center;justify-content:space-between;
+  gap:12px;flex-wrap:wrap;padding:16px 20px;background:#202a39;border-bottom:1px solid #344154;
+  font:650 14px/1.5 "Cascadia Code",Consolas,monospace}
+.r2-check-reference-head span:last-child{font:500 13px/1.5 system-ui,sans-serif;color:#bbc8dd}
+.r2-check-reference-code{flex:1;min-width:0;width:100%;max-width:100%;box-sizing:border-box;margin:0;
+  padding:24px 20px;color:#d8e8fc;background:#111923;overflow:auto;
+  font:14px/1.8 "Cascadia Code",Consolas,monospace;tab-size:4;white-space:pre}
+.r2-check-reference-actions{display:flex;align-items:center;flex-wrap:wrap;gap:11px;
+  padding:15px 20px;border-top:1px solid #344154}
+.r2-check-reference-actions span{flex:1 1 100%;color:#c4cfe0;font-size:14px}
+.r2-check-reference-actions button{min-height:42px;padding:9px 14px;
+  border:1px solid #62728d;border-radius:3px;background:#28374c;
+  color:#f0f3fb;font-size:14px;font-weight:650}
+.r2-check-reference-actions button:hover{background:#364c67}
+#r2-check-code-button{background:#ae9aec;color:#20182b;border-color:#ae9aec}
+#r2-check-code-button:hover{background:#d1c3fc}
+/* One Julia workspace: canonical editor, terminal, source tools and task reference. */
+.r2-code-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(285px,.8fr);
+  min-width:0;align-items:start;background:var(--surface);border:1px solid var(--line);
+  min-height:720px}
+.r2-instructions{position:sticky;top:calc(var(--r2-header) + 78px);max-height:calc(100dvh - var(--r2-header) - 94px);
+  min-width:0;overflow:auto;overflow-wrap:anywhere;border-left:1px solid var(--line);
+  padding:0;background:var(--surface)}
+.r2-instructions>summary{display:flex;flex-direction:column;gap:6px;cursor:pointer;
+  padding:17px 20px;border-bottom:1px solid var(--line);font-size:14px;
+  line-height:1.4;list-style:none;position:sticky;top:0;z-index:2;
+  background:var(--surface)}
+.r2-instructions>summary::-webkit-details-marker{display:none}
+.r2-instructions>summary:focus-visible{outline-offset:-3px}
+.r2-task-summary strong{font-size:15px;color:var(--ink)}
+#r2-task-summary-text{font-size:14px;line-height:1.55;color:var(--muted)}
+.r2-instructions>.paper{padding:20px;margin:0;border:0;box-shadow:none;background:transparent}
+.r2-instructions .section-title h2{font-size:20px;letter-spacing:-.035em}
+.r2-instructions #challenge-text{font-size:16px;line-height:1.7}
+.r2-instructions .code{font-size:13px;padding:14px;border:0;border-radius:2px;
+  color:#e8eaf4;background:#111823;max-width:100%;overflow:auto}
+.r2-instructions .section-intro{font-size:14px;color:var(--muted)}
 .r2-instructions #go-to-compiler{display:none!important}
-.r2-instructions #external-tests,.r2-instructions #integration-handoff{font-size:14px}
-.r2-editor{background:var(--surface);min-width:0;padding:25px}
-.r2-editor-head{display:flex;justify-content:space-between;gap:12px;align-items:center;
-  border-bottom:1px solid var(--line);padding:5px 0 19px;margin-bottom:21px;
-  font:700 14px "Cascadia Code",Consolas,monospace}
-#r2-editor-status{font:500 13px/1.5 "Segoe UI",sans-serif;color:var(--muted)}
-.r2-editor .scratch-editor{width:100%;display:block;min-height:420px;
-  border:1px solid #383e48;border-radius:5px;background:var(--code-bg);
-  color:#eef0f6;padding:21px;font:15px/1.68 "Cascadia Code",Consolas,monospace;
-  tab-size:4;resize:vertical;white-space:pre;overflow:auto}
+.r2-instructions #external-tests,.r2-instructions #integration-handoff{font-size:14px;scroll-margin-top:145px}
+.r2-instructions .external-test-actions button{width:auto}
+.r2-editor{min-width:0;background:#121923;color:#eaf0f7;padding:0;overflow:hidden}
+.r2-editor-head{display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:12px;min-height:54px;margin:0;padding:0 18px;
+  background:#1e2938;border-bottom:1px solid #394456}
+.r2-file-tab{align-self:stretch;display:flex;align-items:center;gap:10px;
+  border-bottom:2px solid #ae97ec;padding:10px 4px 8px;
+  font:650 14px/1.5 "Cascadia Code",Consolas,monospace}
+.r2-file-badge{display:inline-flex;place-items:center;padding:2px 5px;color:#d8cafa;
+  background:#493d67;border-radius:2px;font-size:12px}
+#r2-editor-status{font:500 13px/1.5 system-ui,sans-serif;color:#bac8d9}
+.r2-editor-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;
+  background:#192331;padding:12px 16px;margin:0;border-bottom:1px solid #394456}
+.r2-editor-actions .r2-button,.r2-editor-actions .draft-actions button{
+  min-height:38px;padding:8px 11px;border:1px solid #4a5970;border-radius:3px;
+  font-size:13px;font-weight:650;line-height:1.35;background:#283345;color:#e7eff9;
+  text-decoration:none;white-space:normal}
+.r2-editor-actions .r2-button:hover,.r2-editor-actions .draft-actions button:hover{
+  background:#35455c;color:#fff;border-color:#8291a5}
+.r2-editor-actions #r2-run{background:#a995ed;color:#20182e;border-color:#a995ed;
+  padding:8px 18px}
+.r2-editor-actions #r2-run:hover{background:#d0c2fc;border-color:#d0c2fc}
+.r2-editor-actions button:disabled{opacity:.6}
+.r2-editor-actions #r2-exports{border-color:transparent;background:transparent;color:#c7b8f9}
+.r2-editor .draft-actions{display:contents;margin:0;padding:0}
+.r2-editor .draft-actions #reset-draft{background:transparent;color:#b8c5d4}
 .r2-editor .draft-title{display:none}
-.r2-editor .draft-actions{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}
-.r2-editor .draft-actions button{font-size:13px}
-.r2-editor-actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 26px}
+.r2-editor-well{display:grid;grid-template-columns:52px minmax(0,1fr);
+  min-width:0;background:#101722;border-bottom:1px solid #394456}
+.r2-line-numbers{height:100%;min-height:420px;padding:19px 10px 22px 4px;
+  background:#151e2b;color:#72829b;overflow:hidden;white-space:pre;
+  font:14px/1.7 "Cascadia Code",Consolas,monospace;text-align:right;
+  user-select:none;pointer-events:none;border-right:1px solid #344258}
+.r2-editor .scratch-editor{width:100%;height:clamp(420px,47dvh,560px);min-height:420px;
+  display:block;border:0;border-radius:0;outline-offset:-3px;background:#101722;
+  color:#e9eef7;padding:19px 18px 22px;font:14px/1.7 "Cascadia Code",Consolas,monospace;
+  tab-size:4;resize:vertical;white-space:pre;overflow:auto}
+.r2-editor-foot{display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:8px;padding:7px 15px;background:#1e2938;color:#c7d1e0;
+  font:12px/1.5 "Cascadia Code",Consolas,monospace}
+.r2-terminal{background:#0c121b;color:#e5edf8;border-top:1px solid #384459;
+  min-width:0}
+.r2-terminal-head{display:flex;align-items:center;justify-content:space-between;
+  gap:12px;border-bottom:1px solid #344154;background:#182130;
+  padding:11px 16px;font:650 14px/1.4 "Cascadia Code",Consolas,monospace}
+.r2-terminal-clear{min-height:34px;padding:5px 11px;border:1px solid #516077;
+  border-radius:2px;background:transparent;color:#d1ddeb;font-size:13px}
+.r2-terminal #local-runner-status{font-size:14px;line-height:1.6;color:#b8c9dd;
+  margin:11px 16px}
+.r2-terminal .local-runner-console{min-height:112px;margin:0;padding:12px 16px 18px;
+  background:#0c121b;color:#dbe9fb;border:0;border-radius:0;max-width:100%;
+  overflow:auto;font:14px/1.65 "Cascadia Code",Consolas,monospace;white-space:pre-wrap}
+.r2-terminal #local-runner-images{padding:0 16px 16px;max-width:100%}
+.r2-runner-setup{margin:0;border-top:1px solid #394456;background:#1b2534;padding:0}
+.r2-runner-setup>summary{padding:14px 17px;color:#e7ecf8;
+  cursor:pointer;font-size:14px;font-weight:700}
+.r2-runner-setup>.local-runner{padding:8px 17px 19px;margin:0;border:0;background:transparent}
+.r2-runner-setup .local-runner h3{font-size:16px;color:#eef2f9}
+.r2-runner-setup .local-runner p,.r2-runner-setup .local-runner label{
+  color:#c2cede;font-size:14px}
+.r2-runner-setup #local-runner-token{color:#171d24;background:#fff;border:1px solid #76849b}
+.r2-runner-setup .local-runner-actions{display:flex;flex-wrap:wrap;gap:9px}
+.r2-runner-setup .local-runner-actions button{min-height:40px}
+.r2-runner-setup .local-runner-console{color:#dee8f7;background:#111823;
+  border:1px solid #394456;min-height:35px;max-width:100%}
 .r2-editor>.compiler{position:relative;top:auto;max-height:none;overflow:visible;
-  width:auto;padding:0;border:0;background:transparent;box-shadow:none;
-  border-top:1px solid var(--line);padding-top:23px}
-.r2-editor>.compiler .compiler-heading{display:flex;margin:0 0 15px}
-.r2-editor>.compiler .compiler-heading h2{font-size:18px;letter-spacing:-.025em}
-.r2-editor .local-runner{padding:0;background:transparent;border:0}
-.r2-editor .local-runner h3{font-size:16px}
-.r2-editor .local-runner-console{background:var(--code-bg);color:#e3e9f0;
-  border:0;border-radius:4px;min-height:58px;max-width:100%;font-size:13px}
-.r2-compiler-extras{margin-top:25px;border-top:1px solid var(--line);padding:17px 0}
-.r2-compiler-extras>summary{font-size:14px;font-weight:650;color:var(--accent)}
+  width:auto;padding:0 16px 22px;border:0;background:#1b2534;
+  box-shadow:none;border-top:1px solid #394456}
+.r2-editor>.compiler .compiler-heading{display:flex;align-items:center;
+  justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 10px}
+.r2-editor>.compiler .compiler-heading h2{font-size:16px;line-height:1.4;
+  color:#edf1fa;letter-spacing:-.02em;margin:0}
+.r2-editor>.compiler .compiler-heading .eyebrow{font-size:12px;color:#b7c4d8}
+.r2-editor>.compiler .runtime-tag{color:#c9d7eb;background:#253347;
+  border:1px solid #50617a;font-size:12px}
+.r2-editor>.compiler .compiler-explainer,.r2-editor>.compiler .privacy-note{
+  color:#c2ccdb;font-size:14px}
+.r2-editor>.compiler .local-runner-console{background:#111823;color:#e3e9f0;
+  border:0;border-radius:2px;min-height:58px;max-width:100%;font-size:13px}
+.r2-compiler-extras{margin-top:8px;border-top:1px solid #394456;padding:13px 0}
+.r2-compiler-extras>summary{font-size:14px;font-weight:650;color:#c7b8f9}
 .r2-page-heading{margin:10px 0 32px}
 .r2-page-heading h1{font-size:clamp(31px,3.5vw,47px);line-height:1.15;
   letter-spacing:-.048em;margin:0 0 10px}
@@ -752,10 +953,16 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 .lesson-footer{max-width:1280px;margin:44px auto 0;border-top:1px solid var(--line)}
 .r2-mobile-action{display:none}
 @media(max-width:900px){
-  .r2-course-list #nav-items{grid-template-columns:1fr 1fr}
-  .r2-code-layout{grid-template-columns:minmax(0,1fr)}
-  .r2-instructions{border-right:0;border-bottom:1px solid var(--line)}
-  .r2-editor{padding:24px}
+  .r2-learn .r2-learn-paper,.r2-check-layout{grid-template-columns:minmax(0,1fr)}
+  .r2-example-pane,.r2-check-reference{border-left:0;border-top:1px solid #344154}
+  .r2-check-reference-code{max-height:280px}
+  .r2-course-layout{grid-template-columns:minmax(0,1fr);gap:24px}
+  .r2-next-lesson{position:static}
+  .r2-code-layout{display:flex;flex-direction:column;min-height:0}
+  .r2-instructions{order:-1;position:static;top:auto;max-height:none;width:100%;
+    border-left:0;border-bottom:1px solid var(--line);overflow:visible}
+  .r2-instructions>summary{position:static}
+  .r2-editor{width:100%;padding:0}
   .r2-lesson-picker{position:static;order:1;margin-top:12px;max-width:none}
   .r2-lesson-picker select{width:min(80vw,350px)}
 }
@@ -770,16 +977,34 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   .r2-global-nav{gap:0}
   .r2-global-nav button{font-size:12px;min-height:42px;padding:8px 9px}
   .r2-page{padding:23px 16px 110px}
-  .r2-course-hero{padding:29px 20px;gap:12px}
-  .r2-course-hero h1{font-size:clamp(30px,9vw,42px)}
-  .r2-course-hero p{font-size:15px}
-  .r2-course-heading{display:block;margin:27px 0 15px}
-  .r2-course-heading h2{font-size:24px}
-  .r2-course-heading p{font-size:13px;margin:5px 0 0}
-  .r2-course-list .sidebar-head{padding:14px;gap:12px}
-  .r2-course-list #nav-items{grid-template-columns:1fr;gap:12px}
-  .r2-course-list .nav-group h3{padding:15px}
-  .r2-course-list .lesson-link{min-height:52px;padding:12px 14px}
+  .r2-course-hero{padding:7px 0 24px}
+  .r2-course-identity{font-size:12px;gap:9px}
+  .r2-course-hero-main{display:block;margin-top:17px}
+  .r2-course-hero h1{font-size:clamp(28px,7.5vw,36px)}
+  .r2-course-hero p{font-size:14px}
+  .r2-course-hero-actions{display:flex;flex-wrap:wrap;align-items:center;
+    justify-content:space-between;justify-items:start;margin-top:19px}
+  .r2-course-progress{font-size:12px;text-align:left}
+  .r2-course-layout{gap:22px;margin-top:21px;display:flex;flex-direction:column}
+  .r2-course-path,.r2-next-lesson{width:100%}
+  .r2-course-heading{margin:0 0 14px}
+  .r2-course-heading h2{font-size:22px}
+  .r2-course-list .lesson-link{gap:9px}
+  .r2-course-list .nav-score{font-size:12px;min-width:62px;max-width:78px}
+  .r2-group-progress{font-size:13px}
+  .r2-syllabus-details{font-size:13px}
+  .r2-preview-prereqs,.r2-preview-checkpoint{margin-left:18px;margin-right:18px}
+  .r2-preview-actions{width:100%}
+  .r2-preview-actions .r2-button{flex:1 1 auto}
+  .r2-lesson-path{gap:11px;margin-top:10px;padding-top:13px}
+  .r2-lesson-path-actions{width:100%;gap:8px;margin-left:0}
+  #r2-lesson-checkpoint{flex:1 1 100%;margin-right:0}
+  .r2-lesson-path-actions button{flex:1 1 0;min-width:0}
+  .r2-course-list .nav-group h3{padding:19px 9px 9px}
+  .r2-course-list .lesson-link{min-height:52px;padding:10px 9px;font-size:14px}
+  .r2-next-lesson .r2-preview-lesson{font-size:23px}
+  .r2-preview-code{font-size:13px;padding:18px}
+  .r2-preview-footer{padding:15px 18px}
   main#lesson-main{padding:17px 13px 95px}
   .r2-lesson-head{padding:9px 4px 15px}
   .r2-breadcrumb{font-size:12px;margin-bottom:4px}
@@ -794,23 +1019,43 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
     padding:11px 0;font-size:11px}
   .r2-stage-tabs button span{font-size:13px;margin:0 0 0 2px}
   .r2-activity{min-height:calc(100dvh - 320px)}
-  .r2-learn .paper,.r2-check .paper{padding:23px 18px}
-  .r2-learn #lesson-theory{font-size:16px;line-height:1.7}
-  .r2-learn .code{font-size:13px;padding:16px}
-  .r2-check .choice{min-height:53px;font-size:15px}
-  .r2-check .question h3{font-size:20px}
+  .r2-learn .r2-learn-paper,.r2-check-layout{border:0}
+  .r2-learn-reading{padding:24px 18px}
+  .r2-learn #lesson-theory{font-size:17px;line-height:1.8}
+  .r2-example-head{padding:14px 16px}
+  .r2-example-pane pre.code{font-size:14px;padding:19px 16px;min-height:170px}
+  .r2-example-actions{padding:15px 16px}
+  .r2-check .r2-check-paper{padding:21px 17px}
+  .r2-check .choice{min-height:54px;font-size:15px}
+  .r2-check .question h3{font-size:21px}
+  .r2-check-reference-code{font-size:13px;padding:18px 16px;max-height:230px}
+  .r2-check-reference-actions{padding:15px 16px}
+  .r2-question-tools{margin-top:5px}
+  .r2-stage-footer{align-items:stretch}
+  .r2-stage-footer .r2-button{min-width:0}
   .r2-stage-footer{margin:20px 0 0;gap:12px}
-  .r2-code-layout{border:0;background:transparent}
-  .r2-instructions,.r2-editor{padding:19px 15px;background:var(--surface);
-    border:1px solid var(--line)}
-  .r2-instructions{border-bottom:0}
+  .r2-code-layout{border:1px solid var(--line);background:transparent}
+  .r2-instructions{padding:0;background:var(--surface);border:0;
+    border-bottom:1px solid var(--line)}
   .r2-instructions #challenge-text{font-size:16px}
-  .r2-editor .scratch-editor{min-height:clamp(275px,40dvh,450px);
-    font-size:14px;padding:15px}
-  .r2-editor-actions{display:none}
-  .r2-editor .draft-actions{gap:8px}
-  .r2-editor>.compiler .local-runner-actions{margin-bottom:12px}
-  .r2-editor>.compiler #local-runner-run{display:none}
+  .r2-editor{display:flex;flex-direction:column;padding:0;background:#121923;border:0}
+  .r2-editor-head{order:0;padding:0 13px;min-height:48px}
+  .r2-editor-well{order:1}
+  .r2-editor-foot{order:2}
+  .r2-editor-actions{order:3;display:flex;padding:10px;gap:7px}
+  .r2-terminal{order:4}
+  .r2-runner-setup{order:5}
+  .r2-editor>.compiler{order:6}
+  .r2-editor-actions .r2-button,.r2-editor-actions .draft-actions button{
+    flex:0 1 auto;font-size:13px;min-height:40px;padding:8px 10px}
+  .r2-editor-well{grid-template-columns:42px minmax(0,1fr)}
+  .r2-line-numbers{min-height:clamp(290px,43dvh,470px);font-size:13px;
+    padding:15px 7px 16px 2px}
+  .r2-editor .scratch-editor{height:clamp(290px,43dvh,470px);
+    min-height:clamp(290px,43dvh,470px);font-size:14px;padding:15px 11px}
+  .r2-terminal .local-runner-console{font-size:13px}
+  .r2-runner-setup .local-runner-actions{margin-bottom:12px}
+  .r2-runner-setup #local-runner-run{display:none}
   .r2-explore>.r2-lab:not(.r2-lab-inactive){padding:18px 14px}
   .r2-explore .r2-lab-picker{display:block}
   .r2-lab-picker label{display:block;margin-bottom:7px}
@@ -842,7 +1087,8 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   .r2-primary:hover,.primary:hover{background:#cabaff;border-color:#cabaff;color:#15121f}
   .r2-secondary,.secondary{color:var(--ink);background:var(--surface);border-color:#525764}
   .r2-global-nav button{color:var(--muted)}
-  .r2-course-hero h1 em{color:var(--accent)}
+  .r2-course-hero h1{color:var(--ink)}
+  .r2-course-list .lesson-link{border-bottom-color:var(--line)}
   .r2-learn .code,.r2-instructions .code{background:var(--code-bg)}
   .r2-editor .scratch-editor{background:var(--code-bg);color:#f0eff6}
   .r2-check .choice.selected{background:var(--accent-soft)}
@@ -869,37 +1115,17 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 
 /* The worked Julia example belongs next to the mathematical explanation
    at widths where both remain legible. Small screens retain linear reading. */
-@media(min-width:1100px){
-  .r2-learn{max-width:1090px}
-  .r2-learn .paper{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);
-    grid-template-rows:auto auto 1fr;column-gap:43px;row-gap:12px}
-  .r2-learn .section-title{grid-column:1 / -1}
-  .r2-learn #lesson-theory{grid-column:1;grid-row:2 / span 2}
-  .r2-learn .code-label{grid-column:2;grid-row:2;margin:0}
-  .r2-learn pre.code{grid-column:2;grid-row:3;margin:0;align-self:start}
-}
 .r2-mobile-action.r2-keyboard-visible{display:none!important}
 
 
-/* Screenshot-reviewed R2 composition: show course choices on the first screen,
-   prioritize the editor on phones, and keep the wordmark punctuation contained. */
+/* Existing lesson task summary remains collapsible on mobile; editor stays first. */
 .brand-mark{position:relative;overflow:hidden}
 .brand-mark span{position:static!important;display:inline!important}
-.r2-course-hero{padding:35px 43px;gap:10px}
-.r2-course-hero h1{font-size:clamp(30px,3.9vw,48px);line-height:1.14;max-width:980px}
-.r2-course-hero p{font-size:15px;margin:0 0 4px}
-.r2-course-heading{margin:27px 0 14px}
-.r2-course-heading p{display:none}
-.r2-course-list .sidebar-head{display:none}
-.r2-instructions>summary{display:none}
+.r2-instructions>summary{display:flex}
 .r2-editor-actions{margin:0 0 20px}
 .r2-editor .draft-actions{margin:14px 0}
 @media(max-width:767px){
-  .r2-course-hero{padding:23px 20px;gap:10px}
-  .r2-course-hero h1{font-size:clamp(28px,7.4vw,33px);line-height:1.12}
-  .r2-course-hero p{font-size:14px}
-  .r2-course-heading{margin:23px 0 12px}
-  .r2-instructions{border:1px solid var(--line);border-bottom:0;background:var(--surface);padding:0}
+  .r2-instructions{border:0;border-bottom:1px solid var(--line);background:var(--surface);padding:0}
   .r2-instructions>summary{display:grid;gap:5px;cursor:pointer;padding:14px 16px;list-style:none}
   .r2-instructions>summary::-webkit-details-marker{display:none}
   .r2-instructions>summary:after{content:"Read full task & starter →";font-size:12px;

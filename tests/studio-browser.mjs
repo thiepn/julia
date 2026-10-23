@@ -53,6 +53,24 @@ try{
     await page.locator("#scratch-code").fill('println("studio draft")');
     assert.equal(await page.locator("#compiler-panel").isVisible(),true);
     assert.equal(await page.locator("#scratch-code").inputValue(),'println("studio draft")');
+    // IDE shell must retain the ONE canonical editor, local runner, terminal and file tools.
+    assert.equal(await page.locator(".r2-editor-well #scratch-code").count(),1);
+    assert.equal(await page.locator(".r2-terminal #local-runner-output").count(),1);
+    assert.equal(await page.locator(".r2-runner-setup #local-runner-token").count(),1);
+    for(const id of ["copy-draft","download-draft","import-draft","reset-draft"]){
+      assert.equal(await page.locator(".r2-editor-actions #"+id).count(),1);
+    }
+    await page.locator("#scratch-code").fill("x = 1\ny = 2");
+    assert.equal(await page.locator(".r2-line-numbers").innerText(),"1\n2");
+    assert.equal(await page.locator("#r2-cursor-location").innerText(),"Ln 2, Col 6");
+    assert.ok((await page.locator("#r2-draft-size").innerText()).includes(" / 50000 bytes"));
+    await page.locator("#scratch-code").fill('println("studio draft")');
+    const taskBox=await page.locator(".r2-instructions").boundingBox(),
+      sourceBox=await page.locator(".r2-editor").boundingBox();
+    assert.ok(taskBox && sourceBox);
+    if(viewport.width>900)assert.ok(sourceBox.x<taskBox.x,"editor must precede task pane on desktop");
+    else assert.ok(taskBox.y<sourceBox.y,"compact task must precede editor on narrow screens");
+    assert.equal(await page.locator(".r2-terminal").isVisible(),true);
     assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1")),before);
     if(viewport.width<=767){
       assert.equal(await page.locator("#nav-items").isVisible(),false);

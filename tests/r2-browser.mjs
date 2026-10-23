@@ -59,20 +59,73 @@ try{
       await page.goto(origin+"/#course");
       await page.locator("#r2-course").waitFor({state:"visible"});
       assert.equal(await page.locator(".lesson-link").count(),16);
+      assert.equal(await page.locator("#r2-course-progress").innerText(),"0 of 16 concept sets reviewed");
+      assert.match(await page.locator('.lesson-link[href="#lesson/02"] .r2-syllabus-details').innerText(),
+        /10 min.*Suggested before: 01/);
+      assert.match(await page.locator('.lesson-link[href="#lesson/11"] .r2-syllabus-details').innerText(),
+        /Suggested before: 06, 08/);
+      assert.equal(await page.locator('.lesson-link[href="#lesson/01"] .nav-score').innerText(),"0/3 correct");
+      assert.equal(await page.locator("#r2-preview-prereqs").isVisible(),false);
+      assert.equal(await page.locator("#r2-next-lesson-title").innerText(),"01 · Variables & numbers");
+      assert.match(await page.locator("#r2-next-lesson-code").innerText(),/println\(a \+ b\)/);
       assert.equal(await page.locator("#r2-stage-code").isVisible(),false);
       await noOverflow("course");await shot("course");
+      if(scheme==="light"&&device.name==="desktop"){
+        await page.locator("#r2-next-code").click();
+        await page.locator("#r2-stage-code").waitFor({state:"visible"});
+        assert.equal(await page.locator("#lesson-jump").inputValue(),"01");
+        await page.locator("#r2-course-open").click();
+        await page.locator("#r2-course").waitFor({state:"visible"});
+        await page.locator('.lesson-link[href="#lesson/11"]').click();
+        await page.waitForFunction(()=>document.querySelector("#lesson-jump")?.value==="11");
+        assert.equal(await page.locator('#r2-lesson-prereqs a[href="#lesson/06"]').count(),1);
+        assert.equal(await page.locator('#r2-lesson-prereqs a[href="#lesson/08"]').count(),1);
+        await page.locator('#r2-lesson-prereqs a[href="#lesson/06"]').click();
+        await page.waitForFunction(()=>document.querySelector("#lesson-jump")?.value==="06");
+        await page.locator("#r2-lesson-next").click();
+        await page.waitForFunction(()=>document.querySelector("#lesson-jump")?.value==="07");
+        await page.locator("#r2-lesson-previous").click();
+        await page.waitForFunction(()=>document.querySelector("#lesson-jump")?.value==="06");
+        await page.locator("#r2-back-course").click();
+        await page.locator("#r2-course").waitFor({state:"visible"});
+      }
       await page.locator('.lesson-link[href="#lesson/09"]').click();
       await page.getByRole("heading",{name:"Floating-point numbers"}).waitFor();
       assert.equal(await page.locator("#r2-stage-learn").isVisible(),true);
       assert.equal(await page.locator("#r2-stage-code").isVisible(),false);
+      assert.equal(await page.locator(".r2-learn-reading #lesson-theory").count(),1);
+      assert.equal(await page.locator(".r2-example-pane #example-code").count(),1);
+      assert.match(await page.locator("#example-code").innerText(),/isapprox/);
+      assert.equal(await page.locator("#r2-example-source").innerText(),"Kalicharan ch. 2; AMP VL01");
       await noOverflow("learn");await shot("learn");
       await page.locator('[data-r2-stage="check"]').click();
       assert.equal(await page.locator("#r2-stage-check").isVisible(),true);
       assert.equal(await page.locator("#questions .question:visible").count(),1);
+      assert.equal(await page.locator("#r2-check-code").innerText(),
+        await page.locator("#example-code").innerText());
+      assert.equal(await page.locator("#r2-question-steps button").count(),3);
+      assert.equal(await page.locator('#r2-question-steps button[aria-current="step"]').count(),1);
+      if(device.name==="desktop"&&scheme==="light"){
+        // Original evaluator determines correction and checkpoint progress.
+        await page.locator('[data-question="0"][data-choice="0"]').click();
+        assert.equal(await page.locator('#r2-question-steps button[data-r2-question="0"]').getAttribute("data-state"),"Try again");
+        assert.equal(await page.locator("#questions .question:visible .answer-reason").count(),1);
+        await page.locator('[data-question="0"][data-choice="1"]').click();
+        assert.equal(await page.locator('#r2-question-steps button[data-r2-question="0"]').getAttribute("data-state"),"Correct");
+        await page.locator('#r2-question-steps button[data-r2-question="2"]').click();
+        assert.match(await page.locator("#r2-question-index").innerText(),/Question 3 of 3/);
+        assert.equal(await page.locator("#questions .question:visible").count(),1);
+        await page.locator("#r2-review-concept").click();
+        assert.equal(await page.locator("#r2-stage-learn").isVisible(),true);
+        await page.locator("#r2-example-code").click();
+        assert.equal(await page.locator("#r2-stage-code").isVisible(),true);
+        await page.locator('[data-r2-stage="check"]').click();
+        await page.locator('#r2-question-steps button[data-r2-question="0"]').click();
+      }
       await page.locator("#r2-question-next").click();
       assert.match(await page.locator("#r2-question-index").innerText(),/Question 2 of 3/);
       await noOverflow("check");await shot("check");
-      await page.locator('button[data-r2-stage="code"]').click();
+      await page.locator("#r2-check-code-button").click();
       const editor=page.locator("#scratch-code");
       assert.equal(await editor.isVisible(),true);
       assert.equal(await page.locator("#compiler-panel").isVisible(),true);
@@ -86,6 +139,16 @@ try{
       await page.locator('[data-r2-stage="learn"]').click();
       await page.locator('button[data-r2-stage="code"]').click();
       assert.equal(await editor.inputValue(),'println("R2 original persisted source")');
+      if(device.name==="desktop"&&scheme==="light"){
+        await page.locator("#r2-course-open").click();
+        await page.locator("#r2-course").waitFor({state:"visible"});
+        assert.equal(await page.locator('.lesson-link[href="#lesson/09"] .nav-score').innerText(),"1/3 correct");
+        assert.equal(await page.locator("#r2-course-progress").innerText(),"0 of 16 concept sets reviewed");
+        assert.match(await page.locator("#r2-resume-current").innerText(),/Return to 09.*Code/);
+        await page.locator("#r2-resume-current").click();
+        await page.locator("#r2-stage-code").waitFor({state:"visible"});
+        assert.equal(await editor.inputValue(),'println("R2 original persisted source")');
+      }
       await noOverflow("code");await shot("code");
       await page.locator('button[data-r2-stage="explore"]').click();
       assert.equal(await page.locator("#r2-stage-explore").isVisible(),true);
