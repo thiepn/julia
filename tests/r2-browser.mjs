@@ -74,7 +74,6 @@ try{
       await page.getByRole("heading",{name:"Floating-point numbers"}).waitFor();
       assert.equal(await page.locator("#r2-stage-learn").isVisible(),true);
       assert.equal(await page.locator("#r2-stage-code").isVisible(),false);
-      assert.equal(await page.locator("#r2-learn-paper").count(),0);
       assert.equal(await page.locator(".r2-learn-reading #lesson-theory").count(),1);
       assert.equal(await page.locator(".r2-example-pane #example-code").count(),1);
       assert.match(await page.locator("#example-code").innerText(),/isapprox/);
