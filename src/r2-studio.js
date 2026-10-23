@@ -27,7 +27,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const nextPreview=node("aside","r2-next-lesson");
   nextPreview.setAttribute("aria-labelledby","r2-next-lesson-title");
   nextPreview.innerHTML=
-    '<div class="r2-preview-header"><span>UP NEXT · LESSON SOURCE</span><span>Julia</span></div>'+
+    '<div class="r2-preview-header"><span id="r2-preview-mode">UP NEXT · LESSON SOURCE</span><span>Julia</span></div>'+
     '<p id="r2-next-lesson-title" class="r2-preview-lesson"></p><p id="r2-next-lesson-goal"></p>'+
     '<div class="r2-preview-checkpoint" id="r2-preview-checkpoint"></div>'+
     '<nav class="r2-preview-prereqs" aria-label="Suggested previous lessons" id="r2-preview-prereqs"></nav>'+
@@ -274,6 +274,8 @@ export function initR2Studio({doc=document,lessons,navigate}){
       status.textContent=stageReviewed+" / "+links.length+" concept reviewed";
     }
     get("r2-course-scope").textContent=reviewed+" / 16 concept sets reviewed";
+    if(lessonFor(currentLesson))
+      get("r2-lesson-checkpoint").textContent=checkpointLabel(currentLesson);
   }
   // renderSidebar replaces the stage children after each canonical answer.
   new MutationObserver(decorateCourseRows).observe(get("nav-items"),{childList:true});
@@ -386,6 +388,9 @@ export function initR2Studio({doc=document,lessons,navigate}){
     const lesson=lessons[Number.isInteger(index)&&index>=0&&index<lessons.length?index:0];
     get("r2-next-lesson-title").textContent=lesson.id+" · "+lesson.title;
     get("r2-next-lesson-goal").textContent=lesson.goal;
+    get("r2-preview-mode").textContent=
+      get("continue-lesson").textContent.startsWith("Review lesson ")?
+        "REVIEW · LESSON SOURCE":"UP NEXT · LESSON SOURCE";
     get("r2-next-lesson-code").textContent=lesson.example;
     get("r2-next-lesson-source").textContent=lesson.source;
     get("r2-preview-checkpoint").textContent=checkpointLabel(lesson.id);
