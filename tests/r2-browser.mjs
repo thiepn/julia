@@ -59,6 +59,13 @@ try{
       await page.goto(origin+"/#course");
       await page.locator("#r2-course").waitFor({state:"visible"});
       assert.equal(await page.locator(".lesson-link").count(),16);
+      assert.equal(await page.locator("#r2-course-scope").innerText(),"0 / 16 concept sets reviewed");
+      assert.match(await page.locator('.lesson-link[href="#lesson/02"] .r2-syllabus-details').innerText(),
+        /10 min.*Suggested before: 01/);
+      assert.match(await page.locator('.lesson-link[href="#lesson/11"] .r2-syllabus-details').innerText(),
+        /Suggested before: 06, 08/);
+      assert.equal(await page.locator('.lesson-link[href="#lesson/01"] .nav-score').innerText(),"0/3 correct");
+      assert.equal(await page.locator("#r2-preview-prereqs").isVisible(),false);
       assert.equal(await page.locator("#r2-next-lesson-title").innerText(),"01 · Variables & numbers");
       assert.match(await page.locator("#r2-next-lesson-code").innerText(),/println\(a \+ b\)/);
       assert.equal(await page.locator("#r2-stage-code").isVisible(),false);
@@ -68,6 +75,18 @@ try{
         await page.locator("#r2-stage-code").waitFor({state:"visible"});
         assert.equal(await page.locator("#lesson-jump").inputValue(),"01");
         await page.locator("#r2-course-open").click();
+        await page.locator("#r2-course").waitFor({state:"visible"});
+        await page.locator('.lesson-link[href="#lesson/11"]').click();
+        await page.waitForFunction(()=>document.querySelector("#lesson-jump")?.value==="11");
+        assert.equal(await page.locator('#r2-lesson-prereqs a[href="#lesson/06"]').count(),1);
+        assert.equal(await page.locator('#r2-lesson-prereqs a[href="#lesson/08"]').count(),1);
+        await page.locator('#r2-lesson-prereqs a[href="#lesson/06"]').click();
+        await page.waitForFunction(()=>document.querySelector("#lesson-jump")?.value==="06");
+        await page.locator("#r2-lesson-next").click();
+        await page.waitForFunction(()=>document.querySelector("#lesson-jump")?.value==="07");
+        await page.locator("#r2-lesson-previous").click();
+        await page.waitForFunction(()=>document.querySelector("#lesson-jump")?.value==="06");
+        await page.locator("#r2-back-course").click();
         await page.locator("#r2-course").waitFor({state:"visible"});
       }
       await page.locator('.lesson-link[href="#lesson/09"]').click();
@@ -120,6 +139,16 @@ try{
       await page.locator('[data-r2-stage="learn"]').click();
       await page.locator('button[data-r2-stage="code"]').click();
       assert.equal(await editor.inputValue(),'println("R2 original persisted source")');
+      if(device.name==="desktop"&&scheme==="light"){
+        await page.locator("#r2-course-open").click();
+        await page.locator("#r2-course").waitFor({state:"visible"});
+        assert.equal(await page.locator('.lesson-link[href="#lesson/09"] .nav-score').innerText(),"1/3 correct");
+        assert.equal(await page.locator("#r2-course-scope").innerText(),"0 / 16 concept sets reviewed");
+        assert.match(await page.locator("#r2-resume-current").innerText(),/Return to 09.*Code/);
+        await page.locator("#r2-resume-current").click();
+        await page.locator("#r2-stage-code").waitFor({state:"visible"});
+        assert.equal(await editor.inputValue(),'println("R2 original persisted source")');
+      }
       await noOverflow("code");await shot("code");
       await page.locator('button[data-r2-stage="explore"]').click();
       assert.equal(await page.locator("#r2-stage-explore").isVisible(),true);
