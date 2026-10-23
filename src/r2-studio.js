@@ -21,17 +21,21 @@ export function initR2Studio({doc=document,lessons,navigate}){
     '<div class="r2-course-hero-actions"><span id="r2-course-progress" role="status"></span>'+
     '<button type="button" id="r2-hero-continue" class="r2-button r2-primary">Continue learning →</button></div></div>');
   const coursePath=node("section","r2-course-path");
-  coursePath.append(node("header","r2-course-heading",'<h2>Course curriculum</h2>'),sidebar);
+  coursePath.append(node("header","r2-course-heading",
+    '<h2>Course curriculum</h2><span id="r2-course-scope">16 lessons</span>'),sidebar);
   sidebar.classList.add("r2-course-list");
   const nextPreview=node("aside","r2-next-lesson");
   nextPreview.setAttribute("aria-labelledby","r2-next-lesson-title");
   nextPreview.innerHTML=
     '<div class="r2-preview-header"><span>UP NEXT · LESSON SOURCE</span><span>Julia</span></div>'+
     '<p id="r2-next-lesson-title" class="r2-preview-lesson"></p><p id="r2-next-lesson-goal"></p>'+
+    '<div class="r2-preview-checkpoint" id="r2-preview-checkpoint"></div>'+
+    '<nav class="r2-preview-prereqs" aria-label="Suggested previous lessons" id="r2-preview-prereqs"></nav>'+
     '<div class="r2-preview-file"><span>example.jl</span><span>Read-only</span></div>'+
     '<pre class="r2-preview-code"><code id="r2-next-lesson-code"></code></pre>'+
     '<div class="r2-preview-footer"><span id="r2-next-lesson-source"></span>'+
-    '<button type="button" id="r2-next-code" class="r2-button r2-primary">Open code workspace →</button></div>';
+    '<div class="r2-preview-actions"><button type="button" id="r2-resume-current" class="r2-button r2-secondary" hidden></button>'+
+    '<button type="button" id="r2-next-code" class="r2-button r2-primary">Open code workspace →</button></div></div>';
   const courseLayout=node("div","r2-course-layout");
   courseLayout.append(nextPreview,coursePath);
   course.append(courseHero,courseLayout);
@@ -62,7 +66,13 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const toolbar=doc.querySelector(".study-toolbar");
   const picker=toolbar.querySelector(".study-lesson-select");
   picker.classList.add("r2-lesson-picker");
-  lessonHead.append(picker,get("lesson-meta"),get("lesson-title"),get("lesson-goal"));
+  lessonHead.append(picker,get("lesson-meta"),get("lesson-title"),get("lesson-goal"),
+    node("div","r2-lesson-path",
+      '<nav id="r2-lesson-prereqs" aria-label="Suggested prior lessons"></nav>'+
+      '<div class="r2-lesson-path-actions">'+
+      '<span id="r2-lesson-checkpoint" role="status"></span>'+
+      '<button type="button" id="r2-lesson-previous">← Previous lesson</button>'+
+      '<button type="button" id="r2-lesson-next">Next lesson →</button></div>'));
   toolbar.remove();
   const tabs=node("nav","r2-stage-tabs",'<button type="button" data-r2-stage="learn">01 <span>Learn</span></button>'+
     '<button type="button" data-r2-stage="check">02 <span>Check</span></button>'+
@@ -206,10 +216,74 @@ export function initR2Studio({doc=document,lessons,navigate}){
   let currentView="lesson",currentStage="learn",question=0,mixedIndex=0,
     currentLesson="",nextStage=null;
   const validStages=["learn","check","code","explore"];
+  const lessonFor=id=>lessons.find(lesson=>lesson.id===id);
+  const suggestedBefore=lesson=>String(lesson.prereq||"").split(",")
+    .map(id=>id.trim()).filter(id=>lessonFor(id));
+  // Presentation reads existing .nav-score counts supplied by canonical renderSidebar.
+  // No new progress, grades, gating, or browser storage.
+  const checkpointCount=id=>{
+    const link=[...get("nav-items").querySelectorAll(".lesson-link")]
+      .find(item=>item.getAttribute("href")==="#lesson/"+id);
+    const text=link?.querySelector(".nav-score")?.getAttribute("aria-label")||"";
+    const match=text.match(/^(\\d+) out of 3 answered correctly$/);
+    return match?Number(match[1]):0;
+  };
+  const checkpointLabel=id=>{
+    const count=checkpointCount(id);
+    return count>=2?"Concept reviewed ("+count+"/3 correct)":count+"/3 correct · concept not yet reviewed";
+  };
+  const linkedPrerequisites=(target,lesson)=>{
+    const ids=suggestedBefore(lesson);
+    target.replaceChildren();
+    target.hidden=ids.length===0;
+    if(!ids.length)return;
+    const label=doc.createElement("span");label.textContent="Suggested before:";
+    target.append(label);
+    for(const id of ids){
+      const source=lessonFor(id),anchor=doc.createElement("a");
+      anchor.href="#lesson/"+id;anchor.textContent=id+" · "+source.title;
+      anchor.setAttribute("aria-label","Open suggested lesson "+id+": "+source.title);
+      target.append(anchor);
+    }
+  };
+  function decorateCourseRows(){
+    const nav=get("nav-items"),groups=[...nav.querySelectorAll(".nav-group")];
+    if(groups.length===0)return;
+    let reviewed=0;
+    for(const group of groups){
+      let stageReviewed=0;
+      const links=[...group.querySelectorAll(".lesson-link")];
+      for(const link of links){
+        const id=link.getAttribute("href")?.match(/^#lesson\/(\\d{2})$/)?.[1];
+        const lesson=lessonFor(id);if(!lesson)continue;
+        const score=checkpointCount(id),done=score>=2;
+        if(done){reviewed++;stageReviewed++;}
+        let details=link.querySelector(".r2-syllabus-details");
+        if(!details){details=doc.createElement("span");details.className="r2-syllabus-details";
+          link.querySelector(".lesson-link-name")?.append(details);}
+        const prereqs=suggestedBefore(lesson);
+        details.textContent=lesson.minutes+" min"+(prereqs.length?
+          " · Suggested before: "+prereqs.join(", "):"");
+        link.dataset.checkpoint=done?"reviewed":score?"started":"unreviewed";
+        const badge=link.querySelector(".nav-score");
+        if(badge){badge.textContent=done?"Reviewed":score+"/3 correct";}
+      }
+      let status=group.querySelector(".r2-group-progress");
+      if(!status){status=doc.createElement("span");status.className="r2-group-progress";
+        group.querySelector("h3")?.append(status);}
+      status.textContent=stageReviewed+" / "+links.length+" concept reviewed";
+    }
+    get("r2-course-scope").textContent=reviewed+" / 16 concept sets reviewed";
+  }
+  // renderSidebar replaces the stage children after each canonical answer.
+  new MutationObserver(decorateCourseRows).observe(get("nav-items"),{childList:true});
+  const resumeButton=get("r2-resume-current");
+
   function showView(view){
     currentView=view;doc.body.dataset.r2View=view;
     // Reuse the canonical Continue choice whenever the syllabus is reopened.
     if(view==="course"){
+      decorateCourseRows();
       get("r2-course-progress").textContent=get("progress-label").textContent;
       get("r2-hero-continue").textContent=get("continue-lesson").textContent+" →";
       updateCoursePreview();
@@ -314,11 +388,23 @@ export function initR2Studio({doc=document,lessons,navigate}){
     get("r2-next-lesson-goal").textContent=lesson.goal;
     get("r2-next-lesson-code").textContent=lesson.example;
     get("r2-next-lesson-source").textContent=lesson.source;
+    get("r2-preview-checkpoint").textContent=checkpointLabel(lesson.id);
+    linkedPrerequisites(get("r2-preview-prereqs"),lesson);
     nextPreview.dataset.lessonId=lesson.id;
+    const selected=get("lesson-jump").value;
+    resumeButton.hidden=!lessonFor(selected)||(selected===lesson.id&&currentStage==="learn");
+    resumeButton.textContent="Return to "+selected+" · "+currentStage[0].toUpperCase()+currentStage.slice(1);
   }
   function update(id){
     const lesson=lessons.find(l=>l.id===id)||lessons[0];
     get("r2-lesson-unit").textContent=lesson.stage+" / "+lesson.id;
+    linkedPrerequisites(get("r2-lesson-prereqs"),lesson);
+    get("r2-lesson-checkpoint").textContent=checkpointLabel(lesson.id);
+    const index=lessons.indexOf(lesson);
+    const previous=get("r2-lesson-previous"),next=get("r2-lesson-next");
+    previous.disabled=index===0;next.disabled=index===lessons.length-1;
+    if(index>0)previous.setAttribute("aria-label","Previous: "+lessons[index-1].title);
+    if(index<lessons.length-1)next.setAttribute("aria-label","Next: "+lessons[index+1].title);
     get("r2-course-progress").textContent=get("progress-label").textContent;
     get("r2-hero-continue").textContent=get("continue-lesson").textContent+" →";
     updateCoursePreview();
@@ -336,6 +422,22 @@ export function initR2Studio({doc=document,lessons,navigate}){
     if(lessonChanged)get("lesson-title").focus({preventScroll:true});
   }
   get("r2-hero-continue").addEventListener("click",()=>get("continue-lesson").click());
+  resumeButton.addEventListener("click",()=>{
+    const id=get("lesson-jump").value;
+    if(!lessonFor(id))return;
+    nextStage=currentStage;
+    const route="#lesson/"+id;
+    if(location.hash===route){showStage(nextStage);nextStage=null;}
+    else location.hash=route;
+  });
+  get("r2-lesson-previous").addEventListener("click",()=>{
+    const index=lessons.findIndex(l=>l.id===get("lesson-jump").value);
+    if(index>0)navigate(index-1);
+  });
+  get("r2-lesson-next").addEventListener("click",()=>{
+    const index=lessons.findIndex(l=>l.id===get("lesson-jump").value);
+    if(index>=0&&index<lessons.length-1)navigate(index+1);
+  });
   get("r2-next-code").addEventListener("click",()=>{
     const id=nextPreview.dataset.lessonId;
     if(!lessons.some(l=>l.id===id))return;
