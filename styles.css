@@ -623,6 +623,51 @@ textarea:focus-visible,summary:focus-visible{outline:3px solid var(--accent);out
 .r2-course-list .lesson-link-name{flex:1;min-width:0;line-height:1.4}
 .r2-course-list .nav-score{font:600 12px/1.5 "Cascadia Code",Consolas,monospace;
   color:var(--accent);white-space:nowrap}
+/* Canonical 16-lesson syllabus: progress reads the original concept evaluator only. */
+.r2-course-heading{display:flex;align-items:baseline;justify-content:space-between;
+  gap:12px;flex-wrap:wrap}
+#r2-course-scope{font-size:14px;color:var(--muted);font-weight:650}
+.r2-course-list .nav-group h3{display:flex;align-items:baseline;justify-content:space-between;
+  flex-wrap:wrap;gap:7px 16px}
+.r2-group-progress{font-size:13px;color:var(--muted);font-weight:600;letter-spacing:0}
+.r2-course-list .lesson-link{align-items:flex-start}
+.r2-course-list .lesson-link-name{display:flex;flex-direction:column;gap:5px;
+  font-weight:650;line-height:1.45;min-width:0}
+.r2-syllabus-details{font-size:14px;line-height:1.5;font-weight:450;color:var(--muted);
+  white-space:normal}
+.r2-course-list .nav-score{min-width:76px;max-width:105px;white-space:normal;
+  text-align:right;font-size:13px;line-height:1.4;font-weight:650}
+.r2-course-list .lesson-link[data-checkpoint="reviewed"] .nav-score{color:var(--success)}
+.r2-course-list .lesson-link[data-checkpoint="started"] .nav-score{color:var(--accent)}
+.r2-preview-checkpoint{margin:0 21px 14px;color:#c9bbff;
+  font-size:14px;line-height:1.5;font-weight:650}
+.r2-preview-prereqs{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 12px;
+  margin:0 21px 22px;font-size:14px;line-height:1.5}
+.r2-preview-prereqs[hidden]{display:none}
+.r2-preview-prereqs span{color:#b3c0d2}
+.r2-preview-prereqs a{color:#d4c6ff;text-decoration:underline;text-underline-offset:3px}
+.r2-preview-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.r2-preview-actions .r2-secondary{background:transparent;color:#ede6ff;border-color:#7f75a3}
+.r2-preview-actions .r2-secondary:hover{background:#342c4e;color:#fff}
+.r2-preview-actions button[hidden]{display:none}
+.r2-lesson-path{display:flex;align-items:center;justify-content:space-between;
+  gap:13px 22px;flex-wrap:wrap;width:100%;min-width:0;
+  margin-top:13px;padding:16px 0 0;border-top:1px solid var(--line)}
+#r2-lesson-prereqs{display:flex;align-items:baseline;flex-wrap:wrap;gap:7px 11px;
+  font-size:14px;line-height:1.5}
+#r2-lesson-prereqs[hidden]{display:none}
+#r2-lesson-prereqs span{color:var(--muted);font-weight:600}
+#r2-lesson-prereqs a{color:var(--accent);font-weight:650;text-decoration:underline;
+  text-underline-offset:3px}
+.r2-lesson-path-actions{display:flex;align-items:center;flex-wrap:wrap;
+  gap:10px;min-width:0;margin-left:auto}
+#r2-lesson-checkpoint{font-size:14px;color:var(--muted);font-weight:600;margin-right:7px}
+.r2-lesson-path-actions button{background:var(--surface);color:var(--ink);
+  border:1px solid #b9bdc8;min-height:40px;padding:8px 12px;
+  border-radius:3px;font-size:14px;font-weight:650}
+.r2-lesson-path-actions button:hover:not(:disabled){border-color:var(--accent);
+  background:var(--accent-soft);color:var(--accent)}
+.r2-lesson-path-actions button:disabled{opacity:.45;cursor:not-allowed}
 .r2-next-lesson{position:sticky;top:calc(var(--r2-header) + 20px);min-width:0;
   grid-column:2;grid-row:1;
   background:#121821;color:#e8edf5;border:1px solid #293447;overflow:hidden}
@@ -947,6 +992,18 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   .r2-course-path,.r2-next-lesson{width:100%}
   .r2-course-heading{margin:0 0 14px}
   .r2-course-heading h2{font-size:22px}
+  .r2-course-heading{align-items:flex-start;gap:7px}
+  .r2-course-list .lesson-link{gap:9px}
+  .r2-course-list .nav-score{font-size:12px;min-width:62px;max-width:78px}
+  .r2-group-progress{font-size:13px}
+  .r2-syllabus-details{font-size:13px}
+  .r2-preview-prereqs,.r2-preview-checkpoint{margin-left:18px;margin-right:18px}
+  .r2-preview-actions{width:100%}
+  .r2-preview-actions .r2-button{flex:1 1 auto}
+  .r2-lesson-path{gap:11px;margin-top:10px;padding-top:13px}
+  .r2-lesson-path-actions{width:100%;gap:8px;margin-left:0}
+  #r2-lesson-checkpoint{flex:1 1 100%;margin-right:0}
+  .r2-lesson-path-actions button{flex:1 1 0;min-width:0}
   .r2-course-list .nav-group h3{padding:19px 9px 9px}
   .r2-course-list .lesson-link{min-height:52px;padding:10px 9px;font-size:14px}
   .r2-next-lesson .r2-preview-lesson{font-size:23px}
