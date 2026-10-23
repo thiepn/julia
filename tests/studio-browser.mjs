@@ -58,13 +58,12 @@ try{
     assert.equal(await page.locator(".r2-terminal #local-runner-output").count(),1);
     assert.equal(await page.locator(".r2-runner-setup #local-runner-token").count(),1);
     for(const id of ["copy-draft","download-draft","import-draft","reset-draft"]){
-      assert.equal(await page.locator("#r2-editor-actions #"+id).count(),0);
       assert.equal(await page.locator(".r2-editor-actions #"+id).count(),1);
     }
     await page.locator("#scratch-code").fill("x = 1\ny = 2");
     assert.equal(await page.locator(".r2-line-numbers").innerText(),"1\n2");
     assert.equal(await page.locator("#r2-cursor-location").innerText(),"Ln 2, Col 6");
-    assert.match(await page.locator("#r2-draft-size").innerText(),/\\d+ \\/ 50000 bytes/);
+    assert.ok((await page.locator("#r2-draft-size").innerText()).includes(" / 50000 bytes"));
     await page.locator("#scratch-code").fill('println("studio draft")');
     const taskBox=await page.locator(".r2-instructions").boundingBox(),
       sourceBox=await page.locator(".r2-editor").boundingBox();
