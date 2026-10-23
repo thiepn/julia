@@ -90,15 +90,29 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const layout=node("div","r2-code-layout"),
     instructions=node("details","r2-instructions"),
     editor=node("section","r2-editor"),
-    editorHead=node("header","r2-editor-head",'<span>main.jl</span>'+
-      '<span id="r2-editor-status" role="status">Saved locally</span>'),
+    editorHead=node("header","r2-editor-head",
+      '<div class="r2-file-tab" aria-label="Current Julia source file"><span class="r2-file-badge">jl</span>'+
+      '<span>main.jl</span></div><span id="r2-editor-status" role="status">Saved locally</span>'),
     editorActions=node("div","r2-editor-actions",
       '<button id="r2-run" type="button" class="r2-button r2-primary">Run Julia</button>'+
+      '<button id="r2-tests-jump" type="button" class="r2-button r2-secondary" hidden>Julia tests</button>'+
       '<button id="r2-export" type="button" class="r2-button r2-secondary">Download .jl</button>'+
-      '<button id="r2-exports" type="button" class="r2-button r2-text">Export & backup</button>');
+      '<button id="r2-import" type="button" class="r2-button r2-secondary">Import .jl</button>'+
+      '<button id="r2-exports" type="button" class="r2-button r2-text">Export & backup</button>'),
+    editorWell=node("div","r2-editor-well"),
+    lineNumbers=node("div","r2-line-numbers"),
+    editorFoot=node("div","r2-editor-foot",
+      '<span id="r2-cursor-location">Ln 1, Col 1</span>'+
+      '<span id="r2-draft-size">0 / 50000 bytes</span>'),
+    terminal=node("section","r2-terminal",
+      '<header class="r2-terminal-head"><span>Julia terminal</span>'+
+      '<button type="button" id="r2-terminal-clear" class="r2-terminal-clear">Clear output</button></header>'),
+    runnerSetup=node("details","r2-runner-setup");
+  lineNumbers.setAttribute("aria-hidden","true");
   const draftTitle=codePanel.querySelector(".draft-title"),
     draft=get("scratch-code"),draftActions=codePanel.querySelector(".draft-actions");
-  editor.append(editorHead,editorActions,draftTitle,draft,draftActions);
+  editorWell.append(lineNumbers,draft);
+  editor.append(editorHead,editorActions,draftTitle,editorWell,editorFoot,draftActions);
   const extras=node("details","r2-compiler-extras");
   extras.append(node("summary",null,"External compiler, comparison and other tools"));
   const runner=compiler.querySelector(".local-runner");
@@ -107,18 +121,27 @@ export function initR2Studio({doc=document,lessons,navigate}){
     if(item===runner||item===preview||item.classList?.contains("compiler-heading"))continue;
     extras.append(item);
   }
-  if(runner)compiler.append(runner);
-  // A genuine local plot preview is primary output, not a technical diagnostic.
+  if(runner){
+    const status=get("local-runner-status"),
+      output=get("local-runner-output").closest("pre"),
+      images=get("local-runner-images");
+    terminal.append(status,output,images);
+    runnerSetup.append(node("summary",null,"Local Julia connection"),runner);
+    runnerSetup.open=true;
+  }
+  editor.append(terminal,runnerSetup);
+  // Local plot files and third-party services are separate from actual Julia execution.
   if(preview)compiler.append(preview);
   compiler.append(extras);
   editor.append(compiler);
   instructions.append(node("summary","r2-task-summary",
-    '<strong>Coding task</strong><span id="r2-task-summary-text"></span>'),codePanel);
+    '<strong id="r2-task-heading">Coding task</strong><span id="r2-task-summary-text"></span>'),codePanel);
+  instructions.setAttribute("aria-labelledby","r2-task-heading");
   const wideLayout=doc.defaultView.matchMedia("(min-width:768px)");
   const adjustTask=()=>{instructions.open=wideLayout.matches;};
   adjustTask();
   wideLayout.addEventListener?.("change",adjustTask);
-  layout.append(instructions,editor);code.append(layout);
+  layout.append(editor,instructions);code.append(layout);
   explore.append(node("header","r2-inner-head",'<span class="r2-kicker">NUMERICAL STUDIO</span>'+
     '<h2>Explore & experiment</h2><p>Manipulate the original numerical models and inspect their output.</p>'),
     node("div","r2-lab-picker",'<label for="r2-lab-choice">Experiment</label>'+
@@ -248,6 +271,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     get("r2-hero-continue").textContent=get("continue-lesson").textContent+" →";
     updateCoursePreview();
     get("r2-task-summary-text").textContent=get("challenge-text").textContent;
+    doc.defaultView.queueMicrotask(()=>{updateCursor();syncTestAccess();});
     const lessonChanged=currentLesson!==id;
     if(lessonChanged){question=0;currentLesson=id;}
     get("lesson-jump").value=id;syncLabs();syncQuestions();
@@ -281,11 +305,54 @@ export function initR2Studio({doc=document,lessons,navigate}){
     else showStage("code");
   });
   learn.querySelector("[data-r2-forward]").addEventListener("click",()=>showStage("check"));
-  get("r2-run").addEventListener("click",()=>get("local-runner-run").click());
+  const runOriginal=()=>get("local-runner-run").click();
+  get("r2-run").addEventListener("click",runOriginal);
   get("r2-export").addEventListener("click",()=>get("download-draft").click());
+  get("r2-import").addEventListener("click",()=>get("import-draft").click());
+  get("r2-terminal-clear").addEventListener("click",()=>get("local-runner-clear").click());
   get("r2-exports").addEventListener("click",()=>{
     openAux("utilities");get("submission-workflow").open=true;
   });
+  const externalTests=get("external-tests"),testsJump=get("r2-tests-jump");
+  const syncTestAccess=()=>{testsJump.hidden=externalTests.hidden;};
+  new MutationObserver(syncTestAccess).observe(externalTests,{attributes:true,attributeFilter:["hidden"]});
+  testsJump.addEventListener("click",()=>{
+    if(externalTests.hidden)return;
+    instructions.open=true;
+    externalTests.scrollIntoView({block:"start",behavior:"smooth"});
+    const heading=get("external-test-heading");
+    heading.setAttribute("tabindex","-1");heading.focus({preventScroll:true});
+  });
+  syncTestAccess();
+  const updateCursor=()=>{
+    const before=draft.value.slice(0,draft.selectionStart),row=before.split("\\n");
+    get("r2-cursor-location").textContent="Ln "+row.length+", Col "+(row.at(-1).length+1);
+    const bytes=new TextEncoder().encode(draft.value).length;
+    get("r2-draft-size").textContent=bytes+" / 50000 bytes";
+    lineNumbers.textContent=Array.from({length:draft.value.split("\\n").length},(_,i)=>i+1).join("\\n");
+    lineNumbers.scrollTop=draft.scrollTop;
+    get("r2-editor-status").textContent=
+      get("draft-feedback")?.textContent?.toLowerCase().includes("unsaved")?
+        "Unsaved — copy source":"Saved locally";
+  };
+  draft.addEventListener("input",()=>doc.defaultView.queueMicrotask(updateCursor));
+  draft.addEventListener("click",updateCursor);
+  draft.addEventListener("keyup",updateCursor);
+  draft.addEventListener("scroll",()=>{lineNumbers.scrollTop=draft.scrollTop;});
+  draft.addEventListener("keydown",event=>{
+    if((event.ctrlKey||event.metaKey)&&event.key==="Enter"&&!event.isComposing){
+      event.preventDefault();runOriginal();
+    }
+  });
+  const runButton=get("local-runner-run");
+  const syncRunState=()=>{
+    const busy=runButton.disabled;
+    get("r2-run").disabled=busy;
+    get("r2-run").textContent=busy?"Running Julia…":"Run Julia";
+    get("r2-mobile-next").disabled=busy&&currentStage==="code";
+  };
+  new MutationObserver(syncRunState).observe(runButton,{attributes:true,attributeFilter:["disabled"]});
+  syncRunState();
   get("semester-rehearsal-open").addEventListener("click",()=>{
     openAux("mixed");
   });
@@ -297,13 +364,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     const i=lessons.findIndex(x=>x.id===get("lesson-jump").value);
     if(i>=0)navigate(i);
   });
-  get("scratch-code").addEventListener("input",()=>{
-    doc.defaultView.queueMicrotask(()=>{
-      get("r2-editor-status").textContent=
-        get("draft-feedback")?.textContent?.toLowerCase().includes("unsaved")?
-          "Unsaved — copy source":"Saved locally";
-    });
-  });
+  updateCursor();
   return {show,showStage,update,selectLab:id=>{
     const choice=get("r2-lab-choice");
     if([...choice.options].some(opt=>opt.value===id)){
