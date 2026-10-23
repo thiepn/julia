@@ -79,12 +79,45 @@ export function initR2Studio({doc=document,lessons,navigate}){
     checkPanel=get("practice-title")?.closest("section"),
     codePanel=get("coding-title")?.closest("section");
   if(!learnPanel||!checkPanel||!codePanel)throw Error("Canonical lesson sections missing.");
+  // Reuse the exact canonical lesson text and Julia example; move, never duplicate,
+  // their authoritative DOM nodes into a source-led reading workspace.
+  const reading=node("div","r2-learn-reading"),
+    examplePane=node("section","r2-example-pane"),
+    exampleHead=node("header","r2-example-head",
+      '<span>example.jl <span class="r2-example-mode">Read-only · not executed</span></span>'+
+      '<button type="button" id="r2-copy-example">Copy example</button>'),
+    exampleActions=node("footer","r2-example-actions",
+      '<span id="r2-example-source"></span>'+
+      '<button type="button" id="r2-example-code" class="r2-button r2-primary">Open Code →</button>'+
+      '<span id="r2-example-feedback" role="status" aria-live="polite"></span>');
+  const examplePre=get("example-code").closest("pre"),
+    originalHeading=learnPanel.querySelector(".section-title"),
+    originalLabel=learnPanel.querySelector(".code-label");
+  if(!examplePre||!originalHeading||!originalLabel)throw Error("Canonical Julia example missing.");
+  reading.append(originalHeading,get("lesson-theory"));
+  examplePane.append(exampleHead,examplePre,exampleActions);
+  learnPanel.replaceChildren(reading,examplePane);
+  learnPanel.classList.add("r2-learn-paper");
   learn.append(learnPanel,node("footer","r2-stage-footer",
-    '<span>Concept & worked example</span>'+
-    '<button type="button" data-r2-forward="check" class="r2-button r2-primary">Try a question →</button>'));
-  check.append(node("header","r2-inner-head",'<span class="r2-kicker">UNDERSTANDING</span>'+
-    '<h2>Check your understanding</h2><span id="r2-question-index" role="status">Question 1 of 3</span>'),
-    checkPanel,node("footer","r2-stage-footer",
+    '<span id="r2-reading-source"></span>'+
+    '<button type="button" data-r2-forward="check" class="r2-button r2-primary">Check understanding →</button>'));
+
+  // The original question nodes, evaluator and feedback stay inside checkPanel.
+  // The question index only reflects that DOM's selected/correct/retry state.
+  const checkLayout=node("div","r2-check-layout"),
+    questionTools=node("nav","r2-question-tools",
+      '<span id="r2-question-index" role="status">Question 1 of 3</span>'+
+      '<div id="r2-question-steps" role="group" aria-label="Choose checkpoint question"></div>'),
+    checkReference=node("aside","r2-check-reference",
+      '<header class="r2-check-reference-head"><span>example.jl</span><span>Read-only</span></header>'+
+      '<pre class="r2-check-reference-code"><code id="r2-check-code"></code></pre>'+
+      '<div class="r2-check-reference-actions"><span id="r2-check-source"></span>'+
+      '<button type="button" id="r2-review-concept">Review concept</button>'+
+      '<button type="button" id="r2-check-code-button">Open Code →</button></div>');
+  checkReference.setAttribute("aria-label","Lesson Julia source reference");
+  checkPanel.classList.add("r2-check-paper");
+  checkLayout.append(checkPanel,checkReference);
+  check.append(questionTools,checkLayout,node("footer","r2-stage-footer",
     '<button type="button" id="r2-question-prev" class="r2-button r2-secondary">← Previous</button>'+
     '<button type="button" id="r2-question-next" class="r2-button r2-primary">Next question →</button>'));
   const layout=node("div","r2-code-layout"),
@@ -213,9 +246,25 @@ export function initR2Studio({doc=document,lessons,navigate}){
     }}
   function syncQuestions(){
     const qs=[...get("questions").querySelectorAll(".question")];
-    question=Math.max(0,Math.min(question,qs.length-1));
+    question=Math.max(0,Math.min(question,Math.max(0,qs.length-1)));
     qs.forEach((q,i)=>q.classList.toggle("r2-question-inactive",i!==question));
     get("r2-question-index").textContent="Question "+(question+1)+" of "+qs.length;
+    const steps=get("r2-question-steps");
+    steps.replaceChildren(...qs.map((item,i)=>{
+      const state=item.querySelector(".question-head .correct")?"Correct":
+        item.querySelector(".question-head .retry")?"Try again":
+        item.querySelector(".choice.selected")?"Answered":"Unanswered";
+      const button=doc.createElement("button");
+      button.type="button";button.textContent=String(i+1).padStart(2,"0");
+      button.dataset.r2Question=String(i);button.dataset.state=state;
+      button.setAttribute("aria-label","Question "+(i+1)+" · "+state);
+      button.setAttribute("aria-current",i===question?"step":"false");
+      button.addEventListener("click",()=>{
+        question=i;syncQuestions();
+        get("questions").querySelector(".question:not(.r2-question-inactive) h3")?.focus?.({preventScroll:true});
+      });
+      return button;
+    }));
     get("r2-question-prev").disabled=question===0;
     get("r2-question-next").textContent=question===qs.length-1?
       "Start coding →":"Next question →";
@@ -270,6 +319,11 @@ export function initR2Studio({doc=document,lessons,navigate}){
     get("r2-course-progress").textContent=get("progress-label").textContent;
     get("r2-hero-continue").textContent=get("continue-lesson").textContent+" →";
     updateCoursePreview();
+    get("r2-reading-source").textContent=lesson.source;
+    get("r2-example-source").textContent=lesson.source;
+    get("r2-check-source").textContent=lesson.source;
+    get("r2-check-code").textContent=lesson.example;
+    get("r2-example-feedback").textContent="";
     get("r2-task-summary-text").textContent=get("challenge-text").textContent;
     doc.defaultView.queueMicrotask(()=>{updateCursor();syncTestAccess();});
     const lessonChanged=currentLesson!==id;
@@ -305,6 +359,18 @@ export function initR2Studio({doc=document,lessons,navigate}){
     else showStage("code");
   });
   learn.querySelector("[data-r2-forward]").addEventListener("click",()=>showStage("check"));
+  get("r2-example-code").addEventListener("click",()=>showStage("code"));
+  get("r2-review-concept").addEventListener("click",()=>showStage("learn"));
+  get("r2-check-code-button").addEventListener("click",()=>showStage("code"));
+  get("r2-copy-example").addEventListener("click",async()=>{
+    const feedback=get("r2-example-feedback"),source=get("example-code").textContent;
+    try{
+      await doc.defaultView.navigator.clipboard.writeText(source);
+      feedback.textContent="Example copied.";
+    }catch{
+      feedback.textContent="Clipboard unavailable. Select the example text to copy.";
+    }
+  });
   const runOriginal=()=>get("local-runner-run").click();
   get("r2-run").addEventListener("click",runOriginal);
   get("r2-terminal-clear").addEventListener("click",()=>get("local-runner-clear").click());
