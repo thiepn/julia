@@ -247,7 +247,10 @@ export function initR2Studio({doc=document,lessons,navigate}){
   function syncQuestions(){
     const qs=[...get("questions").querySelectorAll(".question")];
     question=Math.max(0,Math.min(question,Math.max(0,qs.length-1)));
-    qs.forEach((q,i)=>q.classList.toggle("r2-question-inactive",i!==question));
+    qs.forEach((q,i)=>{
+      q.classList.toggle("r2-question-inactive",i!==question);
+      const title=q.querySelector("h3");if(title)title.tabIndex=-1;
+    });
     get("r2-question-index").textContent="Question "+(question+1)+" of "+qs.length;
     const steps=get("r2-question-steps");
     steps.replaceChildren(...qs.map((item,i)=>{
