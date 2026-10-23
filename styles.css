@@ -754,11 +754,11 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 .r2-editor .draft-title{display:none}
 .r2-editor-well{display:grid;grid-template-columns:52px minmax(0,1fr);
   min-width:0;background:#101722;border-bottom:1px solid #394456}
-.r2-line-numbers{height:100%;min-height:500px;padding:19px 10px 22px 4px;
+.r2-line-numbers{height:100%;min-height:420px;padding:19px 10px 22px 4px;
   background:#151e2b;color:#72829b;overflow:hidden;white-space:pre;
   font:14px/1.7 "Cascadia Code",Consolas,monospace;text-align:right;
   user-select:none;pointer-events:none;border-right:1px solid #344258}
-.r2-editor .scratch-editor{width:100%;height:500px;min-height:500px;
+.r2-editor .scratch-editor{width:100%;height:clamp(420px,47dvh,560px);min-height:420px;
   display:block;border:0;border-radius:0;outline-offset:-3px;background:#101722;
   color:#e9eef7;padding:19px 18px 22px;font:14px/1.7 "Cascadia Code",Consolas,monospace;
   tab-size:4;resize:vertical;white-space:pre;overflow:auto}
