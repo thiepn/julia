@@ -225,7 +225,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     const link=[...get("nav-items").querySelectorAll(".lesson-link")]
       .find(item=>item.getAttribute("href")==="#lesson/"+id);
     const text=link?.querySelector(".nav-score")?.getAttribute("aria-label")||"";
-    const match=text.match(/^(\\d+) out of 3 answered correctly$/);
+    const match=text.match(/^(\d+) out of 3 answered correctly$/);
     return match?Number(match[1]):0;
   };
   const checkpointLabel=id=>{
@@ -254,7 +254,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
       let stageReviewed=0;
       const links=[...group.querySelectorAll(".lesson-link")];
       for(const link of links){
-        const id=link.getAttribute("href")?.match(/^#lesson\/(\\d{2})$/)?.[1];
+        const id=link.getAttribute("href")?.match(/^#lesson\/(\d{2})$/)?.[1];
         const lesson=lessonFor(id);if(!lesson)continue;
         const score=checkpointCount(id),done=score>=2;
         if(done){reviewed++;stageReviewed++;}
