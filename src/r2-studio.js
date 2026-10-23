@@ -22,7 +22,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     '<button type="button" id="r2-hero-continue" class="r2-button r2-primary">Continue learning →</button></div></div>');
   const coursePath=node("section","r2-course-path");
   coursePath.append(node("header","r2-course-heading",
-    '<h2>Course curriculum</h2><span id="r2-course-scope">16 lessons</span>'),sidebar);
+    '<h2>Course curriculum</h2>'),sidebar);
   sidebar.classList.add("r2-course-list");
   const nextPreview=node("aside","r2-next-lesson");
   nextPreview.setAttribute("aria-labelledby","r2-next-lesson-title");
@@ -249,15 +249,14 @@ export function initR2Studio({doc=document,lessons,navigate}){
   function decorateCourseRows(){
     const nav=get("nav-items"),groups=[...nav.querySelectorAll(".nav-group")];
     if(groups.length===0)return;
-    let reviewed=0;
-    for(const group of groups){
+     for(const group of groups){
       let stageReviewed=0;
       const links=[...group.querySelectorAll(".lesson-link")];
       for(const link of links){
         const id=link.getAttribute("href")?.match(/^#lesson\/(\d{2})$/)?.[1];
         const lesson=lessonFor(id);if(!lesson)continue;
         const score=checkpointCount(id),done=score>=2;
-        if(done){reviewed++;stageReviewed++;}
+        if(done)stageReviewed++;
         let details=link.querySelector(".r2-syllabus-details");
         if(!details){details=doc.createElement("span");details.className="r2-syllabus-details";
           link.querySelector(".lesson-link-name")?.append(details);}
@@ -273,7 +272,6 @@ export function initR2Studio({doc=document,lessons,navigate}){
         group.querySelector("h3")?.append(status);}
       status.textContent=stageReviewed+" / "+links.length+" concept reviewed";
     }
-    get("r2-course-scope").textContent=reviewed+" / 16 concept sets reviewed";
     if(lessonFor(currentLesson))
       get("r2-lesson-checkpoint").textContent=checkpointLabel(currentLesson);
   }
