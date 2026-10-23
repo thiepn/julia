@@ -908,9 +908,14 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   .r2-instructions{padding:0;background:var(--surface);border:0;
     border-bottom:1px solid var(--line)}
   .r2-instructions #challenge-text{font-size:16px}
-  .r2-editor{padding:0;background:#121923;border:0}
-  .r2-editor-head{padding:0 13px;min-height:48px}
-  .r2-editor-actions{display:flex;padding:10px;gap:7px}
+  .r2-editor{display:flex;flex-direction:column;padding:0;background:#121923;border:0}
+  .r2-editor-head{order:0;padding:0 13px;min-height:48px}
+  .r2-editor-well{order:1}
+  .r2-editor-foot{order:2}
+  .r2-editor-actions{order:3;display:flex;padding:10px;gap:7px}
+  .r2-terminal{order:4}
+  .r2-runner-setup{order:5}
+  .r2-editor>.compiler{order:6}
   .r2-editor-actions .r2-button,.r2-editor-actions .draft-actions button{
     flex:0 1 auto;font-size:13px;min-height:40px;padding:8px 10px}
   .r2-editor-well{grid-template-columns:42px minmax(0,1fr)}
