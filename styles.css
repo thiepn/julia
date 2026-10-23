@@ -702,43 +702,104 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 .r2-check .choice.selected{border-color:var(--accent);background:var(--accent-soft)}
 .r2-check .answer-reason{font-size:15px;line-height:1.65}
 .r2-check #concept-brief{font-size:13px;color:var(--muted)}
-.r2-code-layout{display:grid;grid-template-columns:minmax(280px,39%) minmax(0,61%);
-  gap:0;background:var(--surface);border:1px solid var(--line);
-  min-height:650px;align-items:start}
-.r2-instructions{padding:30px 29px;border-right:1px solid var(--line);
-  min-width:0;overflow-wrap:anywhere}
-.r2-instructions>.paper{padding:0;margin:0;border:0;box-shadow:none;background:transparent}
-.r2-instructions .section-title h2{font-size:22px;letter-spacing:-.035em}
-.r2-instructions #challenge-text{font-size:17px;line-height:1.75}
-.r2-instructions .code{font-size:13px;padding:15px;border:0;border-radius:4px;
-  color:#e8eaf4;background:var(--code-bg)}
-.r2-instructions .section-intro{font-size:13px;color:var(--muted)}
+/* One Julia workspace: canonical editor, terminal, source tools and task reference. */
+.r2-code-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(285px,.8fr);
+  min-width:0;align-items:start;background:var(--surface);border:1px solid var(--line);
+  min-height:720px}
+.r2-instructions{position:sticky;top:calc(var(--r2-header) + 78px);max-height:calc(100dvh - var(--r2-header) - 94px);
+  min-width:0;overflow:auto;overflow-wrap:anywhere;border-left:1px solid var(--line);
+  padding:0;background:var(--surface)}
+.r2-instructions>summary{display:flex;flex-direction:column;gap:6px;cursor:pointer;
+  padding:17px 20px;border-bottom:1px solid var(--line);font-size:14px;
+  line-height:1.4;list-style:none;position:sticky;top:0;z-index:2;
+  background:var(--surface)}
+.r2-instructions>summary::-webkit-details-marker{display:none}
+.r2-instructions>summary:focus-visible{outline-offset:-3px}
+.r2-task-summary strong{font-size:15px;color:var(--ink)}
+#r2-task-summary-text{font-size:14px;line-height:1.55;color:var(--muted)}
+.r2-instructions>.paper{padding:20px;margin:0;border:0;box-shadow:none;background:transparent}
+.r2-instructions .section-title h2{font-size:20px;letter-spacing:-.035em}
+.r2-instructions #challenge-text{font-size:16px;line-height:1.7}
+.r2-instructions .code{font-size:13px;padding:14px;border:0;border-radius:2px;
+  color:#e8eaf4;background:#111823;max-width:100%;overflow:auto}
+.r2-instructions .section-intro{font-size:14px;color:var(--muted)}
 .r2-instructions #go-to-compiler{display:none!important}
-.r2-instructions #external-tests,.r2-instructions #integration-handoff{font-size:14px}
-.r2-editor{background:var(--surface);min-width:0;padding:25px}
-.r2-editor-head{display:flex;justify-content:space-between;gap:12px;align-items:center;
-  border-bottom:1px solid var(--line);padding:5px 0 19px;margin-bottom:21px;
-  font:700 14px "Cascadia Code",Consolas,monospace}
-#r2-editor-status{font:500 13px/1.5 "Segoe UI",sans-serif;color:var(--muted)}
-.r2-editor .scratch-editor{width:100%;display:block;min-height:420px;
-  border:1px solid #383e48;border-radius:5px;background:var(--code-bg);
-  color:#eef0f6;padding:21px;font:15px/1.68 "Cascadia Code",Consolas,monospace;
-  tab-size:4;resize:vertical;white-space:pre;overflow:auto}
+.r2-instructions #external-tests,.r2-instructions #integration-handoff{font-size:14px;scroll-margin-top:145px}
+.r2-instructions .external-test-actions button{width:auto}
+.r2-editor{min-width:0;background:#121923;color:#eaf0f7;padding:0;overflow:hidden}
+.r2-editor-head{display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:12px;min-height:54px;margin:0;padding:0 18px;
+  background:#1e2938;border-bottom:1px solid #394456}
+.r2-file-tab{align-self:stretch;display:flex;align-items:center;gap:10px;
+  border-bottom:2px solid #ae97ec;padding:10px 4px 8px;
+  font:650 14px/1.5 "Cascadia Code",Consolas,monospace}
+.r2-file-badge{display:inline-flex;place-items:center;padding:2px 5px;color:#d8cafa;
+  background:#493d67;border-radius:2px;font-size:12px}
+#r2-editor-status{font:500 13px/1.5 system-ui,sans-serif;color:#bac8d9}
+.r2-editor-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;
+  background:#192331;padding:12px 16px;margin:0;border-bottom:1px solid #394456}
+.r2-editor-actions .r2-button,.r2-editor-actions .draft-actions button{
+  min-height:38px;padding:8px 11px;border:1px solid #4a5970;border-radius:3px;
+  font-size:13px;font-weight:650;line-height:1.35;background:#283345;color:#e7eff9;
+  text-decoration:none;white-space:normal}
+.r2-editor-actions .r2-button:hover,.r2-editor-actions .draft-actions button:hover{
+  background:#35455c;color:#fff;border-color:#8291a5}
+.r2-editor-actions #r2-run{background:#a995ed;color:#20182e;border-color:#a995ed;
+  padding:8px 18px}
+.r2-editor-actions #r2-run:hover{background:#d0c2fc;border-color:#d0c2fc}
+.r2-editor-actions button:disabled{opacity:.6}
+.r2-editor-actions #r2-exports{border-color:transparent;background:transparent;color:#c7b8f9}
+.r2-editor .draft-actions{display:contents;margin:0;padding:0}
+.r2-editor .draft-actions #reset-draft{background:transparent;color:#b8c5d4}
 .r2-editor .draft-title{display:none}
-.r2-editor .draft-actions{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}
-.r2-editor .draft-actions button{font-size:13px}
-.r2-editor-actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 26px}
+.r2-editor-well{display:grid;grid-template-columns:52px minmax(0,1fr);
+  min-width:0;background:#101722;border-bottom:1px solid #394456}
+.r2-line-numbers{height:100%;min-height:500px;padding:19px 10px 22px 4px;
+  background:#151e2b;color:#72829b;overflow:hidden;white-space:pre;
+  font:14px/1.7 "Cascadia Code",Consolas,monospace;text-align:right;
+  user-select:none;pointer-events:none;border-right:1px solid #344258}
+.r2-editor .scratch-editor{width:100%;height:500px;min-height:500px;
+  display:block;border:0;border-radius:0;outline-offset:-3px;background:#101722;
+  color:#e9eef7;padding:19px 18px 22px;font:14px/1.7 "Cascadia Code",Consolas,monospace;
+  tab-size:4;resize:vertical;white-space:pre;overflow:auto}
+.r2-editor-foot{display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:8px;padding:7px 15px;background:#1e2938;color:#c7d1e0;
+  font:12px/1.5 "Cascadia Code",Consolas,monospace}
+.r2-terminal{background:#0c121b;color:#e5edf8;border-top:1px solid #384459;
+  min-width:0}
+.r2-terminal-head{display:flex;align-items:center;justify-content:space-between;
+  gap:12px;border-bottom:1px solid #344154;background:#182130;
+  padding:11px 16px;font:650 14px/1.4 "Cascadia Code",Consolas,monospace}
+.r2-terminal-clear{min-height:34px;padding:5px 11px;border:1px solid #516077;
+  border-radius:2px;background:transparent;color:#d1ddeb;font-size:13px}
+.r2-terminal #local-runner-status{font-size:14px;line-height:1.6;color:#b8c9dd;
+  margin:11px 16px}
+.r2-terminal .local-runner-console{min-height:112px;margin:0;padding:12px 16px 18px;
+  background:#0c121b;color:#dbe9fb;border:0;border-radius:0;max-width:100%;
+  overflow:auto;font:14px/1.65 "Cascadia Code",Consolas,monospace;white-space:pre-wrap}
+.r2-terminal #local-runner-images{padding:0 16px 16px;max-width:100%}
+.r2-runner-setup{margin:0;border-top:1px solid #394456;background:#1b2534;padding:0}
+.r2-runner-setup>summary{padding:14px 17px;color:#e7ecf8;
+  cursor:pointer;font-size:14px;font-weight:700}
+.r2-runner-setup>.local-runner{padding:8px 17px 19px;margin:0;border:0;background:transparent}
+.r2-runner-setup .local-runner h3{font-size:16px;color:#eef2f9}
+.r2-runner-setup .local-runner p,.r2-runner-setup .local-runner label{
+  color:#c2cede;font-size:14px}
+.r2-runner-setup #local-runner-token{color:#171d24;background:#fff;border:1px solid #76849b}
+.r2-runner-setup .local-runner-actions{display:flex;flex-wrap:wrap;gap:9px}
+.r2-runner-setup .local-runner-actions button{min-height:40px}
+.r2-runner-setup .local-runner-console{color:#dee8f7;background:#111823;
+  border:1px solid #394456;min-height:35px;max-width:100%}
 .r2-editor>.compiler{position:relative;top:auto;max-height:none;overflow:visible;
-  width:auto;padding:0;border:0;background:transparent;box-shadow:none;
-  border-top:1px solid var(--line);padding-top:23px}
-.r2-editor>.compiler .compiler-heading{display:flex;margin:0 0 15px}
-.r2-editor>.compiler .compiler-heading h2{font-size:18px;letter-spacing:-.025em}
-.r2-editor .local-runner{padding:0;background:transparent;border:0}
-.r2-editor .local-runner h3{font-size:16px}
-.r2-editor .local-runner-console{background:var(--code-bg);color:#e3e9f0;
-  border:0;border-radius:4px;min-height:58px;max-width:100%;font-size:13px}
-.r2-compiler-extras{margin-top:25px;border-top:1px solid var(--line);padding:17px 0}
-.r2-compiler-extras>summary{font-size:14px;font-weight:650;color:var(--accent)}
+  width:auto;padding:0 16px 22px;border:0;background:#1b2534;
+  box-shadow:none;border-top:1px solid #394456}
+.r2-editor>.compiler .compiler-heading{display:none}
+.r2-editor>.compiler .compiler-explainer,.r2-editor>.compiler .privacy-note{
+  color:#c2ccdb;font-size:14px}
+.r2-editor>.compiler .local-runner-console{background:#111823;color:#e3e9f0;
+  border:0;border-radius:2px;min-height:58px;max-width:100%;font-size:13px}
+.r2-compiler-extras{margin-top:8px;border-top:1px solid #394456;padding:13px 0}
+.r2-compiler-extras>summary{font-size:14px;font-weight:650;color:#c7b8f9}
 .r2-page-heading{margin:10px 0 32px}
 .r2-page-heading h1{font-size:clamp(31px,3.5vw,47px);line-height:1.15;
   letter-spacing:-.048em;margin:0 0 10px}
@@ -781,9 +842,11 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 @media(max-width:900px){
   .r2-course-layout{grid-template-columns:minmax(0,1fr);gap:24px}
   .r2-next-lesson{position:static}
-  .r2-code-layout{grid-template-columns:minmax(0,1fr)}
-  .r2-instructions{border-right:0;border-bottom:1px solid var(--line)}
-  .r2-editor{padding:24px}
+  .r2-code-layout{display:flex;flex-direction:column;min-height:0}
+  .r2-instructions{order:-1;position:static;top:auto;max-height:none;width:100%;
+    border-left:0;border-bottom:1px solid var(--line);overflow:visible}
+  .r2-instructions>summary{position:static}
+  .r2-editor{width:100%;padding:0}
   .r2-lesson-picker{position:static;order:1;margin-top:12px;max-width:none}
   .r2-lesson-picker select{width:min(80vw,350px)}
 }
@@ -835,17 +898,23 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   .r2-check .choice{min-height:53px;font-size:15px}
   .r2-check .question h3{font-size:20px}
   .r2-stage-footer{margin:20px 0 0;gap:12px}
-  .r2-code-layout{border:0;background:transparent}
-  .r2-instructions,.r2-editor{padding:19px 15px;background:var(--surface);
-    border:1px solid var(--line)}
-  .r2-instructions{border-bottom:0}
+  .r2-code-layout{border:1px solid var(--line);background:transparent}
+  .r2-instructions{padding:0;background:var(--surface);border:0;
+    border-bottom:1px solid var(--line)}
   .r2-instructions #challenge-text{font-size:16px}
-  .r2-editor .scratch-editor{min-height:clamp(275px,40dvh,450px);
-    font-size:14px;padding:15px}
-  .r2-editor-actions{display:none}
-  .r2-editor .draft-actions{gap:8px}
-  .r2-editor>.compiler .local-runner-actions{margin-bottom:12px}
-  .r2-editor>.compiler #local-runner-run{display:none}
+  .r2-editor{padding:0;background:#121923;border:0}
+  .r2-editor-head{padding:0 13px;min-height:48px}
+  .r2-editor-actions{display:flex;padding:10px;gap:7px}
+  .r2-editor-actions .r2-button,.r2-editor-actions .draft-actions button{
+    flex:0 1 auto;font-size:13px;min-height:40px;padding:8px 10px}
+  .r2-editor-well{grid-template-columns:42px minmax(0,1fr)}
+  .r2-line-numbers{min-height:clamp(290px,43dvh,470px);font-size:13px;
+    padding:15px 7px 16px 2px}
+  .r2-editor .scratch-editor{height:clamp(290px,43dvh,470px);
+    min-height:clamp(290px,43dvh,470px);font-size:14px;padding:15px 11px}
+  .r2-terminal .local-runner-console{font-size:13px}
+  .r2-runner-setup .local-runner-actions{margin-bottom:12px}
+  .r2-runner-setup #local-runner-run{display:none}
   .r2-explore>.r2-lab:not(.r2-lab-inactive){padding:18px 14px}
   .r2-explore .r2-lab-picker{display:block}
   .r2-lab-picker label{display:block;margin-bottom:7px}
@@ -920,11 +989,11 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 /* Existing lesson task summary remains collapsible on mobile; editor stays first. */
 .brand-mark{position:relative;overflow:hidden}
 .brand-mark span{position:static!important;display:inline!important}
-.r2-instructions>summary{display:none}
+.r2-instructions>summary{display:flex}
 .r2-editor-actions{margin:0 0 20px}
 .r2-editor .draft-actions{margin:14px 0}
 @media(max-width:767px){
-  .r2-instructions{border:1px solid var(--line);border-bottom:0;background:var(--surface);padding:0}
+  .r2-instructions{border:0;border-bottom:1px solid var(--line);background:var(--surface);padding:0}
   .r2-instructions>summary{display:grid;gap:5px;cursor:pointer;padding:14px 16px;list-style:none}
   .r2-instructions>summary::-webkit-details-marker{display:none}
   .r2-instructions>summary:after{content:"Read full task & starter →";font-size:12px;
