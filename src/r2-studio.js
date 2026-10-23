@@ -96,8 +96,6 @@ export function initR2Studio({doc=document,lessons,navigate}){
     editorActions=node("div","r2-editor-actions",
       '<button id="r2-run" type="button" class="r2-button r2-primary">Run Julia</button>'+
       '<button id="r2-tests-jump" type="button" class="r2-button r2-secondary" hidden>Julia tests</button>'+
-      '<button id="r2-export" type="button" class="r2-button r2-secondary">Download .jl</button>'+
-      '<button id="r2-import" type="button" class="r2-button r2-secondary">Import .jl</button>'+
       '<button id="r2-exports" type="button" class="r2-button r2-text">Export & backup</button>'),
     editorWell=node("div","r2-editor-well"),
     lineNumbers=node("div","r2-line-numbers"),
@@ -112,7 +110,9 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const draftTitle=codePanel.querySelector(".draft-title"),
     draft=get("scratch-code"),draftActions=codePanel.querySelector(".draft-actions");
   editorWell.append(lineNumbers,draft);
-  editor.append(editorHead,editorActions,draftTitle,editorWell,editorFoot,draftActions);
+  // Canonical file actions live in the workspace toolbar: do not create copies.
+  editorActions.insertBefore(draftActions,get("r2-exports"));
+  editor.append(editorHead,editorActions,draftTitle,editorWell,editorFoot);
   const extras=node("details","r2-compiler-extras");
   extras.append(node("summary",null,"External compiler, comparison and other tools"));
   const runner=compiler.querySelector(".local-runner");
@@ -307,8 +307,6 @@ export function initR2Studio({doc=document,lessons,navigate}){
   learn.querySelector("[data-r2-forward]").addEventListener("click",()=>showStage("check"));
   const runOriginal=()=>get("local-runner-run").click();
   get("r2-run").addEventListener("click",runOriginal);
-  get("r2-export").addEventListener("click",()=>get("download-draft").click());
-  get("r2-import").addEventListener("click",()=>get("import-draft").click());
   get("r2-terminal-clear").addEventListener("click",()=>get("local-runner-clear").click());
   get("r2-exports").addEventListener("click",()=>{
     openAux("utilities");get("submission-workflow").open=true;
@@ -325,11 +323,11 @@ export function initR2Studio({doc=document,lessons,navigate}){
   });
   syncTestAccess();
   const updateCursor=()=>{
-    const before=draft.value.slice(0,draft.selectionStart),row=before.split("\\n");
+    const before=draft.value.slice(0,draft.selectionStart),row=before.split("\n");
     get("r2-cursor-location").textContent="Ln "+row.length+", Col "+(row.at(-1).length+1);
     const bytes=new TextEncoder().encode(draft.value).length;
     get("r2-draft-size").textContent=bytes+" / 50000 bytes";
-    lineNumbers.textContent=Array.from({length:draft.value.split("\\n").length},(_,i)=>i+1).join("\\n");
+    lineNumbers.textContent=Array.from({length:draft.value.split("\n").length},(_,i)=>i+1).join("\n");
     lineNumbers.scrollTop=draft.scrollTop;
     get("r2-editor-status").textContent=
       get("draft-feedback")?.textContent?.toLowerCase().includes("unsaved")?
