@@ -74,14 +74,40 @@ try{
       await page.getByRole("heading",{name:"Floating-point numbers"}).waitFor();
       assert.equal(await page.locator("#r2-stage-learn").isVisible(),true);
       assert.equal(await page.locator("#r2-stage-code").isVisible(),false);
+      assert.equal(await page.locator("#r2-learn-paper").count(),0);
+      assert.equal(await page.locator(".r2-learn-reading #lesson-theory").count(),1);
+      assert.equal(await page.locator(".r2-example-pane #example-code").count(),1);
+      assert.match(await page.locator("#example-code").innerText(),/isapprox/);
+      assert.equal(await page.locator("#r2-example-source").innerText(),"Kalicharan ch. 2; AMP VL01");
       await noOverflow("learn");await shot("learn");
       await page.locator('[data-r2-stage="check"]').click();
       assert.equal(await page.locator("#r2-stage-check").isVisible(),true);
       assert.equal(await page.locator("#questions .question:visible").count(),1);
+      assert.equal(await page.locator("#r2-check-code").innerText(),
+        await page.locator("#example-code").innerText());
+      assert.equal(await page.locator("#r2-question-steps button").count(),3);
+      assert.equal(await page.locator('#r2-question-steps button[aria-current="step"]').count(),1);
+      if(device.name==="desktop"&&scheme==="light"){
+        // Original evaluator determines correction and checkpoint progress.
+        await page.locator('[data-question="0"][data-choice="0"]').click();
+        assert.equal(await page.locator('#r2-question-steps button[data-r2-question="0"]').getAttribute("data-state"),"Try again");
+        assert.equal(await page.locator("#questions .question:visible .answer-reason").count(),1);
+        await page.locator('[data-question="0"][data-choice="1"]').click();
+        assert.equal(await page.locator('#r2-question-steps button[data-r2-question="0"]').getAttribute("data-state"),"Correct");
+        await page.locator('#r2-question-steps button[data-r2-question="2"]').click();
+        assert.match(await page.locator("#r2-question-index").innerText(),/Question 3 of 3/);
+        assert.equal(await page.locator("#questions .question:visible").count(),1);
+        await page.locator("#r2-review-concept").click();
+        assert.equal(await page.locator("#r2-stage-learn").isVisible(),true);
+        await page.locator("#r2-example-code").click();
+        assert.equal(await page.locator("#r2-stage-code").isVisible(),true);
+        await page.locator('[data-r2-stage="check"]').click();
+        await page.locator('#r2-question-steps button[data-r2-question="0"]').click();
+      }
       await page.locator("#r2-question-next").click();
       assert.match(await page.locator("#r2-question-index").innerText(),/Question 2 of 3/);
       await noOverflow("check");await shot("check");
-      await page.locator('button[data-r2-stage="code"]').click();
+      await page.locator("#r2-check-code-button").click();
       const editor=page.locator("#scratch-code");
       assert.equal(await editor.isVisible(),true);
       assert.equal(await page.locator("#compiler-panel").isVisible(),true);
