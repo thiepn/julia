@@ -695,7 +695,7 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   background:transparent;min-height:37px;padding:7px 12px;font-size:14px}
 #r2-copy-example:hover{background:#35445a}
 .r2-example-pane pre.code{background:#101722;color:#e3edfc;border:0;border-radius:0;
-  margin:0;max-width:100%;min-width:0;overflow:auto;
+  margin:0;max-width:100%;min-width:0;width:100%;box-sizing:border-box;overflow:auto;
   padding:27px 23px;font:15px/1.85 "Cascadia Code",Consolas,monospace;
   white-space:pre;tab-size:4;flex:1}
 .r2-example-actions{border-top:1px solid #344154;padding:16px 19px;
@@ -755,7 +755,7 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   gap:12px;flex-wrap:wrap;padding:16px 20px;background:#202a39;border-bottom:1px solid #344154;
   font:650 14px/1.5 "Cascadia Code",Consolas,monospace}
 .r2-check-reference-head span:last-child{font:500 13px/1.5 system-ui,sans-serif;color:#bbc8dd}
-.r2-check-reference-code{flex:1;min-width:0;max-width:100%;margin:0;
+.r2-check-reference-code{flex:1;min-width:0;width:100%;max-width:100%;box-sizing:border-box;margin:0;
   padding:24px 20px;color:#d8e8fc;background:#111923;overflow:auto;
   font:14px/1.8 "Cascadia Code",Consolas,monospace;tab-size:4;white-space:pre}
 .r2-check-reference-actions{display:flex;align-items:center;flex-wrap:wrap;gap:11px;
