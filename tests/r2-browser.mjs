@@ -169,7 +169,7 @@ try{
       await page.locator('button[data-r2-stage="explore"]').click();
       assert.equal(await page.locator("#r2-stage-explore").isVisible(),true);
       assert.ok(await page.locator("#r2-lab-choice option").count()>=1);
-      assert.equal(await page.locator("#r2-explore-stage .r2-lab:not(.r2-lab-inactive)").count(),1);
+      assert.equal(await page.locator(".r2-explore-stage .r2-lab:not(.r2-lab-inactive)").count(),1);
       assert.equal(await page.locator(".r2-explore-workbench").count(),1);
       await page.locator("#r2-lab-choice").selectOption("precision-lab");
       assert.equal(await page.locator("#r2-explore-source-state").innerText(),
@@ -231,7 +231,9 @@ try{
           if(expectedSource){
             const [lab,sourceId]=expectedSource;
             assert.equal(await page.locator('#r2-lab-choice option[value="'+lab+'"]').count(),1);
-            await page.locator("#r2-lab-choice").selectOption(lab);
+            if(await page.locator("#r2-lab-choice").isVisible())
+              await page.locator("#r2-lab-choice").selectOption(lab);
+            else assert.equal(await page.locator("#r2-lab-choice").inputValue(),lab);
             assert.equal(await page.locator(".r2-explore-live-source").textContent(),
               await page.locator("#"+sourceId).textContent());
             assert.equal(await page.locator("#"+sourceId).count(),1);
