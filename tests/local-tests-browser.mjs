@@ -44,9 +44,23 @@ try{
    assert.match(await r2Locator(page,"#external-test-local-output").innerText(),/Test Summary:/);
    assert.equal(await r2Locator(page,"#scratch-code").inputValue(),"count_above(v,t)=count(x->x>t,v)");
    assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1")),before);
+   // Selected source-authored edge case uses exactly the existing protected Julia runner.
+   await r2Locator(page,"#external-focus-case").selectOption("Negative threshold");
+   assert.equal(await r2Locator(page,"#external-focus-local-run").isEnabled(),true);
+   await r2Locator(page,"#external-focus-local-run").click();
+   await waitStatus(page,"external-focus-local-status","Julia Test assertions passed");
+   assert.match(await r2Locator(page,"#external-focus-local-output").innerText(),/Test Summary:/);
+   assert.match(await r2Locator(page,"#external-focus-local-output").innerText(),/Negative threshold/);
+   assert.equal(await r2Locator(page,"#scratch-code").inputValue(),"count_above(v,t)=count(x->x>t,v)");
+   assert.match(await r2Locator(page,"#external-test-local-status").innerText(),/Julia Test assertions passed/);
+   assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1")),before);
    // A change invalidates the previous result; the same canonical test contract now fails.
    await r2Locator(page,"#scratch-code").fill("count_above(v,t)=0");
    assert.equal(await r2Locator(page,"#external-test-local-output").innerText(),"");
+   assert.equal(await r2Locator(page,"#external-focus-local-output").innerText(),"");
+   await r2Locator(page,"#external-focus-local-run").click();
+   await waitStatus(page,"external-focus-local-status","did not complete successfully");
+   assert.match(await r2Locator(page,"#external-focus-local-output").innerText(),/Test Failed|Some tests did not pass/);
    await r2Locator(page,"#external-test-local-run").click();
    await waitStatus(page,"external-test-local-status","did not complete successfully");
    assert.match(await r2Locator(page,"#external-test-local-output").innerText(),/Test Failed|Some tests did not pass/);
