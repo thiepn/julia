@@ -69,6 +69,7 @@ try{
       assert.equal(await page.locator("#r2-preview-prereqs").isVisible(),false);
       assert.equal(await page.locator("#r2-next-lesson-title").innerText(),"01 · Variables & numbers");
       assert.match(await page.locator("#r2-next-lesson-code").innerText(),/println\(a \+ b\)/);
+      console.log("R2_PAGE_ERRORS",JSON.stringify(errors));
       console.log("R2_INITIAL_STATE",await page.evaluate(()=>({
         view:document.body.dataset.r2View,
         stage:document.body.dataset.r2Stage,
