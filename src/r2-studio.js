@@ -284,7 +284,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     copyFeedback.textContent="Original Copy action requested; check the experiment's copy feedback.";
   });
   for(const [codeId] of Object.values(sourceSpecs)){
-    const source=get(codeId);
+    const source=explorerStage.querySelector("#"+codeId);
     if(source)new MutationObserver(()=>{
       if(sourceSpecs[get("r2-lab-choice").value]?.[0]===codeId)
         sourceView.textContent=source.textContent;
