@@ -276,6 +276,7 @@ function renderFocusedCase(){
   const valid=!!name&&!!suite?.cases.some(c=>c.name===name);
   $("#external-focus-download").disabled=!valid;
   $("#external-focus-copy").disabled=!valid;
+  $("#external-focus-local-run").disabled=!valid;
   $("#external-focus-preview").textContent=valid?
     buildExternalTestFile(current().id,practiceVariant,$("#scratch-code").value,name).content:"";
 }
@@ -615,6 +616,8 @@ $("#scratch-code").addEventListener("input", () => {
   $("#completion-test-local-status").textContent="";
   $("#completion-test-local-output").textContent="";
   $("#external-focus-feedback").textContent="";
+  $("#external-focus-local-status").textContent="";
+  $("#external-focus-local-output").textContent="";
   $("#property-feedback").textContent="";
   renderExternalTestHandoff();
   renderIntegrationTask();
@@ -711,6 +714,8 @@ $("#property-all-download").addEventListener("click",()=>{
 });
 $("#external-focus-case").addEventListener("change",()=>{
   $("#external-focus-feedback").textContent="";
+  $("#external-focus-local-status").textContent="";
+  $("#external-focus-local-output").textContent="";
   renderFocusedCase();
 });
 $("#external-focus-download").addEventListener("click",()=>{
@@ -733,6 +738,22 @@ $("#external-focus-copy").addEventListener("click",async()=>{
     $("#external-focus-feedback").textContent="Focused Julia test copied. Run it externally, then rerun the full suite after repair.";
   }catch{
     $("#external-focus-feedback").textContent="Clipboard or selected case unavailable. Use the file preview.";
+  }
+});
+$("#external-focus-local-run").addEventListener("click",async()=>{
+  const caseName=$("#external-focus-case").value;
+  if(!caseName)return;
+  const lessonId=current().id,variant=practiceVariant,source=$("#scratch-code").value;
+  try{
+    // Same source-authored Julia Test file and authenticated local runner as the full suite.
+    const script=buildExternalTestFile(lessonId,variant,source,caseName);
+    await localRunner.runTestScript({script,
+      validFor:()=>current().id===lessonId&&practiceVariant===variant&&
+        $("#external-focus-case").value===caseName,
+      statusElement:$("#external-focus-local-status"),
+      outputElement:$("#external-focus-local-output")});
+  }catch(error){
+    $("#external-focus-local-status").textContent=String(error.message||error);
   }
 });
 $("#external-test-local-run").addEventListener("click",async()=>{
