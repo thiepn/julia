@@ -213,10 +213,25 @@ export function initR2Studio({doc=document,lessons,navigate}){
   adjustTask();
   wideLayout.addEventListener?.("change",adjustTask);
   layout.append(editor,instructions);code.append(layout);
-  explore.append(node("header","r2-inner-head",'<span class="r2-kicker">NUMERICAL STUDIO</span>'+
-    '<h2>Explore & experiment</h2><p>Manipulate the original numerical models and inspect their output.</p>'),
-    node("div","r2-lab-picker",'<label for="r2-lab-choice">Experiment</label>'+
-      '<select id="r2-lab-choice"></select>'));
+  const explorerBar=node("div","r2-lab-bar"),
+    explorerNav=node("nav","r2-lab-shortcuts"),
+    explorerWorkbench=node("div","r2-explore-workbench"),
+    explorerStage=node("div","r2-explore-stage"),
+    explorerSource=node("aside","r2-explore-source",
+      '<header class="r2-explore-source-head"><strong>Julia source</strong>'+
+      '<span id="r2-explore-source-state"></span></header>'+
+      '<div id="r2-explore-source-content"></div>'+
+      '<footer class="r2-explore-source-actions">'+
+      '<button id="r2-explore-open-code" type="button">Open Code workspace</button></footer>');
+  explorerNav.setAttribute("aria-label","Numerical experiment shortcuts");
+  explorerSource.setAttribute("aria-label","Julia code for selected numerical experiment");
+  explorerBar.append(node("div","r2-lab-picker",
+    '<label for="r2-lab-choice">Experiment</label><select id="r2-lab-choice"></select>'),
+    explorerNav);
+  explore.append(node("header","r2-inner-head",
+    '<h2>Explore & experiment</h2>'),explorerBar);
+  explorerWorkbench.append(explorerStage,explorerSource);
+  explore.append(explorerWorkbench);
   const labIds=["numerical-explorer","elimination-lab","precision-lab",
     "fitting-lab","program-trace","factor-lab","sensitivity-lab",
     "ue02-lab","amp-root-workshop","amp-condition-workshop",
@@ -224,8 +239,59 @@ export function initR2Studio({doc=document,lessons,navigate}){
     "plotting-workshop","repair-lab"];
   get("lab-directory")?.remove();
   for(const id of labIds){const part=get(id);if(part){
-    part.classList.add("r2-lab");explore.append(part);
+    part.classList.add("r2-lab");explorerStage.append(part);
   }}
+  // Move, do not clone, the original live Julia source and Copy controls.
+  // This preserves their numerical source generators and existing event listeners.
+  const originalSources=new Map(),sourceSelectors={
+    "elimination-lab":".elim-julia-details",
+    "precision-lab":".precision-code-details",
+    "fitting-lab":".fit-code-details",
+    "factor-lab":".factor-code",
+    "sensitivity-lab":".sensitivity-code"
+  };
+  for(const [id,selector] of Object.entries(sourceSelectors)){
+    const part=get(id),details=part?.querySelector(selector);
+    if(!details)throw Error("Expected original Julia example for "+id);
+    const anchor=doc.createComment("Julia source original position: "+id);
+    details.before(anchor);
+    originalSources.set(id,{node:details,anchor});
+  }
+  for(const [id,codeId,copyId,feedbackId] of [
+    ["plotting-workshop","plotting-recipe-code","plotting-recipe-copy","plotting-recipe-feedback"],
+    ["ue02-lab","ue02-code","ue02-copy","ue02-copy-feedback"]
+  ]){
+    const codeNode=get(codeId),parent=codeNode?.closest("pre"),copy=get(copyId);
+    if(!parent||!copy)continue;
+    const holder=node("details","r2-generated-source");
+    holder.append(node("summary",null,"Julia code for this experiment"),parent,copy);
+    const feedback=get(feedbackId);
+    if(feedback)holder.append(feedback);
+    const anchor=doc.createComment("Julia source original position: "+id);
+    copy.after(anchor);
+    originalSources.set(id,{node:holder,anchor});
+  }
+  let displayedSource=null;
+  const sourceSlot=get("r2-explore-source-content"),sourceState=get("r2-explore-source-state");
+  const selectOriginalSource=id=>{
+    if(displayedSource){
+      const former=originalSources.get(displayedSource);
+      if(former)former.anchor.after(former.node);
+      displayedSource=null;
+    }
+    sourceSlot.replaceChildren();
+    const chosen=originalSources.get(id);
+    sourceState.textContent=chosen?"Original Julia example · not executed":
+      "Browser calculation · not Julia execution";
+    if(chosen){
+      sourceSlot.append(chosen.node);
+      chosen.node.open=true;
+      displayedSource=id;
+    }else{
+      sourceSlot.append(node("p","r2-no-source",
+        "This experiment calculates results in the browser. Open Code to run your own Julia program."));
+    }
+  };
   const oldFooter=main.querySelector(".lesson-footer"),
     stages=node("div","r2-stage-content");
   stages.append(learn,check,code,explore);
@@ -395,6 +461,12 @@ export function initR2Studio({doc=document,lessons,navigate}){
     get("semester-rehearsal-items"),{childList:true});
   get("r2-mixed-prev").addEventListener("click",()=>{mixedIndex--;syncMixed();});
   get("r2-mixed-next").addEventListener("click",()=>{mixedIndex++;syncMixed();});
+  const quickLabs=[
+    ["numerical-explorer","Norms & matrices"],["elimination-lab","Elimination"],
+    ["factor-lab","QR & Cholesky"],["sensitivity-lab","Conditioning"],
+    ["fitting-lab","Least squares"],["precision-lab","Floating point"],
+    ["plotting-workshop","Plots.jl"]
+  ];
   function syncLabs(){
     const choice=get("r2-lab-choice"),prior=choice.value;
     const available=labIds.map(get).filter(n=>n&&!n.hidden);
@@ -404,10 +476,25 @@ export function initR2Studio({doc=document,lessons,navigate}){
     }));
     choice.value=available.some(x=>x.id===prior)?prior:available[0]?.id||"";
     choice.parentElement.hidden=available.length<2;
-    labIds.map(get).filter(Boolean).forEach(n=>n.classList.toggle(
-      "r2-lab-inactive",n.id!==choice.value));
+    for(const n of labIds.map(get).filter(Boolean))
+      n.classList.toggle("r2-lab-inactive",n.id!==choice.value);
+    explorerNav.replaceChildren(...quickLabs.filter(([id])=>available.some(x=>x.id===id))
+      .map(([id,label])=>{
+        const button=doc.createElement("button");
+        button.type="button";button.textContent=label;
+        button.dataset.lab=id;
+        if(id===choice.value)button.setAttribute("aria-current","true");
+        button.addEventListener("click",()=>{
+          choice.value=id;syncLabs();
+          explorerWorkbench.scrollIntoView({block:"start"});
+        });
+        return button;
+      }));
+    explorerBar.dataset.lab=choice.value;
+    selectOriginalSource(choice.value);
   }
   get("r2-lab-choice").addEventListener("change",syncLabs);
+  get("r2-explore-open-code").addEventListener("click",()=>showStage("code"));
   function updateCoursePreview(){
     // Follow the existing course Continue policy; do not calculate another progress state.
     const index=Number(get("continue-lesson").dataset.index);
