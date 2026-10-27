@@ -213,6 +213,63 @@ export function initR2Studio({doc=document,lessons,navigate}){
   adjustTask();
   wideLayout.addEventListener?.("change",adjustTask);
   layout.append(editor,instructions);code.append(layout);
+  // Phase 07: a navigation layer over the existing, independently owned tasks.
+  // It does not create a second editor, grade, runner or persistence mechanism.
+  const practicePath=node("section","r2-practice-path");
+  practicePath.setAttribute("aria-label","Choose a coding practice approach");
+  practicePath.innerHTML='<header><h2>Practice by doing</h2><p>Choose an approach; the original task and Julia runner remain authoritative.</p></header>'+
+    '<div class="r2-practice-choices" role="group" aria-label="Practice approach">'+
+    '<button type="button" data-r2-practice="build">01 · Build independently</button>'+
+    '<button type="button" data-r2-practice="scaffold">02 · Guided steps</button>'+
+    '<button type="button" data-r2-practice="debug">03 · Repair a bug</button>'+
+    '<button type="button" data-r2-practice="trace">04 · Trace an algorithm</button></div>'+
+    '<p id="r2-practice-guidance" role="status" aria-live="polite"></p>';
+  code.prepend(practicePath);
+  const practiceButtons=[...practicePath.querySelectorAll("[data-r2-practice]")];
+  const guidance=practicePath.querySelector("#r2-practice-guidance");
+  let practiceApproach="build";
+  function syncPractice(){
+    const lessonId=get("lesson-jump").value;
+    const trace=get("program-trace"),repair=get("repair-lab");
+    const debugAvailable=!!repair&&!repair.hidden;
+    const traceAvailable=!!trace&&!trace.hidden;
+    for(const button of practiceButtons){
+      const mode=button.dataset.r2Practice;
+      button.disabled=(mode==="debug"&&!debugAvailable)||(mode==="trace"&&!traceAvailable);
+      button.setAttribute("aria-pressed",String(mode===practiceApproach));
+      if(button.disabled&&mode===practiceApproach)practiceApproach="build";
+    }
+    for(const button of practiceButtons)
+      button.setAttribute("aria-pressed",String(button.dataset.r2Practice===practiceApproach));
+    guidance.textContent=practiceApproach==="build"?
+      "Start with the task and success criteria. Write your own Julia code; use the original Julia tests for evidence.":
+      practiceApproach==="scaffold"?
+      "Read the starter and success criteria first. Reveal the existing hints one at a time; then write and test your own code.":
+      practiceApproach==="debug"?
+      "The original repair workspace has its own saved repair draft and local Julia execution. Text comparison is not a passing test.":
+      "Predict each modeled iteration before revealing its result. A trace prediction is not Julia execution.";
+    practicePath.dataset.approach=practiceApproach;
+    practicePath.dataset.lesson=lessonId;
+  }
+  practiceButtons.forEach(button=>button.addEventListener("click",()=>{
+    if(button.disabled)return;
+    practiceApproach=button.dataset.r2Practice;
+    syncPractice();
+    if(practiceApproach==="debug"||practiceApproach==="trace"){
+      const lab=practiceApproach==="debug"?"repair-lab":"program-trace";
+      showStage("explore");
+      const picker=get("r2-lab-choice");
+      if([...picker.options].some(option=>option.value===lab)){
+        picker.value=lab;syncLabs();
+        get(lab).scrollIntoView({block:"start"});
+      }
+    }else if(practiceApproach==="scaffold"){
+      const hint=get("hint-1");
+      if(hint&&!hint.hidden){hint.open=true;hint.scrollIntoView({block:"nearest"});}
+      else get("starter-code").scrollIntoView({block:"nearest"});
+    }else get("scratch-code").focus({preventScroll:true});
+  }));
+
   const explorerBar=node("div","r2-lab-bar"),
     explorerNav=node("nav","r2-lab-shortcuts"),
     explorerWorkbench=node("div","r2-explore-workbench"),
@@ -407,6 +464,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     });
     if(stage==="check")syncQuestions();
     if(stage==="explore")syncLabs();
+    if(stage==="code")syncPractice();
     get("r2-mobile-next").textContent=stage==="learn"?"Try a question →":
       stage==="check"?(question===2?"Start coding →":"Next question →"):
       stage==="code"?"Run Julia":"Back to coding";
@@ -541,7 +599,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     doc.defaultView.queueMicrotask(()=>{updateCursor();syncTestAccess();});
     const lessonChanged=currentLesson!==id;
     if(lessonChanged){question=0;currentLesson=id;}
-    get("lesson-jump").value=id;syncLabs();syncQuestions();
+    get("lesson-jump").value=id;syncLabs();syncQuestions();syncPractice();
     const target=nextStage||"learn";nextStage=null;showStage(target);
     if(lessonChanged)get("lesson-title").focus({preventScroll:true});
   }
