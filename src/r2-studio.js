@@ -244,13 +244,13 @@ export function initR2Studio({doc=document,lessons,navigate}){
   // Numerical controllers bind to their original DOM early during app bootstrap.
   // Mirror only the generated source text; do not move controls or code nodes.
   const sourceSpecs={
-    "elimination-lab":["elim-julia","elim-copy"],
-    "precision-lab":["precision-julia","precision-copy"],
-    "fitting-lab":["fit-julia","fit-copy"],
-    "factor-lab":["factor-julia","factor-copy"],
-    "sensitivity-lab":["sensitivity-julia","sensitivity-copy"],
-    "plotting-workshop":["plotting-recipe-code","plotting-recipe-copy"],
-    "ue02-lab":["ue02-code","ue02-copy"]
+    "elimination-lab":["elim-julia","elim-copy","elim-copy-status"],
+    "precision-lab":["precision-julia","precision-copy","precision-copy-status"],
+    "fitting-lab":["fit-julia","fit-copy","fit-copy-status"],
+    "factor-lab":["factor-julia","factor-copy","factor-copy-status"],
+    "sensitivity-lab":["sensitivity-julia","sensitivity-copy","sensitivity-copy-result"],
+    "plotting-workshop":["plotting-recipe-code","plotting-recipe-copy","plotting-recipe-feedback"],
+    "ue02-lab":["ue02-code","ue02-copy","ue02-feedback"]
   };
   // Explore is not connected to document until the R2 shell mounts below.
   const sourceSlot=explorerSource.querySelector("#r2-explore-source-content"),
@@ -280,8 +280,8 @@ export function initR2Studio({doc=document,lessons,navigate}){
   sourceCopy.addEventListener("click",()=>{
     const spec=sourceSpecs[get("r2-lab-choice").value],button=spec?get(spec[1]):null;
     if(!button){copyFeedback.textContent="No original Julia source is available.";return;}
+    copyFeedback.textContent="";
     button.click();
-    copyFeedback.textContent="Original Copy action requested; check the experiment's copy feedback.";
   });
   for(const [codeId] of Object.values(sourceSpecs)){
     const source=explorerStage.querySelector("#"+codeId);
@@ -289,6 +289,13 @@ export function initR2Studio({doc=document,lessons,navigate}){
       if(sourceSpecs[get("r2-lab-choice").value]?.[0]===codeId)
         sourceView.textContent=source.textContent;
     }).observe(source,{childList:true,characterData:true,subtree:true});
+  }
+  for(const [codeId,,feedbackId] of Object.values(sourceSpecs)){
+    const feedback=explorerStage.querySelector("#"+feedbackId);
+    if(feedback)new MutationObserver(()=>{
+      if(sourceSpecs[get("r2-lab-choice").value]?.[0]===codeId)
+        copyFeedback.textContent=feedback.textContent;
+    }).observe(feedback,{childList:true,characterData:true,subtree:true});
   }
   const oldFooter=main.querySelector(".lesson-footer"),
     stages=node("div","r2-stage-content");
@@ -476,8 +483,9 @@ export function initR2Studio({doc=document,lessons,navigate}){
     choice.parentElement.hidden=available.length<2;
     for(const n of labIds.map(get).filter(Boolean))
       n.classList.toggle("r2-lab-inactive",n.id!==choice.value);
-    explorerNav.replaceChildren(...quickLabs.filter(([id])=>available.some(x=>x.id===id))
-      .map(([id,label])=>{
+    const shortcuts=quickLabs.filter(([id])=>available.some(x=>x.id===id));
+    explorerNav.hidden=shortcuts.length<2;
+    explorerNav.replaceChildren(...shortcuts.map(([id,label])=>{
         const button=doc.createElement("button");
         button.type="button";button.textContent=label;
         button.dataset.lab=id;
