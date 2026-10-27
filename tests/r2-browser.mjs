@@ -108,6 +108,16 @@ try{
       assert.match(await page.locator("#example-code").innerText(),/isapprox/);
       assert.equal(await page.locator("#r2-example-source").innerText(),"Kalicharan ch. 2; AMP VL01");
       await noOverflow("learn");await shot("learn");
+      await page.locator('[data-r2-stage="code"]').click();
+      await page.locator("#r2-stage-code").waitFor({state:"visible"});
+      assert.equal(await page.locator("#r2-practice-guidance").count(),1);
+      assert.equal(await page.locator('[data-r2-practice="build"]').getAttribute("aria-pressed"),"true");
+      assert.equal(await page.locator("#scratch-code").count(),1);
+      await page.locator('[data-r2-practice="scaffold"]').click();
+      assert.equal(await page.locator('[data-r2-practice="scaffold"]').getAttribute("aria-pressed"),"true");
+      assert.match(await page.locator("#r2-practice-guidance").innerText(),/existing hints/);
+      await noOverflow("practice-path");
+      await page.locator('[data-r2-stage="learn"]').click();
       await page.locator('[data-r2-stage="check"]').click();
       assert.equal(await page.locator("#r2-stage-check").isVisible(),true);
       assert.equal(await page.locator("#questions .question:visible").count(),1);
