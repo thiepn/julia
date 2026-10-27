@@ -57,7 +57,8 @@ try{
         assert.ok(d<=2,device.name+" "+scheme+" "+label+" horizontal overflow: "+d);
       };
       await page.goto(origin+"/#course");
-      await page.locator("#r2-course").waitFor({state:"visible"});
+      try{await page.locator("#r2-course").waitFor({state:"visible"});}
+      catch(error){console.error("R2 STARTUP ERRORS",JSON.stringify(errors));throw error;}
       assert.equal(await page.locator(".lesson-link").count(),16);
       assert.equal(await page.locator("#r2-course-progress").innerText(),"0 of 16 concept sets reviewed");
       assert.match(await page.locator('.lesson-link[href="#lesson/02"] .r2-syllabus-details').innerText(),
