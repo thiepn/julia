@@ -1305,3 +1305,17 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   .r2-editor-head{padding:2px 0 11px;margin-bottom:12px}
   .r2-editor .scratch-editor{min-height:clamp(280px,42dvh,460px)}
 }
+
+
+/* Phase 07 — source-owned coding practice navigation. */
+.r2-practice-path{margin:0 0 1rem;padding:1rem 1.15rem;border:1px solid var(--border,#cbd5e1);border-radius:12px;background:var(--surface,#fff)}
+.r2-practice-path header h2{font-size:1.05rem;margin:0 0 .3rem}
+.r2-practice-path header p{margin:0 0 .9rem;font-size:.9rem;opacity:.8}
+.r2-practice-choices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.45rem}
+.r2-practice-choices button{font:inherit;font-size:.84rem;text-align:left;padding:.7rem;border:1px solid currentColor;border-radius:7px;background:transparent;color:inherit;cursor:pointer;overflow-wrap:anywhere}
+.r2-practice-choices button[aria-pressed="true"]{outline:2px solid currentColor;outline-offset:-3px;font-weight:700}
+.r2-practice-choices button:disabled{opacity:.4;cursor:not-allowed}
+.r2-practice-choices button:focus-visible{outline:3px solid #7c9cda;outline-offset:2px}
+#r2-practice-guidance{font-size:.88rem;line-height:1.5;margin:.85rem 0 0}
+@media(max-width:760px){.r2-practice-choices{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:350px){.r2-practice-path{padding:.75rem}.r2-practice-choices button{padding:.5rem;font-size:.78rem}}
