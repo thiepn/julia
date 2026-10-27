@@ -1011,20 +1011,80 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   letter-spacing:-.048em;margin:0 0 10px}
 .r2-page-heading h2{font-size:27px;letter-spacing:-.035em;margin:0 0 8px}
 .r2-page-heading p{max-width:66ch;color:var(--muted);margin:0}
-.r2-explore{max-width:1190px;margin:0 auto}
-.r2-explore .r2-lab-picker{display:flex;gap:12px;align-items:center;
-  padding:13px 16px;margin:0 0 22px;background:var(--surface);
-  border:1px solid var(--line)}
-.r2-lab-picker label{font-weight:700;font-size:14px}
-.r2-lab-picker select{flex:1;min-width:0;max-width:650px;min-height:44px;
-  padding:9px 11px;border:1px solid var(--line);color:var(--ink);
-  background:var(--surface);font-size:14px}
-.r2-explore>.r2-lab:not(.r2-lab-inactive){padding:clamp(20px,3vw,42px);
-  background:var(--surface);border:1px solid var(--line);width:100%;
-  max-width:none;overflow:visible}
-.r2-explore>.r2-lab h2{font-size:22px;letter-spacing:-.025em}
-.r2-explore .numerical-layout,.r2-explore .factor-matrices,.r2-explore .fitting-layout{
-  max-width:100%}
+/* Explore keeps the authored numerical controls intact while exposing their live Julia source. */
+.r2-explore{max-width:1330px;margin:0 auto;min-width:0}
+.r2-explore>.r2-inner-head{margin:4px 0 17px}
+.r2-explore .r2-lab-bar{margin:0 0 21px;border-bottom:1px solid var(--line);
+  padding-bottom:15px;display:grid;gap:13px}
+.r2-explore .r2-lab-picker{display:flex;align-items:center;gap:15px;
+  padding:0;margin:0;background:transparent;border:0}
+.r2-lab-picker label{font-weight:700;font-size:15px;white-space:nowrap;color:var(--ink)}
+.r2-lab-picker select{flex:1;min-width:0;max-width:760px;min-height:44px;
+  padding:9px 12px;border:1px solid #b8c1cf;border-radius:3px;
+  color:var(--ink);background:var(--surface);font-size:15px}
+.r2-lab-shortcuts{display:flex;gap:7px;flex-wrap:wrap}
+.r2-lab-shortcuts button{border:1px solid var(--line);background:var(--surface);
+  min-height:39px;padding:8px 12px;border-radius:3px;color:var(--ink);
+  font-size:14px;font-weight:650;line-height:1.4}
+.r2-lab-shortcuts button[aria-current="true"]{border-color:var(--accent);
+  background:var(--accent-soft);color:var(--accent)}
+.r2-lab-shortcuts button:hover{border-color:var(--accent)}
+.r2-explore-workbench{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(285px,.86fr);
+  gap:0;min-width:0;align-items:start;border:1px solid var(--line);
+  background:var(--surface);scroll-margin-top:calc(var(--r2-header) + 12px)}
+.r2-explore-stage{min-width:0;background:var(--surface)}
+.r2-explore-stage>.r2-lab:not(.r2-lab-inactive){padding:clamp(18px,2.6vw,33px);
+  margin:0;background:transparent;border:0;width:100%;max-width:none;min-width:0;
+  box-shadow:none;overflow:visible}
+.r2-explore-stage>.r2-lab h2{font-size:clamp(20px,2vw,26px);
+  letter-spacing:-.035em;line-height:1.33}
+.r2-explore .numerical-layout,.r2-explore .factor-matrices,
+.r2-explore .fitting-layout{max-width:100%;min-width:0}
+.r2-explore svg{display:block;max-width:100%;height:auto}
+.r2-explore .numerical-controls,.r2-explore .elim-controls,
+.r2-explore .precision-controls,.r2-explore .fit-controls,
+.r2-explore .factor-controls,.r2-explore .sensitivity-controls{max-width:100%;min-width:0}
+.r2-explore .elim-matrix-scroll,.r2-explore .precision-table-scroll,
+.r2-explore .fit-data-scroll,.r2-explore .sensitivity-table-scroll,
+.r2-explore .numerical-values{max-width:100%;overflow-x:auto}
+.r2-explore-source{position:sticky;top:calc(var(--r2-header) + 16px);
+  display:flex;flex-direction:column;min-width:0;max-height:calc(100dvh - var(--r2-header) - 30px);
+  overflow:auto;background:#131a26;border-left:1px solid #364257;color:#e9eef7}
+.r2-explore-source-head{padding:16px 18px;background:#202b3b;
+  border-bottom:1px solid #37455c;display:flex;flex-wrap:wrap;
+  gap:6px 13px;align-items:baseline;justify-content:space-between}
+.r2-explore-source-head strong{font-size:15px;color:#fff;font-weight:720}
+#r2-explore-source-state{font-size:14px;line-height:1.55;color:#c6d1e2}
+#r2-explore-source-content{min-width:0;padding:16px 18px;flex:1}
+.r2-explore-source details{min-width:0;border:0;margin:0;padding:0}
+.r2-explore-source details>summary{font-size:15px;line-height:1.5;font-weight:700;
+  color:#eee9ff;min-height:40px;cursor:pointer;padding:9px 0}
+.r2-explore-source pre.code,.r2-explore-source .practice-code{box-sizing:border-box;
+  width:100%;max-width:100%;min-width:0;max-height:47dvh;overflow:auto;
+  padding:15px;border:1px solid #43506b;background:#0e1520;
+  color:#e2edff;border-radius:2px;white-space:pre;tab-size:4;
+  font:13px/1.75 "Cascadia Code",Consolas,monospace}
+.r2-explore-source button{min-height:41px;padding:9px 13px;border-radius:3px;
+  border:1px solid #697997;background:#2e3d56;color:#eff3ff;
+  font-size:14px;font-weight:650;max-width:100%}
+.r2-explore-source button:hover{background:#465a78}
+.r2-explore-source .feedback{font-size:14px;line-height:1.6;color:#d4dff1}
+.r2-explore-source-actions{padding:15px 18px;border-top:1px solid #37455c}
+.r2-explore-source-actions button{width:100%;background:#a996ed;color:#20182e;
+  border-color:#a996ed}
+.r2-explore-source-actions button:hover{background:#cdbdfb;color:#20182e}
+.r2-no-source{font-size:15px;line-height:1.7;color:#d0dbeb;margin:0}
+.r2-explore-workbench[data-has-source="false"]{grid-template-columns:minmax(0,1fr)}
+.r2-explore-workbench[data-has-source="false"] .r2-explore-source{
+  position:static;max-height:none;border-left:0;border-top:1px solid #37455c}
+.r2-explore-workbench[data-has-source="false"] .r2-explore-source-head{padding:12px 18px}
+.r2-explore-workbench[data-has-source="false"] #r2-explore-source-content{padding:14px 18px}
+.r2-explore-workbench[data-has-source="false"] .r2-explore-source-actions{padding:12px 18px}
+@media(max-width:1070px){
+  .r2-explore-workbench{grid-template-columns:minmax(0,1fr)}
+  .r2-explore-source{position:static;max-height:none;border-left:0;border-top:1px solid #37455c}
+  .r2-explore-source pre.code{max-height:340px}
+}
 .r2-mixed{max-width:950px}
 .r2-mixed #semester-rehearsal{background:var(--surface);border:1px solid var(--line);
   padding:clamp(19px,3vw,40px);margin:0}
@@ -1154,10 +1214,15 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   .r2-terminal .local-runner-console{font-size:13px}
   .r2-runner-setup .local-runner-actions{margin-bottom:12px}
   .r2-runner-setup #local-runner-run{display:none}
-  .r2-explore>.r2-lab:not(.r2-lab-inactive){padding:18px 14px}
   .r2-explore .r2-lab-picker{display:block}
   .r2-lab-picker label{display:block;margin-bottom:7px}
   .r2-lab-picker select{width:100%;max-width:none}
+  .r2-lab-shortcuts{gap:6px}
+  .r2-lab-shortcuts button{font-size:13px;min-height:42px;padding:9px 10px}
+  .r2-explore-stage>.r2-lab:not(.r2-lab-inactive){padding:18px 13px}
+  .r2-explore-source-head,#r2-explore-source-content,
+  .r2-explore-source-actions{padding-left:13px;padding-right:13px}
+  .r2-explore-source pre.code{font-size:12px;max-height:300px}
   .r2-mixed-navigation{gap:6px}
   .r2-mixed-navigation .r2-button{padding:10px}
   .r2-mobile-action{display:flex;position:fixed;z-index:80;bottom:0;left:0;
