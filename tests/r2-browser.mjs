@@ -69,6 +69,14 @@ try{
       assert.equal(await page.locator("#r2-preview-prereqs").isVisible(),false);
       assert.equal(await page.locator("#r2-next-lesson-title").innerText(),"01 · Variables & numbers");
       assert.match(await page.locator("#r2-next-lesson-code").innerText(),/println\(a \+ b\)/);
+      console.log("R2_INITIAL_STATE",await page.evaluate(()=>({
+        view:document.body.dataset.r2View,
+        stage:document.body.dataset.r2Stage,
+        mainHidden:document.getElementById("lesson-main")?.hidden,
+        courseHidden:document.getElementById("r2-course")?.hidden,
+        codeHidden:document.getElementById("r2-stage-code")?.hidden,
+        codeParent:document.getElementById("r2-stage-code")?.parentElement?.className
+      })));
       assert.equal(await page.locator("#r2-stage-code").isVisible(),false);
       await noOverflow("course");await shot("course");
       if(scheme==="light"&&device.name==="desktop"){
