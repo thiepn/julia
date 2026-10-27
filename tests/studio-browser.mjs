@@ -71,6 +71,26 @@ try{
     if(viewport.width>900)assert.ok(sourceBox.x<taskBox.x,"editor must precede task pane on desktop");
     else assert.ok(taskBox.y<sourceBox.y,"compact task must precede editor on narrow screens");
     assert.equal(await page.locator(".r2-terminal").isVisible(),true);
+    // Phase 05: the original source-authored test suite stays unique and in Code.
+    assert.equal(await page.locator(".r2-test-desk #external-tests").count(),1);
+    assert.equal(await page.locator(".r2-test-cases-pane #external-test-cases li").count(),4);
+    assert.equal(await page.locator("#r2-test-case-count").innerText(),"4 source test cases");
+    assert.equal(await page.locator(".r2-test-results-pane #external-test-local-output").count(),1);
+    assert.equal(await page.locator(".r2-runner-diagnostics #local-runner-diagnostic-output").count(),1);
+    assert.equal(await page.locator("#r2-test-verification").innerText(),"Not run");
+    await page.locator("#r2-tests-jump").click();
+    assert.equal(await page.locator("#r2-test-desk").getAttribute("open"),"");
+    assert.equal(await page.locator("#external-test-heading").isVisible(),true);
+    const originalSource=await page.locator("#scratch-code").inputValue();
+    await page.locator("#external-focus-case").selectOption("Outside tolerance");
+    assert.match(await page.locator("#external-focus-preview").innerText(),/isclose\\(1, 1\\.1, 1e-3\\)/);
+    assert.doesNotMatch(await page.locator("#external-focus-preview").innerText(),/0\\.1 \\+ 0\\.2/);
+    assert.equal(await page.locator("#scratch-code").inputValue(),originalSource);
+    // A third-party embed never authorizes Julia Test execution or an invented PASS.
+    await page.locator("#external-test-local-run").click();
+    assert.match(await page.locator("#external-test-local-status").innerText(),/Disable JDoodle/);
+    assert.match(await page.locator("#r2-test-verification").innerText(),/Disable JDoodle/);
+    assert.equal(await page.locator("#external-test-local-output").innerText(),"");
     assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1")),before);
     if(viewport.width<=767){
       assert.equal(await page.locator("#nav-items").isVisible(),false);
