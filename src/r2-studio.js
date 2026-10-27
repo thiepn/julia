@@ -281,6 +281,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     }
     sourceSlot.replaceChildren();
     const chosen=originalSources.get(id);
+    explorerWorkbench.dataset.hasSource=chosen?"true":"false";
     sourceState.textContent=chosen?"Original Julia example · not executed":
       "Browser calculation · not Julia execution";
     if(chosen){
