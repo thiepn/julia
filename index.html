@@ -124,12 +124,15 @@
             <div class="external-test-actions">
               <button id="external-focus-download" type="button" class="secondary" disabled>Download focused .jl</button>
               <button id="external-focus-copy" type="button" class="secondary" disabled>Copy focused .jl</button>
+              <button id="external-focus-local-run" type="button" class="secondary" disabled>Run selected case with local Julia</button>
             </div>
             <details id="external-focus-details">
               <summary>View focused Julia test</summary>
               <pre class="code"><code id="external-focus-preview"></code></pre>
             </details>
             <p id="external-focus-feedback" class="feedback" role="status" aria-live="polite"></p>
+            <p id="external-focus-local-status" class="feedback" role="status" aria-live="polite"></p>
+            <pre class="local-runner-console" aria-label="Actual focused Julia test result"><code id="external-focus-local-output"></code></pre>
             <p class="external-focus-instruction">Run the selected case in Julia to reproduce a failure. After editing your code, run the full test file to check for regressions.</p>
           </div>
           <section id="algorithm-design" class="algorithm-design" aria-labelledby="algorithm-design-heading" hidden>
