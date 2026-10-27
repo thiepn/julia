@@ -50,7 +50,8 @@ try{
    await r2Locator(page,"#external-focus-local-run").click();
    await waitStatus(page,"external-focus-local-status","Julia Test assertions passed");
    assert.match(await r2Locator(page,"#external-focus-local-output").innerText(),/Test Summary:/);
-   assert.match(await r2Locator(page,"#external-focus-local-output").innerText(),/Negative threshold/);
+   assert.match(await r2Locator(page,"#external-focus-preview").textContent(),/Negative threshold/);
+   assert.doesNotMatch(await r2Locator(page,"#external-focus-preview").textContent(),/Threshold inside data/);
    assert.equal(await r2Locator(page,"#scratch-code").inputValue(),"count_above(v,t)=count(x->x>t,v)");
    assert.match(await r2Locator(page,"#external-test-local-status").innerText(),/Julia Test assertions passed/);
    assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1")),before);
