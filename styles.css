@@ -1059,7 +1059,8 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 .r2-explore-source details{min-width:0;border:0;margin:0;padding:0}
 .r2-explore-source details>summary{font-size:15px;line-height:1.5;font-weight:700;
   color:#eee9ff;min-height:40px;cursor:pointer;padding:9px 0}
-.r2-explore-source pre.code,.r2-explore-source .practice-code{box-sizing:border-box;
+.r2-explore-source pre.code,.r2-explore-source .practice-code,
+.r2-explore-source .r2-explore-live-source{box-sizing:border-box;
   width:100%;max-width:100%;min-width:0;max-height:47dvh;overflow:auto;
   padding:15px;border:1px solid #43506b;background:#0e1520;
   color:#e2edff;border-radius:2px;white-space:pre;tab-size:4;
@@ -1068,7 +1069,8 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   border:1px solid #697997;background:#2e3d56;color:#eff3ff;
   font-size:14px;font-weight:650;max-width:100%}
 .r2-explore-source button:hover{background:#465a78}
-.r2-explore-source .feedback{font-size:14px;line-height:1.6;color:#d4dff1}
+.r2-explore-source .feedback,.r2-explore-copy-state{
+  display:block;margin-top:12px;font-size:14px;line-height:1.6;color:#d4dff1}
 .r2-explore-source-actions{padding:15px 18px;border-top:1px solid #37455c}
 .r2-explore-source-actions button{width:100%;background:#a996ed;color:#20182e;
   border-color:#a996ed}
