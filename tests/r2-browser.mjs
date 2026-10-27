@@ -150,6 +150,12 @@ try{
         assert.equal(await editor.inputValue(),'println("R2 original persisted source")');
       }
       await noOverflow("code");await shot("code");
+      await page.locator("#r2-tests-jump").click();
+      assert.equal(await page.locator("#r2-test-desk").isVisible(),true);
+      assert.equal(await page.locator(".r2-test-cases-pane #external-test-cases li").count(),4);
+      assert.equal(await page.locator(".r2-test-results-pane #external-test-local-output").count(),1);
+      assert.equal(await page.locator("#r2-test-verification").innerText(),"Not run");
+      await noOverflow("code-tests");await shot("code-tests");
       await page.locator('button[data-r2-stage="explore"]').click();
       assert.equal(await page.locator("#r2-stage-explore").isVisible(),true);
       assert.ok(await page.locator("#r2-lab-choice option").count()>=1);
