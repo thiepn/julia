@@ -831,8 +831,7 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   color:#e8eaf4;background:#111823;max-width:100%;overflow:auto}
 .r2-instructions .section-intro{font-size:14px;color:var(--muted)}
 .r2-instructions #go-to-compiler{display:none!important}
-.r2-instructions #external-tests,.r2-instructions #integration-handoff{font-size:14px;scroll-margin-top:145px}
-.r2-instructions .external-test-actions button{width:auto}
+.r2-instructions #integration-handoff{font-size:14px;scroll-margin-top:145px}
 .r2-editor{min-width:0;background:#121923;color:#eaf0f7;padding:0;overflow:hidden}
 .r2-editor-head{display:flex;justify-content:space-between;align-items:center;
   flex-wrap:wrap;gap:12px;min-height:54px;margin:0;padding:0 18px;
@@ -885,6 +884,93 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   background:#0c121b;color:#dbe9fb;border:0;border-radius:0;max-width:100%;
   overflow:auto;font:14px/1.65 "Cascadia Code",Consolas,monospace;white-space:pre-wrap}
 .r2-terminal #local-runner-images{padding:0 16px 16px;max-width:100%}
+/* Original Julia Test controls now live with the real editor and terminal. */
+.r2-test-desk{min-width:0;scroll-margin-top:145px;background:#131d2b;
+  border-top:1px solid #45516a;color:#e7eefa}
+.r2-test-desk[hidden]{display:none}
+.r2-test-desk>summary{display:flex;align-items:center;justify-content:space-between;
+  gap:12px;min-height:53px;padding:13px 18px;cursor:pointer;list-style:none;
+  font-size:15px;background:#202d3e;color:#f2f3ff}
+.r2-test-desk>summary::-webkit-details-marker{display:none}
+.r2-test-desk>summary:focus-visible{outline:2px solid #ad9dee;outline-offset:-3px}
+.r2-test-desk-summary strong{font-size:16px}
+#r2-test-case-count{font-size:14px;font-weight:550;color:#c9d7e9}
+.r2-test-desk #external-tests{min-width:0;padding:0;margin:0;border:0;
+  color:#e6edf8;background:#141e2b}
+.r2-test-panes{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  min-width:0;border-top:1px solid #43526a}
+.r2-test-cases-pane,.r2-test-results-pane{min-width:0;padding:19px 18px}
+.r2-test-results-pane{border-left:1px solid #43526a;background:#0f1722}
+.r2-test-cases-pane #external-test-heading{font-size:18px;letter-spacing:-.02em;
+  margin:0 0 18px;line-height:1.5;color:#f2f4fb}
+.r2-test-cases-pane #external-test-cases{list-style:decimal-leading-zero;
+  padding-left:36px;overflow-wrap:anywhere;margin:0 0 19px}
+.r2-test-cases-pane #external-test-cases li{padding:10px 8px;
+  border-bottom:1px solid #364459;font-size:14px;line-height:1.65}
+.r2-test-cases-pane #external-test-cases li::marker{color:#b49df4;
+  font-family:"Cascadia Code",Consolas,monospace;font-weight:700}
+.r2-test-desk .external-test-actions{display:flex;flex-wrap:wrap;gap:8px;
+  margin:13px 0}
+.r2-test-desk .external-test-actions button,.r2-test-desk #external-report-inspect,
+.r2-test-desk #property-lab button{border:1px solid #637389;color:#eef4fd;
+  background:#2a394e;border-radius:3px;min-height:41px;padding:9px 12px;
+  font-size:14px;font-weight:650;width:auto}
+.r2-test-desk .external-test-actions button:hover,
+.r2-test-desk #external-report-inspect:hover{background:#3a506c}
+.r2-test-desk .external-test-actions button:disabled{opacity:.55;cursor:not-allowed}
+.r2-test-desk #external-test-local-run{background:#a797ed;color:#1e1634;
+  border-color:#a797ed}
+.r2-test-desk #external-test-local-run:hover{background:#cec0fd}
+.r2-test-desk #external-test-details{border-top:1px solid #364459;padding-top:10px}
+.r2-test-desk #external-test-details summary,
+.r2-test-desk #external-focus-details summary,
+.r2-test-desk #external-report-details summary{color:#ddcffd;font-size:14px;
+  padding:7px 0;cursor:pointer}
+.r2-test-desk .code{background:#0b131e;color:#dce9fc;border:1px solid #34435a;
+  border-radius:2px;max-width:100%;box-sizing:border-box;font:13px/1.7 "Cascadia Code",Consolas,monospace;
+  white-space:pre;overflow:auto}
+.r2-test-results-head{display:flex;flex-direction:column;gap:8px;
+  border-bottom:1px solid #39485e;padding:0 0 14px;margin-bottom:13px}
+.r2-test-results-head>span:first-child{font-size:16px;font-weight:720;color:#fff}
+#r2-test-verification{font-size:14px;line-height:1.5;color:#d2c6f7;
+  white-space:pre-wrap;overflow-wrap:anywhere}
+.r2-test-results-pane .external-test-run,.r2-test-results-pane .feedback{
+  font-size:14px!important;line-height:1.65;color:#c6d2e4;overflow-wrap:anywhere}
+.r2-test-results-pane #external-test-local-status{margin:14px 0;
+  color:#d7c8ff;font-weight:600}
+.r2-test-results-pane .local-runner-console{padding:15px;margin:12px 0;
+  max-height:320px;min-height:90px;border:1px solid #39475c;border-radius:2px;
+  color:#e4effc;background:#0b111b;font:14px/1.65 "Cascadia Code",Consolas,monospace;
+  white-space:pre-wrap;overflow:auto;overflow-wrap:anywhere}
+.r2-test-desk .external-focus,.r2-test-desk .algorithm-design,
+.r2-test-desk .property-lab,.r2-test-desk #external-report-details{
+  border-top:1px solid #3f5068;margin:0;padding:18px;min-width:0}
+.r2-test-desk .external-focus label,
+.r2-test-desk .algorithm-design h3,.r2-test-desk .property-lab h3{
+  font-size:16px;line-height:1.5;color:#f2f4fc;font-weight:700}
+.r2-test-desk .external-focus select,.r2-test-desk #property-choice,
+.r2-test-desk #external-report-input{width:min(100%,550px);max-width:100%;
+  box-sizing:border-box;min-height:42px;padding:10px 12px;
+  color:#111827;background:#f9fbff;border:1px solid #93a0b5;border-radius:3px;
+  font-size:15px}
+.r2-test-desk .external-focus-instruction,.r2-test-desk .feedback,
+.r2-test-desk .algorithm-design p,.r2-test-desk .property-lab p,
+.r2-test-desk #external-report-results{font-size:14px!important;line-height:1.65;
+  color:#c7d4e7;overflow-wrap:anywhere}
+.r2-test-desk #external-report-results strong{color:#e9e8ff}
+.r2-test-desk .algorithm-contract{display:flex;gap:16px;flex-wrap:wrap}
+.r2-test-desk .algorithm-contract div{min-width:0}
+.r2-test-desk .algorithm-contract dt{font-size:14px;color:#c8d3e5}
+.r2-test-desk .algorithm-contract dd{font-size:15px;color:#eff2ff}
+.r2-runner-diagnostics{margin:0 17px 18px;padding:15px 0 0;
+  border-top:1px solid #41506a}
+.r2-runner-diagnostics h3{font-size:15px;color:#f0efff;line-height:1.5;
+  margin:0 0 12px}
+.r2-runner-diagnostics .feedback{font-size:14px;color:#d2dded;
+  line-height:1.65}
+.r2-runner-diagnostics .local-runner-console{max-height:260px;background:#0d1621;
+  color:#e1ecfa;border:1px solid #43516b;overflow:auto;white-space:pre-wrap;
+  overflow-wrap:anywhere;font:13px/1.6 "Cascadia Code",Consolas,monospace}
 .r2-runner-setup{margin:0;border-top:1px solid #394456;background:#1b2534;padding:0}
 .r2-runner-setup>summary{padding:14px 17px;color:#e7ecf8;
   cursor:pointer;font-size:14px;font-weight:700}
@@ -1044,8 +1130,13 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   .r2-editor-foot{order:2}
   .r2-editor-actions{order:3;display:flex;padding:10px;gap:7px}
   .r2-terminal{order:4}
-  .r2-runner-setup{order:5}
-  .r2-editor>.compiler{order:6}
+  .r2-test-desk{order:5}
+  .r2-test-panes{display:block}
+  .r2-test-cases-pane,.r2-test-results-pane{padding:16px 13px}
+  .r2-test-results-pane{border-left:0;border-top:1px solid #43526a}
+  .r2-test-desk .external-test-actions button{flex:1 1 auto}
+  .r2-runner-setup{order:6}
+  .r2-editor>.compiler{order:7}
   .r2-editor-actions .r2-button,.r2-editor-actions .draft-actions button{
     flex:0 1 auto;font-size:13px;min-height:40px;padding:8px 10px}
   .r2-editor-well{grid-template-columns:42px minmax(0,1fr)}
