@@ -263,12 +263,12 @@ export function initR2Studio({doc=document,lessons,navigate}){
   ]){
     const codeNode=get(codeId),parent=codeNode?.closest("pre"),copy=get(copyId);
     if(!parent||!copy)continue;
+    const anchor=doc.createComment("Julia source original position: "+id);
+    parent.before(anchor);
     const holder=node("details","r2-generated-source");
     holder.append(node("summary",null,"Julia code for this experiment"),parent,copy);
     const feedback=get(feedbackId);
     if(feedback)holder.append(feedback);
-    const anchor=doc.createComment("Julia source original position: "+id);
-    copy.after(anchor);
     originalSources.set(id,{node:holder,anchor});
   }
   let displayedSource=null;
