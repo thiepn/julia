@@ -40,7 +40,7 @@ try{
         if(!shots)return;
         const dir=resolve("r2-screenshots",scheme);await mkdir(dir,{recursive:true});
         await page.screenshot({path:resolve(dir,device.name+"-"+view+".jpg"),type:"jpeg",quality:72,fullPage:true,animations:"disabled"});
-        if(scheme==="light"&&["desktop","mobile-390"].includes(device.name)&&["course","code"].includes(view)){
+        if(scheme==="light"&&["desktop","mobile-390"].includes(device.name)&&["course","code","explore"].includes(view)){
           const capture=await page.screenshot({type:"jpeg",quality:58,animations:"disabled"});
           console.log("R2_VISUAL_CAPTURE:"+device.name+":"+view+":"+capture.toString("base64"));
         }
@@ -169,7 +169,29 @@ try{
       await page.locator('button[data-r2-stage="explore"]').click();
       assert.equal(await page.locator("#r2-stage-explore").isVisible(),true);
       assert.ok(await page.locator("#r2-lab-choice option").count()>=1);
+      assert.equal(await page.locator("#r2-explore-stage .r2-lab:not(.r2-lab-inactive)").count(),1);
+      assert.equal(await page.locator(".r2-explore-workbench").count(),1);
+      await page.locator("#r2-lab-choice").selectOption("precision-lab");
+      assert.equal(await page.locator("#r2-explore-source-state").innerText(),
+        "Original Julia example · not executed");
+      assert.equal(await page.locator("#precision-julia").count(),1);
+      assert.equal(await page.locator(".r2-explore-live-source").innerText(),
+        await page.locator("#precision-julia").textContent());
+      const oldPrecisionSource=await page.locator("#precision-julia").textContent();
+      await page.locator("#precision-x").selectOption("2");
+      await page.waitForFunction(()=>document.querySelector(".r2-explore-live-source")?.textContent===
+        document.getElementById("precision-julia")?.textContent);
+      assert.notEqual(await page.locator(".r2-explore-live-source").textContent(),oldPrecisionSource);
+      assert.ok(await page.locator("#precision-comparison tr").count()>0);
+      await page.locator("#r2-lab-choice").selectOption("ue02-lab");
+      assert.equal(await page.locator(".r2-explore-live-source").textContent(),
+        await page.locator("#ue02-code").textContent());
+      await page.locator("#r2-lab-choice").selectOption("precision-lab");
       await noOverflow("explore");await shot("explore");
+      await page.locator("#r2-explore-open-code").click();
+      assert.equal(await page.locator("#r2-stage-code").isVisible(),true);
+      assert.equal(await editor.inputValue(),'println("R2 original persisted source")');
+      await page.locator('button[data-r2-stage="explore"]').click();
       await page.locator("#r2-mixed-open").click();
       assert.equal(await page.locator("#r2-mixed").isVisible(),true);
       assert.equal(await page.locator(".rehearsal-item:visible").count(),1);
@@ -198,6 +220,22 @@ try{
           await page.locator('button[data-r2-stage="explore"]').click();
           assert.ok(await page.locator("#r2-lab-choice option").count()>=1);
           assert.equal(await page.locator("#repair-lab").count(),1);
+          const expectedSource={
+            "04":["plotting-workshop","plotting-recipe-code"],
+            "09":["precision-lab","precision-julia"],
+            "12":["elimination-lab","elim-julia"],
+            "14":["factor-lab","factor-julia"],
+            "15":["fitting-lab","fit-julia"],
+            "16":["sensitivity-lab","sensitivity-julia"]
+          }[id];
+          if(expectedSource){
+            const [lab,sourceId]=expectedSource;
+            assert.equal(await page.locator('#r2-lab-choice option[value="'+lab+'"]').count(),1);
+            await page.locator("#r2-lab-choice").selectOption(lab);
+            assert.equal(await page.locator(".r2-explore-live-source").textContent(),
+              await page.locator("#"+sourceId).textContent());
+            assert.equal(await page.locator("#"+sourceId).count(),1);
+          }
           await noOverflow("all-16-lesson-"+id);
         }
         await page.goto(origin+"/#course");
