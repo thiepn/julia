@@ -241,58 +241,54 @@ export function initR2Studio({doc=document,lessons,navigate}){
   for(const id of labIds){const part=get(id);if(part){
     part.classList.add("r2-lab");explorerStage.append(part);
   }}
-  // Move, do not clone, the original live Julia source and Copy controls.
-  // This preserves their numerical source generators and existing event listeners.
-  const originalSources=new Map(),sourceCodeIds={
-    "elimination-lab":"elim-julia",
-    "precision-lab":"precision-julia",
-    "fitting-lab":"fit-julia",
-    "factor-lab":"factor-julia",
-    "sensitivity-lab":"sensitivity-julia"
+  // Numerical controllers bind to their original DOM early during app bootstrap.
+  // Mirror only the generated source text; do not move controls or code nodes.
+  const sourceSpecs={
+    "elimination-lab":["elim-julia","elim-copy"],
+    "precision-lab":["precision-julia","precision-copy"],
+    "fitting-lab":["fit-julia","fit-copy"],
+    "factor-lab":["factor-julia","factor-copy"],
+    "sensitivity-lab":["sensitivity-julia","sensitivity-copy"],
+    "plotting-workshop":["plotting-recipe-code","plotting-recipe-copy"],
+    "ue02-lab":["ue02-code","ue02-copy"]
   };
-  for(const [id,codeId] of Object.entries(sourceCodeIds)){
-    const details=get(codeId)?.closest("details");
-    if(!details)continue;
-    const anchor=doc.createComment("Julia source original position: "+id);
-    details.before(anchor);
-    originalSources.set(id,{node:details,anchor});
-  }
-  for(const [id,codeId,copyId,feedbackId] of [
-    ["plotting-workshop","plotting-recipe-code","plotting-recipe-copy","plotting-recipe-feedback"],
-    ["ue02-lab","ue02-code","ue02-copy","ue02-copy-feedback"]
-  ]){
-    const codeNode=get(codeId),parent=codeNode?.closest("pre"),copy=get(copyId);
-    if(!parent||!copy)continue;
-    const anchor=doc.createComment("Julia source original position: "+id);
-    parent.before(anchor);
-    const holder=node("details","r2-generated-source");
-    holder.append(node("summary",null,"Julia code for this experiment"),parent,copy);
-    const feedback=get(feedbackId);
-    if(feedback)holder.append(feedback);
-    originalSources.set(id,{node:holder,anchor});
-  }
-  let displayedSource=null;
-  const sourceSlot=get("r2-explore-source-content"),sourceState=get("r2-explore-source-state");
-  const selectOriginalSource=id=>{
-    if(displayedSource){
-      const former=originalSources.get(displayedSource);
-      if(former)former.anchor.after(former.node);
-      displayedSource=null;
-    }
+  const sourceSlot=get("r2-explore-source-content"),
+    sourceState=get("r2-explore-source-state");
+  const sourceView=node("pre","r2-explore-live-source");
+  const sourceCopy=node("button","r2-explore-copy","Copy original Julia example");
+  sourceCopy.type="button";
+  const copyFeedback=node("span","r2-explore-copy-state");
+  copyFeedback.setAttribute("role","status");
+  const refreshSource=()=>{
+    const id=get("r2-lab-choice").value,
+      spec=sourceSpecs[id],
+      source=spec?get(spec[0]):null;
     sourceSlot.replaceChildren();
-    const chosen=originalSources.get(id);
-    explorerWorkbench.dataset.hasSource=chosen?"true":"false";
-    sourceState.textContent=chosen?"Original Julia example · not executed":
+    explorerWorkbench.dataset.hasSource=source?"true":"false";
+    sourceState.textContent=source?"Original Julia example · not executed":
       "Browser calculation · not Julia execution";
-    if(chosen){
-      sourceSlot.append(chosen.node);
-      chosen.node.open=true;
-      displayedSource=id;
+    if(source){
+      sourceView.textContent=source.textContent;
+      sourceSlot.append(sourceView,sourceCopy,copyFeedback);
     }else{
       sourceSlot.append(node("p","r2-no-source",
         "This experiment calculates results in the browser. Open Code to run your own Julia program."));
     }
+    copyFeedback.textContent="";
   };
+  sourceCopy.addEventListener("click",()=>{
+    const spec=sourceSpecs[get("r2-lab-choice").value],button=spec?get(spec[1]):null;
+    if(!button){copyFeedback.textContent="No original Julia source is available.";return;}
+    button.click();
+    copyFeedback.textContent="Original Copy action requested; check the experiment's copy feedback.";
+  });
+  for(const [codeId] of Object.values(sourceSpecs)){
+    const source=get(codeId);
+    if(source)new MutationObserver(()=>{
+      if(sourceSpecs[get("r2-lab-choice").value]?.[0]===codeId)
+        sourceView.textContent=source.textContent;
+    }).observe(source,{childList:true,characterData:true,subtree:true});
+  }
   const oldFooter=main.querySelector(".lesson-footer"),
     stages=node("div","r2-stage-content");
   stages.append(learn,check,code,explore);
@@ -492,7 +488,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
         return button;
       }));
     explorerBar.dataset.lab=choice.value;
-    selectOriginalSource(choice.value);
+    refreshSource();
   }
   get("r2-lab-choice").addEventListener("change",syncLabs);
   get("r2-explore-open-code").addEventListener("click",()=>showStage("code"));
