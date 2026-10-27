@@ -83,8 +83,8 @@ try{
     assert.equal(await page.locator("#external-test-heading").isVisible(),true);
     const originalSource=await page.locator("#scratch-code").inputValue();
     await page.locator("#external-focus-case").selectOption("Outside tolerance");
-    assert.ok((await page.locator("#external-focus-preview").innerText()).includes("isclose(1, 1.1, 1e-3)"));
-    assert.ok(!(await page.locator("#external-focus-preview").innerText()).includes("isclose(0.1 + 0.2"));
+    assert.ok((await page.locator("#external-focus-preview").textContent()).includes("isclose(1, 1.1, 1e-3)"));
+    assert.ok(!(await page.locator("#external-focus-preview").textContent()).includes("isclose(0.1 + 0.2"));
     assert.equal(await page.locator("#scratch-code").inputValue(),originalSource);
     // A third-party embed never authorizes Julia Test execution or an invented PASS.
     await page.locator("#external-test-local-run").click();
