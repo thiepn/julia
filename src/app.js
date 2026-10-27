@@ -424,6 +424,8 @@ function renderPractice(){
   $("#property-feedback").textContent="";
   $("#external-focus-details").open=false;
   $("#external-focus-feedback").textContent="";
+  $("#external-focus-local-status").textContent="";
+  $("#external-focus-local-output").textContent="";
   $("#external-report-input").value="";
   $("#external-report-results").replaceChildren();
   $("#external-report-details").open=false;
