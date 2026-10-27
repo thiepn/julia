@@ -243,16 +243,16 @@ export function initR2Studio({doc=document,lessons,navigate}){
   }}
   // Move, do not clone, the original live Julia source and Copy controls.
   // This preserves their numerical source generators and existing event listeners.
-  const originalSources=new Map(),sourceSelectors={
-    "elimination-lab":".elim-julia-details",
-    "precision-lab":".precision-code-details",
-    "fitting-lab":".fit-code-details",
-    "factor-lab":".factor-code",
-    "sensitivity-lab":".sensitivity-code"
+  const originalSources=new Map(),sourceCodeIds={
+    "elimination-lab":"elim-julia",
+    "precision-lab":"precision-julia",
+    "fitting-lab":"fit-julia",
+    "factor-lab":"factor-julia",
+    "sensitivity-lab":"sensitivity-julia"
   };
-  for(const [id,selector] of Object.entries(sourceSelectors)){
-    const part=get(id),details=part?.querySelector(selector);
-    if(!details)throw Error("Expected original Julia example for "+id);
+  for(const [id,codeId] of Object.entries(sourceCodeIds)){
+    const details=get(codeId)?.closest("details");
+    if(!details)continue;
     const anchor=doc.createComment("Julia source original position: "+id);
     details.before(anchor);
     originalSources.set(id,{node:details,anchor});
