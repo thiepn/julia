@@ -252,8 +252,9 @@ export function initR2Studio({doc=document,lessons,navigate}){
     "plotting-workshop":["plotting-recipe-code","plotting-recipe-copy"],
     "ue02-lab":["ue02-code","ue02-copy"]
   };
-  const sourceSlot=get("r2-explore-source-content"),
-    sourceState=get("r2-explore-source-state");
+  // Explore is not connected to document until the R2 shell mounts below.
+  const sourceSlot=explorerSource.querySelector("#r2-explore-source-content"),
+    sourceState=explorerSource.querySelector("#r2-explore-source-state");
   const sourceView=node("pre","r2-explore-live-source");
   const sourceCopy=node("button","r2-explore-copy","Copy original Julia example");
   sourceCopy.type="button";
