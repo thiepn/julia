@@ -148,16 +148,38 @@ export function initR2Studio({doc=document,lessons,navigate}){
     terminal=node("section","r2-terminal",
       '<header class="r2-terminal-head"><span>Julia terminal</span>'+
       '<button type="button" id="r2-terminal-clear" class="r2-terminal-clear">Clear output</button></header>'),
+    testDesk=node("details","r2-test-desk"),
+    testPane=node("div","r2-test-panes"),
+    casePane=node("section","r2-test-cases-pane"),
+    resultPane=node("section","r2-test-results-pane"),
     runnerSetup=node("details","r2-runner-setup");
   lineNumbers.setAttribute("aria-hidden","true");
   const draftTitle=codePanel.querySelector(".draft-title"),
-    draft=get("scratch-code"),draftActions=codePanel.querySelector(".draft-actions");
+    draft=get("scratch-code"),draftActions=codePanel.querySelector(".draft-actions"),
+    externalTests=get("external-tests");
+  // Keep the original test controls, assertions and authentic local result targets.
+  const originalTestActions=externalTests.querySelector(".external-test-actions"),
+    originalTestPreview=get("external-test-details"),
+    originalTestIntro=externalTests.querySelector(".external-test-run"),
+    originalTestOutput=get("external-test-local-output").closest("pre");
+  casePane.append(get("external-test-heading"),get("external-test-cases"),
+    originalTestActions,originalTestPreview);
+  resultPane.append(node("header","r2-test-results-head",
+      '<span>Local Julia Test results</span><span id="r2-test-verification" role="status">Not run</span>'),
+    originalTestIntro,get("external-test-feedback"),
+    get("external-test-local-status"),originalTestOutput);
+  testPane.append(casePane,resultPane);
+  externalTests.prepend(testPane);
+  testDesk.id="r2-test-desk";
+  testDesk.append(node("summary","r2-test-desk-summary",
+    '<strong>Julia tests</strong><span id="r2-test-case-count">0 cases</span>'),externalTests);
+  testDesk.open=true;
   editorWell.append(lineNumbers,draft);
   // Canonical file actions live in the workspace toolbar: do not create copies.
   editorActions.insertBefore(draftActions,get("r2-exports"));
   editor.append(editorHead,editorActions,draftTitle,editorWell,editorFoot);
   const extras=node("details","r2-compiler-extras");
-  extras.append(node("summary",null,"External compiler, comparison and other tools"));
+  extras.append(node("summary",null,"External compiler and comparison tools · unverified"));
   const runner=compiler.querySelector(".local-runner");
   const preview=get("local-plot-preview");
   for(const item of [...compiler.children]){
@@ -169,10 +191,16 @@ export function initR2Studio({doc=document,lessons,navigate}){
       output=get("local-runner-output").closest("pre"),
       images=get("local-runner-images");
     terminal.append(status,output,images);
-    runnerSetup.append(node("summary",null,"Local Julia connection"),runner);
+    const diagnosticStatus=get("local-runner-diagnostic-status"),
+      diagnosticOutput=get("local-runner-diagnostic-output").closest("pre");
+    const diagnosticPane=node("section","r2-runner-diagnostics",
+      '<h3 id="r2-runner-diagnostics-heading">Local Julia environment diagnostics</h3>');
+    diagnosticPane.setAttribute("aria-labelledby","r2-runner-diagnostics-heading");
+    diagnosticPane.append(diagnosticStatus,diagnosticOutput);
+    runnerSetup.append(node("summary",null,"Local Julia connection"),runner,diagnosticPane);
     runnerSetup.open=true;
   }
-  editor.append(terminal,runnerSetup);
+  editor.append(terminal,testDesk,runnerSetup);
   // Local plot files and third-party services are separate from actual Julia execution.
   if(preview)compiler.append(preview);
   compiler.append(extras);
@@ -485,13 +513,23 @@ export function initR2Studio({doc=document,lessons,navigate}){
   get("r2-exports").addEventListener("click",()=>{
     openAux("utilities");get("submission-workflow").open=true;
   });
-  const externalTests=get("external-tests"),testsJump=get("r2-tests-jump");
-  const syncTestAccess=()=>{testsJump.hidden=externalTests.hidden;};
+  const testsJump=get("r2-tests-jump"),testCases=get("external-test-cases"),
+    actualTestStatus=get("external-test-local-status");
+  // Presentation is observational: never parse terminal text as a grade or infer
+  // success from presence of generated cases. Verdicts belong to the local runner.
+  const syncTestAccess=()=>{
+    const available=!externalTests.hidden;
+    testDesk.hidden=!available;testsJump.hidden=!available;
+    get("r2-test-case-count").textContent=testCases.children.length+" source test cases";
+    const verdict=actualTestStatus.textContent.trim();
+    get("r2-test-verification").textContent=verdict||"Not run";
+  };
   new MutationObserver(syncTestAccess).observe(externalTests,{attributes:true,attributeFilter:["hidden"]});
+  new MutationObserver(syncTestAccess).observe(testCases,{childList:true});
+  new MutationObserver(syncTestAccess).observe(actualTestStatus,{childList:true,characterData:true,subtree:true});
   testsJump.addEventListener("click",()=>{
     if(externalTests.hidden)return;
-    instructions.open=true;
-    externalTests.scrollIntoView({block:"start",behavior:"smooth"});
+    testDesk.open=true;testDesk.scrollIntoView({block:"start"});
     const heading=get("external-test-heading");
     heading.setAttribute("tabindex","-1");heading.focus({preventScroll:true});
   });
