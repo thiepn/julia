@@ -1093,6 +1093,12 @@ try {
     await r2Locator(mobile,"#practice-mode").selectOption("b");
     await r2Locator(mobile,"#external-report-details summary").click();
     await r2Locator(mobile,"#external-report-input").fill("MethodError: no method matching near_relative(::Int64)");
+    await mobile.evaluate(()=>{
+      window.__juliaReportClickObserved=0;
+      document.getElementById("external-report-inspect").addEventListener("click",()=>{
+        window.__juliaReportClickObserved++;
+      },{capture:true,once:true});
+    });
     await r2Locator(mobile,"#external-report-inspect").click();
     // The R2 mobile task sidebar uses a native disclosure. Read the real DOM
     // result first, then reopen its canonical visual route before checking
@@ -1107,10 +1113,10 @@ try {
         input:document.getElementById("external-report-input")?.value,
         detailsOpen:details?.open,taskOpen:document.querySelector(".r2-instructions")?.open,
         output:results?.textContent,children:results?.children.length,
-        connected:button?.isConnected};
+        connected:button?.isConnected,clickObserved:window.__juliaReportClickObserved};
     });
     if(!/argument count and accepted types/.test(diagnostic.output||""))
-      console.error("J19_MOBILE_REPORT_DIAGNOSTIC",diagnostic);
+      console.error("J19_MOBILE_REPORT_DIAGNOSTIC",{...diagnostic,pageErrors:errors.slice(-5)});
     assert.match(await reportResults.textContent(),/argument count and accepted types/);
     assert.equal(await reportResults.isVisible(),true);
     // On nested native disclosures Chromium's innerText can be empty even
