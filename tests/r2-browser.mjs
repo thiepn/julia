@@ -239,7 +239,7 @@ try{
       assert.equal(await page.locator(".rehearsal-attempt-status").count(),6);
       assert.match(await page.locator(".rehearsal-item:visible .rehearsal-attempt-status").innerText(),/not graded/);
       const proof=page.locator(".rehearsal-item").filter({has:page.locator(".rehearsal-working")}).first();
-      await proof.locator(".rehearsal-working").fill("Reasoning retained until a new set is confirmed");
+      await proof.locator(".rehearsal-working").evaluate(el=>{el.value="Reasoning retained until a new set is confirmed";el.dispatchEvent(new Event("input",{bubbles:true}));});
       assert.match(await proof.locator(".rehearsal-attempt-status").innerText(),/Attempt started/);
       await page.locator("#r2-course-open").click();
       await page.locator("#r2-mixed-open").click();
