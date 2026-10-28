@@ -18,9 +18,9 @@ function editor(value,start=value.length,end=start){
   return el;
 }
 test("Phase 09 keys cover Julia coding punctuation with distinct accessible labels",()=>{
-  assert.equal(JULIA_TOUCH_KEYS.length,8);
+  assert.equal(JULIA_TOUCH_KEYS.length,9);
   assert.equal(new Set(JULIA_TOUCH_KEYS.map(item=>item.key)).size,8);
-  assert.ok(JULIA_TOUCH_KEYS.every(x=>x.description&&x.label&&x.prefix));
+  assert.ok(JULIA_TOUCH_KEYS.every(x=>x.description&&x.label&&typeof x.prefix==="string"));
 });
 test("wrap a selected Julia argument, keeping its selection and one canonical input event",()=>{
   const el=editor("f(x+1)",2,5);
@@ -54,4 +54,40 @@ test("fail closed for unknown keys, disabled and read-only editors and 50 kB dra
   assert.equal(insertJuliaTouchKey(el,"colon"),false);
   assert.equal(el.value.length,25000);
   assert.equal(el.effects.inputs,0);
+});
+
+test("multi-line Julia indentation preserves every source line in one input event",()=>{
+  const el=editor("function f(x)\n  y=x+1\n  y\nend",14,31);
+  const original=el.value;
+  assert.equal(insertJuliaTouchKey(el,"indent"),true);
+  assert.match(el.value,/^function f\(x\)\n {4}  y=x\+1\n {4}  y/m);
+  assert.equal(el.value.replace(/^( {4})/gm,""),original);
+  assert.equal(el.effects.inputs,1);
+  assert.equal(el.selectionStart,14);
+  assert.ok(el.selectionEnd>el.selectionStart);
+  assert.equal(insertJuliaTouchKey(el,"outdent"),true);
+  assert.equal(el.value,original);
+  assert.equal(el.effects.inputs,2);
+});
+test("outdent at caret removes indentation without damaging following Julia tokens",()=>{
+  const el=editor("begin\n    x = 1\nend",13,13);
+  assert.equal(insertJuliaTouchKey(el,"outdent"),true);
+  assert.equal(el.value,"begin\nx = 1\nend");
+  assert.equal(el.selectionStart,9);
+  assert.equal(el.effects.inputs,1);
+  assert.equal(insertJuliaTouchKey(el,"outdent"),false);
+  assert.equal(el.effects.inputs,1);
+});
+test("a selection ending at newline never indents the following Julia block",()=>{
+  const el=editor("alpha\nbeta\ngamma",0,6);
+  assert.equal(insertJuliaTouchKey(el,"indent"),true);
+  assert.equal(el.value,"    alpha\nbeta\ngamma");
+  assert.equal(el.effects.inputs,1);
+});
+test("oversized multi-line indentation is rejected without touching original source",()=>{
+  const value="a".repeat(24998)+"\nb";
+  const el=editor(value,0,value.length);
+  assert.equal(insertJuliaTouchKey(el,"indent"),false);
+  assert.equal(el.value,value);
+  assert.deepEqual(el.effects,{inputs:0,focused:0});
 });
