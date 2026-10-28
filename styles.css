@@ -1319,3 +1319,12 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 #r2-practice-guidance{font-size:.88rem;line-height:1.5;margin:.85rem 0 0}
 @media(max-width:760px){.r2-practice-choices{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:350px){.r2-practice-path{padding:.75rem}.r2-practice-choices button{padding:.5rem;font-size:.78rem}}
+
+
+.r2-scaffold{margin-top:.9rem;padding:.8rem;border-top:1px solid currentColor}
+.r2-scaffold[hidden]{display:none}
+#r2-scaffold-count{font-size:.85rem;font-weight:700}
+#r2-scaffold-cue{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.9rem;line-height:1.55}
+.r2-scaffold button{font:inherit;font-size:.85rem;padding:.45rem .65rem;margin-right:.4rem;margin-bottom:.3rem;border:1px solid currentColor;border-radius:6px;color:inherit;background:transparent;cursor:pointer}
+.r2-scaffold button:disabled{opacity:.4;cursor:not-allowed}
+.r2-scaffold button:focus-visible{outline:3px solid #7c9cda;outline-offset:2px}
