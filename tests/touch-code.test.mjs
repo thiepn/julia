@@ -19,7 +19,7 @@ function editor(value,start=value.length,end=start){
 }
 test("Phase 09 keys cover Julia coding punctuation with distinct accessible labels",()=>{
   assert.equal(JULIA_TOUCH_KEYS.length,9);
-  assert.equal(new Set(JULIA_TOUCH_KEYS.map(item=>item.key)).size,8);
+  assert.equal(new Set(JULIA_TOUCH_KEYS.map(item=>item.key)).size,9);
   assert.ok(JULIA_TOUCH_KEYS.every(x=>x.description&&x.label&&typeof x.prefix==="string"));
 });
 test("wrap a selected Julia argument, keeping its selection and one canonical input event",()=>{
