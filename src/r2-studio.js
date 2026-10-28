@@ -231,8 +231,9 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const practiceButtons=[...practicePath.querySelectorAll("[data-r2-practice]")];
   const guidance=practicePath.querySelector("#r2-practice-guidance");
   let practiceApproach="build";
-  const scaffold=get("r2-scaffold"),scaffoldCount=get("r2-scaffold-count"),
-    scaffoldCue=get("r2-scaffold-cue");
+  const scaffold=practicePath.querySelector("#r2-scaffold"),
+    scaffoldCount=practicePath.querySelector("#r2-scaffold-count"),
+    scaffoldCue=practicePath.querySelector("#r2-scaffold-cue");
   let scaffoldStep=0,scaffoldKey="";
   const scaffoldSteps=()=>{
     const transfer=!get("transfer-plan").hidden;
@@ -263,8 +264,8 @@ export function initR2Studio({doc=document,lessons,navigate}){
       step.source==="r2-test-desk"?
       "Run the source-authored Julia tests. Only actual local runner output is evidence; a downloaded test file is not execution.":
       target?.textContent.trim().slice(0,420)||"Review the original lesson source.";
-    get("r2-scaffold-prev").disabled=scaffoldStep===0;
-    get("r2-scaffold-next").disabled=scaffoldStep===steps.length-1;
+    practicePath.querySelector("#r2-scaffold-prev").disabled=scaffoldStep===0;
+    practicePath.querySelector("#r2-scaffold-next").disabled=scaffoldStep===steps.length-1;
   }
   function advanceScaffold(delta){
     const steps=scaffoldSteps();
@@ -274,8 +275,8 @@ export function initR2Studio({doc=document,lessons,navigate}){
     renderScaffold();
     if(step.source==="scratch-code")target?.focus({preventScroll:true});
   }
-  get("r2-scaffold-prev").addEventListener("click",()=>advanceScaffold(-1));
-  get("r2-scaffold-next").addEventListener("click",()=>advanceScaffold(1));
+  practicePath.querySelector("#r2-scaffold-prev").addEventListener("click",()=>advanceScaffold(-1));
+  practicePath.querySelector("#r2-scaffold-next").addEventListener("click",()=>advanceScaffold(1));
   get("practice-mode").addEventListener("change",()=>doc.defaultView.queueMicrotask(()=>{
     scaffoldStep=0;renderScaffold();
   }));
