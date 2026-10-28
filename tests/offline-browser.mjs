@@ -29,7 +29,14 @@ try{
    await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
    await r2Locator(page,"#offline-access").evaluate(el=>el.open=true);
    await r2Locator(page,"#offline-status").getByText("Lessons and browser-based practice available offline on this device.").waitFor({timeout:30000});
-   await page.waitForFunction(()=>navigator.serviceWorker.controller!==null,null,{timeout:30000});
+   // On a first mobile install an activated worker may not yet control the
+   // existing document. An online reload is the real first-use activation
+   // path; offline acceptance only starts after confirmed controller custody.
+   if(!await page.evaluate(()=>navigator.serviceWorker.controller!==null)){
+     await page.reload();
+     await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
+   }
+   await page.waitForFunction(()=>navigator.serviceWorker.controller!==null,null,{timeout:10000});
    const cached=await page.evaluate(async()=>{
      const worker=await navigator.serviceWorker.ready;
      const keys=await caches.keys();
