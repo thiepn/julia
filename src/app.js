@@ -157,8 +157,12 @@ function lessonIndexFromHash() {
 }
 function navigate(index) {
   const chosen = Math.max(0, Math.min(lessons.length-1, index));
-  location.hash = "#lesson/" + lessons[chosen].id;
-  if (currentIndex === chosen) render();
+  const destination = "#lesson/" + lessons[chosen].id;
+  // A hash change renders asynchronously. Rendering here as well when the
+  // lesson index happens to match consumes the requested Explore stage twice,
+  // breaking the exact mixed-task return and canonical source focus.
+  if (location.hash === destination) render();
+  else location.hash = destination;
 }
 function renderSidebar() {
   const mastered = lessons.filter(l => readyForChallenge(l, progress)).length;
