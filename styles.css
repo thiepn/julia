@@ -456,12 +456,6 @@
   .completion-depth pre,.completion-depth pre>code{
     white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;
     max-width:100%;min-width:0}
-  /* WebKit retains up to 38px of intrinsic scrollable content inside the
-     original completion panel even after code ink is wrapped. Contain that
-     scroll range on the panel rather than widening the entire document;
-     no content is removed, hidden or replaced. */
-  .r2-explore-stage>.completion-depth{
-    max-width:100%;min-width:0;overflow-x:auto;overscroll-behavior-x:contain}
 }
 .completion-depth ol{padding-left:24px}
 .completion-depth li{margin:0 0 8px}
@@ -1403,3 +1397,14 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 .r2-scaffold button{font:inherit;font-size:.85rem;padding:.45rem .65rem;margin-right:.4rem;margin-bottom:.3rem;border:1px solid currentColor;border-radius:6px;color:inherit;background:transparent;cursor:pointer}
 .r2-scaffold button:disabled{opacity:.4;cursor:not-allowed}
 .r2-scaffold button:focus-visible{outline:3px solid #7c9cda;outline-offset:2px}
+
+/* Phase 09: WebKit mobile G1/G2 overflow. This comes AFTER the original
+   .r2-explore-stage>.r2-lab:not(.r2-lab-inactive){overflow:visible}
+   rule and uses the canonical panel ID, so computed overflow is actually
+   auto. The original source and any wider content stay accessible by
+   scrolling inside the teaching panel, never by widening the page. */
+@media(max-width:600px){
+  #r2-stage-explore .r2-explore-stage>#completion-depth{
+    max-width:100%;min-width:0;
+    overflow-x:auto;overscroll-behavior-x:contain}
+}
