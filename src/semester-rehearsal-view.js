@@ -53,10 +53,10 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
          "What would constitute actual execution evidence?"];
       for(const question of questions)prompts.append(node("li",null,question));
       plan.append(prompts);article.append(plan);
-      if(task.kind==="proof"){
+      {
         const input=node("textarea","rehearsal-working");
         input.rows=4;
-        input.placeholder="Write your derivation (this tab only)";
+        input.placeholder=task.kind==="proof"?"Write your derivation (this tab only)":"Plan your algorithm and test cases (this tab only)";
         input.setAttribute("aria-label","Your attempt: "+task.title);
         input.setAttribute("spellcheck","false");
         input.addEventListener("input",markAttempt);
@@ -114,7 +114,7 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
       if(!target){panel.scrollIntoView({behavior:"auto",block:"start"});return false;}
       target.scrollIntoView({behavior:"auto",block:"start"});
       target.querySelector(".rehearsal-work")?.focus({preventScroll:true});
-      return true;
+      return activeId;
     }
   };
 }
