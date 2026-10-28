@@ -63,6 +63,11 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const lessonHead=node("header","r2-lesson-head",'<div class="r2-breadcrumb">'+
     '<button id="r2-back-course" type="button">Course</button><span>/</span>'+
     '<span id="r2-lesson-unit"></span></div>');
+  // Keep the original mixed-task return action in the fixed lesson header,
+  // not inside the changeable completion-depth experiment. This preserves
+  // its listener and makes interruption recovery accessible from every stage.
+  const mixedReturn=get("semester-rehearsal-return");
+  if(mixedReturn)lessonHead.querySelector(".r2-lesson-path-actions").append(mixedReturn);
   const toolbar=doc.querySelector(".study-toolbar");
   const picker=toolbar.querySelector(".study-lesson-select");
   picker.classList.add("r2-lesson-picker");
