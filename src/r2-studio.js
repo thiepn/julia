@@ -223,11 +223,63 @@ export function initR2Studio({doc=document,lessons,navigate}){
     '<button type="button" data-r2-practice="scaffold">02 · Guided steps</button>'+
     '<button type="button" data-r2-practice="debug">03 · Repair a bug</button>'+
     '<button type="button" data-r2-practice="trace">04 · Trace an algorithm</button></div>'+
-    '<p id="r2-practice-guidance" role="status" aria-live="polite"></p>';
+    '<p id="r2-practice-guidance" role="status" aria-live="polite"></p>'+
+    '<div id="r2-scaffold" class="r2-scaffold" hidden><span id="r2-scaffold-count" role="status"></span>'+
+    '<p id="r2-scaffold-cue"></p><button type="button" id="r2-scaffold-prev">Previous cue</button>'+
+    '<button type="button" id="r2-scaffold-next">Next cue</button></div>';
   code.prepend(practicePath);
   const practiceButtons=[...practicePath.querySelectorAll("[data-r2-practice]")];
   const guidance=practicePath.querySelector("#r2-practice-guidance");
   let practiceApproach="build";
+  const scaffold=get("r2-scaffold"),scaffoldCount=get("r2-scaffold-count"),
+    scaffoldCue=get("r2-scaffold-cue");
+  let scaffoldStep=0,scaffoldKey="";
+  const scaffoldSteps=()=>{
+    const transfer=!get("transfer-plan").hidden;
+    const steps=[
+      {title:"Understand the task",source:"challenge-text"},
+      {title:"Identify success criteria",source:"challenge-checks"},
+      {title:"Inspect the starter",source:"starter-code"}
+    ];
+    if(transfer){
+      steps.push({title:"Plan the approach",source:"transfer-plan",detail:true});
+      steps.push({title:"Choose another test case",source:"transfer-tests",detail:true});
+    }else for(const id of ["hint-1","hint-2","hint-3"]){
+      if(!get(id).hidden)steps.push({title:"Reveal "+id.replace("-"," "),source:id,detail:true});
+    }
+    steps.push({title:"Implement and run",source:"scratch-code"});
+    steps.push({title:"Inspect real Julia test evidence",source:"r2-test-desk"});
+    return steps;
+  };
+  function renderScaffold(){
+    scaffold.hidden=practiceApproach!=="scaffold";
+    if(scaffold.hidden)return;
+    const steps=scaffoldSteps(),step=steps[Math.min(scaffoldStep,steps.length-1)];
+    scaffoldStep=steps.indexOf(step);
+    scaffoldCount.textContent="Cue "+(scaffoldStep+1)+" of "+steps.length+" · "+step.title;
+    const target=get(step.source);
+    scaffoldCue.textContent=step.source==="scratch-code"?
+      "Write your solution in the saved editor. Run Julia using the original runner; no pass is inferred from a draft.":
+      step.source==="r2-test-desk"?
+      "Run the source-authored Julia tests. Only actual local runner output is evidence; a downloaded test file is not execution.":
+      target?.textContent.trim().slice(0,420)||"Review the original lesson source.";
+    get("r2-scaffold-prev").disabled=scaffoldStep===0;
+    get("r2-scaffold-next").disabled=scaffoldStep===steps.length-1;
+  }
+  function advanceScaffold(delta){
+    const steps=scaffoldSteps();
+    scaffoldStep=Math.max(0,Math.min(steps.length-1,scaffoldStep+delta));
+    const step=steps[scaffoldStep],target=get(step.source);
+    if(step.detail&&target&&!target.hidden)target.open=true;
+    renderScaffold();
+    if(step.source==="scratch-code")target?.focus({preventScroll:true});
+  }
+  get("r2-scaffold-prev").addEventListener("click",()=>advanceScaffold(-1));
+  get("r2-scaffold-next").addEventListener("click",()=>advanceScaffold(1));
+  get("practice-mode").addEventListener("change",()=>doc.defaultView.queueMicrotask(()=>{
+    scaffoldStep=0;renderScaffold();
+  }));
+
   function syncPractice(){
     const lessonId=get("lesson-jump").value;
     const trace=get("program-trace"),repair=get("repair-lab");
@@ -250,6 +302,9 @@ export function initR2Studio({doc=document,lessons,navigate}){
       "Predict each modeled iteration before revealing its result. A trace prediction is not Julia execution.";
     practicePath.dataset.approach=practiceApproach;
     practicePath.dataset.lesson=lessonId;
+    const key=lessonId+":"+get("practice-mode").value;
+    if(key!==scaffoldKey){scaffoldStep=0;scaffoldKey=key;}
+    renderScaffold();
   }
   practiceButtons.forEach(button=>button.addEventListener("click",()=>{
     if(button.disabled)return;
@@ -264,9 +319,8 @@ export function initR2Studio({doc=document,lessons,navigate}){
         get(lab).scrollIntoView({block:"start"});
       }
     }else if(practiceApproach==="scaffold"){
-      const hint=get("hint-1");
-      if(hint&&!hint.hidden){hint.open=true;hint.scrollIntoView({block:"nearest"});}
-      else get("starter-code").scrollIntoView({block:"nearest"});
+      scaffoldStep=0;renderScaffold();
+      scaffold.scrollIntoView({block:"nearest"});
     }else get("scratch-code").focus({preventScroll:true});
   }));
 
