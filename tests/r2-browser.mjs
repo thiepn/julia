@@ -251,6 +251,21 @@ try{
       await page.locator("#semester-rehearsal-new").click();
       assert.equal(await page.locator(".rehearsal-attempt-status").count(),6);
       assert.equal(await page.locator(".rehearsal-attempt-status").first().innerText(),"Not yet attempted · not graded");
+      // Phase 08: a coding-plan draft survives lesson transfer and returns
+      // to the exact source-owned task, without claiming Julia execution.
+      await page.locator("#r2-mixed-next").click();
+      const coding=page.locator(".rehearsal-item:visible");
+      assert.equal(await coding.getAttribute("data-kind"),"coding");
+      await coding.locator(".rehearsal-working").fill("Inputs, outputs, pivot edge cases; Julia execution pending.");
+      const codingId=await coding.getAttribute("data-source-id");
+      await coding.locator(".rehearsal-work").click();
+      assert.equal(await page.locator("#semester-rehearsal-return").isVisible(),true);
+      await page.locator("#semester-rehearsal-return").click();
+      assert.equal(await page.locator(".rehearsal-item:visible").getAttribute("data-source-id"),codingId);
+      assert.equal(await page.locator(".rehearsal-item:visible .rehearsal-working").inputValue(),
+        "Inputs, outputs, pivot edge cases; Julia execution pending.");
+      assert.match(await page.locator(".rehearsal-item:visible .rehearsal-attempt-status").innerText(),/not graded/);
+      assert.equal(await page.locator("#scratch-code").count(),1);
 
       await noOverflow("mixed");await shot("mixed");
       await page.locator("#r2-utilities-open").click();
