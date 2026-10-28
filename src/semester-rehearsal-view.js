@@ -13,7 +13,9 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
   let current=[],activeId=null;
   // Session-only attempt indicators, never grades or persistent progress.
   const attempted=new Set();
-  let comparisonListeners=new AbortController();
+  // Volatile, per-generated-set reflections. Never persisted or graded.
+  const reviewByArea=new Map();
+  const comparisonSync=new Map();
 
   const node=(tag,cls,text)=>{
     const el=doc.createElement(tag);
@@ -22,9 +24,12 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
     return el;
   };
   function render(){
-    comparisonListeners.abort();
-    comparisonListeners=new AbortController();
     current=createSemesterRehearsal(seed);
+    reviewByArea.clear();
+    comparisonSync.clear();
+    for(const task of current){
+      if(!reviewByArea.has(task.area))reviewByArea.set(task.area,{assumptions:"",boundary:"",coverage:""});
+    }
     items.replaceChildren();
     for(const [index,task] of current.entries()){
       const article=node("article","rehearsal-item");
@@ -77,14 +82,26 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
         ["Proof assumptions",proofSource.context],
         ["Original coding task",codeSource.prompt],
         ["Algorithm context",codeSource.context],
-        ["Source-authored Julia Test names",codeSource.checks?.join(", ")||"No named tests supplied"]
+        ["Source-authored Julia Test names",codeSource.checks?.join(", ")||"No named tests supplied"],
+        ["Original proof reference",proofSource.source],
+        ["Original coding reference",codeSource.source]
       ]){
         const section=node("section","rehearsal-comparison-source");
         section.append(node("h4",null,heading),node("p",null,content));
         compareBody.append(section);
       }
+      const testDetails=node("section","rehearsal-source-checks");
+      testDetails.append(node("h4",null,"Original Julia Test assertions (reference only)"));
+      if(codeSource.checkDetails?.length){
+        for(const check of codeSource.checkDetails){
+          const row=node("div","rehearsal-source-check");
+          row.append(node("strong",null,check.name),node("code",null,check.assertion));
+          testDetails.append(row);
+        }
+      }else testDetails.append(node("p",null,"No original Julia assertions available."));
+      compareBody.append(testDetails);
       compareBody.append(node("p","rehearsal-warning",
-        "Related by syllabus topic only. These are distinct original exercises; a proof does not establish Julia test success."));
+        "Related by syllabus topic only. These are distinct original exercises; source tests are not executed here and a proof does not establish Julia test success."));
       const notes=node("div","rehearsal-comparison-notes");
       const syncComparison=()=>{
         notes.replaceChildren();
@@ -95,11 +112,35 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
             relatedItem?.querySelector(".rehearsal-working")?.value||"No attempt written in this session."));
         }
       };
+      comparisonSync.set(comparison,syncComparison);
       comparison.addEventListener("toggle",()=>{if(comparison.open)syncComparison();});
-      items.addEventListener("input",event=>{
-        if(comparison.open&&event.target.matches(".rehearsal-working"))syncComparison();
-      },{signal:comparisonListeners.signal});
       comparison.append(compareBody,notes);
+      const review=node("section","rehearsal-transfer-review");
+      review.append(node("h4",null,"Proof-to-code review · your notes, not a grade"));
+      const reviewPrompts=[
+        ["assumptions","Assumption transfer","Which precise original proof assumption is relevant to this coding input? Explain if the algorithm actually satisfies it, or why the two tasks are not equivalent."],
+        ["boundary","Boundary or counterexample","Give a concrete boundary input or counterexample, predict what should happen, and say which proof assumption or algorithm condition is stressed."],
+        ["coverage","Test coverage gaps","Name the original Julia Test cases that address your boundary input. What remains untested? A test name or written plan is not a test result."]
+      ];
+      for(const [key,heading,question] of reviewPrompts){
+        const field=node("div","rehearsal-review-field");
+        const input=node("textarea","rehearsal-review-input");
+        input.id="rehearsal-review-"+task.area+"-"+task.kind+"-"+key;
+        input.rows=3;
+        input.dataset.reviewArea=task.area;
+        input.dataset.reviewField=key;
+        input.value=reviewByArea.get(task.area)[key];
+        input.placeholder="Reasoning in this browser tab only; no automatic verification";
+        input.setAttribute("spellcheck","false");
+        const label=node("label",null,heading+" — "+question);
+        label.htmlFor=input.id;
+        field.append(label,input);review.append(field);
+      }
+      const progress=node("p","rehearsal-review-progress","0 of 3 review sections drafted · not checked or graded");
+      progress.dataset.reviewArea=task.area;
+      progress.setAttribute("role","status");
+      review.append(progress);
+      comparison.append(review);
       article.append(comparison);
       const controls=node("div","rehearsal-actions");
       const reveal=node("button","secondary","Show approach");
@@ -137,12 +178,35 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
   }
   regenerate.addEventListener("click",()=>{
     const hasWork=[...items.querySelectorAll(".rehearsal-working")].some(input=>input.value.trim());
-    if((hasWork||attempted.size>0)&&!doc.defaultView.confirm("Start a new set? In-page notes and attempt markers will be discarded; saved lesson drafts remain unchanged."))return;
+    const hasReview=[...reviewByArea.values()].some(review=>Object.values(review).some(value=>value.trim()));
+    if((hasWork||hasReview||attempted.size>0)&&!doc.defaultView.confirm("Start a new set? In-page proof, coding and comparison notes and attempt markers will be discarded; saved lesson drafts remain unchanged."))return;
     seed=(seed+1)>>>0;
     activeId=null;
     attempted.clear();
     render();
     onNewSet();
+  });
+  // One delegated listener handles any number of regeneration cycles.
+  // The paired proof/coding panels mirror a single per-area review, not two copies.
+  items.addEventListener("input",event=>{
+    const input=event.target;
+    if(input.matches(".rehearsal-review-input")){
+      const {reviewArea,reviewField}=input.dataset;
+      const review=reviewByArea.get(reviewArea);
+      if(!review||!Object.hasOwn(review,reviewField))return;
+      review[reviewField]=input.value;
+      for(const other of items.querySelectorAll(".rehearsal-review-input")){
+        if(other!==input&&other.dataset.reviewArea===reviewArea&&other.dataset.reviewField===reviewField)
+          other.value=input.value;
+      }
+      const drafted=Object.values(review).filter(value=>value.trim()).length;
+      for(const progress of items.querySelectorAll(".rehearsal-review-progress")){
+        if(progress.dataset.reviewArea===reviewArea)
+          progress.textContent=drafted+" of 3 review sections drafted · not checked or graded";
+      }
+    }else if(input.matches(".rehearsal-working")){
+      for(const [comparison,sync] of comparisonSync)if(comparison.open)sync();
+    }
   });
   launch.addEventListener("click",()=>{
     panel.open=true;
