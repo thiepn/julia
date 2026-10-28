@@ -284,6 +284,8 @@ export function initR2Studio({doc=document,lessons,navigate}){
   function syncPractice(){
     const lessonId=get("lesson-jump").value;
     const trace=get("program-trace"),repair=get("repair-lab");
+    // These nodes are moved into Explore. Their canonical hidden state is the
+    // availability authority; never assume every lesson has a trace.
     const debugAvailable=!!repair&&!repair.hidden;
     const traceAvailable=!!trace&&!trace.hidden;
     for(const button of practiceButtons){
@@ -313,12 +315,16 @@ export function initR2Studio({doc=document,lessons,navigate}){
     syncPractice();
     if(practiceApproach==="debug"||practiceApproach==="trace"){
       const lab=practiceApproach==="debug"?"repair-lab":"program-trace";
-      showStage("explore");
+      // Select before switching stages, so no unrelated numerical lab flashes
+      // or becomes the active destination during the stage transition.
       const picker=get("r2-lab-choice");
-      if([...picker.options].some(option=>option.value===lab)){
-        picker.value=lab;syncLabs();
-        get(lab).scrollIntoView({block:"start"});
+      syncLabs();
+      if(![...picker.options].some(option=>option.value===lab)){
+        practiceApproach="build";syncPractice();return;
       }
+      picker.value=lab;syncLabs();
+      showStage("explore");
+      get(lab).scrollIntoView({block:"start"});
     }else if(practiceApproach==="scaffold"){
       scaffoldStep=0;renderScaffold();
       scaffold.scrollIntoView({block:"nearest"});
