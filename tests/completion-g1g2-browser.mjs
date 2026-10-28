@@ -69,6 +69,16 @@ try{
        assert.match(await r2Locator(page,"#completion-track-starter").innerText(),/vector_amplification/);
        await r2Locator(page,"#completion-proof-choice").selectOption("G2-multivariable");
        assert.match(await r2Locator(page,"#completion-proof-target").innerText(),/Derive this formula/);
+       if(kind==="WebKit"&&device==="mobile"){
+         // Guard against the later .r2-lab overflow:visible rule silently
+         // overriding the panel scroller (the reproduced 24px regression).
+         const panel=await page.locator("#completion-depth").evaluate(el=>({
+           overflow:getComputedStyle(el).overflowX,
+           client:el.clientWidth,scroll:el.scrollWidth
+         }));
+         assert.equal(panel.overflow,"auto","WebKit mobile source panel must own horizontal overflow");
+         assert.ok(panel.client>0);
+       }
        const geometry=await page.evaluate(()=>{
           const excess=document.documentElement.scrollWidth-innerWidth;
           if(excess<=2)return {excess,offenders:[]};
