@@ -542,7 +542,7 @@
   border-radius:6px;background:var(--surface);min-width:0}
 .rehearsal-comparison>summary{cursor:pointer;font-weight:650}
 .rehearsal-comparison-body{display:grid;gap:11px;margin-top:13px;min-width:0}
-.rehearsal-comparison-source h4,.rehearsal-source-checks h4,.rehearsal-transfer-review h4{
+.rehearsal-comparison-source h4,.rehearsal-source-checks h4,.rehearsal-check-worksheet h4,.rehearsal-transfer-review h4{
   font-size:14px;margin:0 0 4px}
 .rehearsal-comparison-source p,.rehearsal-comparison-notes p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
 .rehearsal-source-check{display:grid;gap:3px;padding:8px 0;border-top:1px solid var(--line)}
@@ -552,6 +552,13 @@
 .rehearsal-comparison-notes,.rehearsal-transfer-review{border-top:1px solid var(--line);
   padding-top:13px;margin-top:13px;min-width:0}
 .rehearsal-comparison-notes h4{font-size:14px;margin:10px 0 4px}
+.rehearsal-check-worksheet{border-top:1px solid var(--line);padding-top:13px;min-width:0}
+.rehearsal-check-field{margin:12px 0;min-width:0}
+.rehearsal-check-field label{display:block;font-size:14px;font-weight:600;margin-bottom:5px}
+.rehearsal-check-note{display:block;width:100%;box-sizing:border-box;min-height:76px;padding:10px;
+  resize:vertical;border:1px solid var(--line);border-radius:4px;
+  color:var(--ink);background:var(--surface);font-size:14px;line-height:1.5}
+.rehearsal-check-progress{color:var(--muted);font-size:14px;margin:10px 0}
 .rehearsal-review-field{margin:12px 0;min-width:0}
 .rehearsal-review-field label{display:block;font-size:14px;font-weight:600;margin-bottom:5px}
 .rehearsal-review-input{display:block;width:100%;box-sizing:border-box;min-height:76px;padding:10px;
