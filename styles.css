@@ -449,6 +449,14 @@
   width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;
   white-space:pre;font:13px/1.55 Consolas,monospace}
 .completion-depth pre>code{white-space:pre}
+/* WebKit on narrow touch viewports includes long inline code ink in the
+   document width even when the owning pre scrolls. Wrap *only* these
+   display-only references; no source text, editors or exports are changed. */
+@media(max-width:600px){
+  .completion-depth pre,.completion-depth pre>code{
+    white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;
+    max-width:100%;min-width:0}
+}
 .completion-depth ol{padding-left:24px}
 .completion-depth li{margin:0 0 8px}
 .completion-actions{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}
