@@ -280,6 +280,21 @@ try{
       assert.equal(await page.locator(".rehearsal-item:visible .rehearsal-working").inputValue(),
         "Proof assumptions and boundary reasoning");
       assert.equal(await page.locator(".rehearsal-pair").count(),6);
+      // The comparison is source-only and mirrors independent, volatile notes.
+      const compare=page.locator(".rehearsal-item:visible .rehearsal-comparison");
+      await compare.locator("summary").click();
+      assert.match(await compare.innerText(),/Original proof claim/);
+      assert.match(await compare.innerText(),/Original coding task/);
+      assert.match(await compare.innerText(),/Source-authored Julia Test names/);
+      assert.match(await compare.innerText(),/Proof assumptions and boundary reasoning/);
+      assert.match(await compare.innerText(),/Inputs, outputs, pivot edge cases/);
+      assert.match(await compare.innerText(),/does not establish Julia test success/);
+      await page.locator(".rehearsal-item:visible .rehearsal-working").fill("Revised proof assumption");
+      assert.match(await compare.innerText(),/Revised proof assumption/);
+      await page.locator(".rehearsal-item:visible .rehearsal-pair").click();
+      await page.locator(".rehearsal-item:visible .rehearsal-pair").click();
+      assert.match(await compare.innerText(),/Revised proof assumption/);
+      assert.equal(await page.locator("#scratch-code").count(),1);
       assert.equal(await page.locator("#scratch-code").count(),1);
 
       await noOverflow("mixed");await shot("mixed");
