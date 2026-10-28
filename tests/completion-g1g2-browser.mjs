@@ -85,7 +85,27 @@ try{
             });
           return {excess,offenders};
         });
-        if(geometry.excess>2)console.error("G1G2_MOBILE_OVERFLOW_GEOMETRY",kind,device,geometry);
+        if(geometry.excess>2){
+          const ancestors=await page.evaluate(()=>{
+            const out={viewport:innerWidth,root:document.documentElement.scrollWidth,
+              body:document.body.scrollWidth,chains:[]};
+            for(const selector of ["#completion-track-starter","#completion-experiment-code"]){
+              let current=document.querySelector(selector);const nodes=[];
+              while(current&&nodes.length<12){
+                const rect=current.getBoundingClientRect(),css=getComputedStyle(current);
+                nodes.push({tag:current.tagName,id:current.id,cls:String(current.className).slice(0,60),
+                  left:Math.round(rect.left),right:Math.round(rect.right),
+                  width:Math.round(rect.width),client:current.clientWidth,scroll:current.scrollWidth,
+                  overflow:css.overflowX,display:css.display,box:css.boxSizing,
+                  padding:css.paddingLeft+"/"+css.paddingRight});
+                current=current.parentElement;
+              }
+              out.chains.push({selector,nodes});
+            }
+            return out;
+          });
+          console.error("G1G2_MOBILE_OVERFLOW_GEOMETRY",kind,device,geometry,ancestors);
+        }
         assert.ok(geometry.excess<=2,kind+" "+device+" horizontal overflow: "+geometry.excess);
        const stored=await page.evaluate(()=>JSON.stringify(Object.entries(localStorage)));
        assert.ok(!stored.includes(code));
