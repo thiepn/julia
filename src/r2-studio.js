@@ -277,7 +277,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
   }
   practicePath.querySelector("#r2-scaffold-prev").addEventListener("click",()=>advanceScaffold(-1));
   practicePath.querySelector("#r2-scaffold-next").addEventListener("click",()=>advanceScaffold(1));
-  get("practice-mode").addEventListener("change",()=>doc.defaultView.queueMicrotask(()=>{
+  codePanel.querySelector("#practice-mode").addEventListener("change",()=>doc.defaultView.queueMicrotask(()=>{
     scaffoldStep=0;renderScaffold();
   }));
 
