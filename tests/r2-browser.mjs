@@ -233,6 +233,25 @@ try{
       await page.locator("#r2-mixed-open").click();
       assert.equal(await page.locator("#r2-mixed").isVisible(),true);
       assert.equal(await page.locator(".rehearsal-item:visible").count(),1);
+      // Phase 08: original mixed prompts, no fabricated grading or persistence.
+      assert.equal(await page.locator(".rehearsal-item").count(),6);
+      assert.equal(await page.locator(".rehearsal-reasoning").count(),6);
+      assert.equal(await page.locator(".rehearsal-attempt-status").count(),6);
+      assert.match(await page.locator(".rehearsal-item:visible .rehearsal-attempt-status").innerText(),/not graded/);
+      const proof=page.locator(".rehearsal-item").filter({has:page.locator(".rehearsal-working")}).first();
+      await proof.locator(".rehearsal-working").fill("Reasoning retained until a new set is confirmed");
+      assert.match(await proof.locator(".rehearsal-attempt-status").innerText(),/Attempt started/);
+      await page.locator("#r2-course-open").click();
+      await page.locator("#r2-mixed-open").click();
+      assert.equal(await proof.locator(".rehearsal-working").inputValue(),"Reasoning retained until a new set is confirmed");
+      page.once("dialog",dialog=>dialog.dismiss());
+      await page.locator("#semester-rehearsal-new").click();
+      assert.equal(await proof.locator(".rehearsal-working").inputValue(),"Reasoning retained until a new set is confirmed");
+      page.once("dialog",dialog=>dialog.accept());
+      await page.locator("#semester-rehearsal-new").click();
+      assert.equal(await page.locator(".rehearsal-attempt-status").count(),6);
+      assert.equal(await page.locator(".rehearsal-attempt-status").first().innerText(),"Not yet attempted · not graded");
+
       await noOverflow("mixed");await shot("mixed");
       await page.locator("#r2-utilities-open").click();
       await page.locator("#course-backup summary").click();
