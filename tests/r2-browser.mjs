@@ -126,6 +126,24 @@ try{
       await page.locator("#practice-mode").selectOption("original");
       await page.locator('[data-r2-practice="build"]').click();
       assert.equal(await page.locator("#r2-scaffold").isVisible(),false);
+      // Every lesson owns a repair exercise; only lessons with a canonical
+      // trace may enable tracing. Neither operation may replace the editor.
+      const originalDraft=await page.locator("#scratch-code").inputValue();
+      await page.locator('[data-r2-practice="debug"]').click();
+      assert.equal(await page.locator("#r2-stage-explore").isVisible(),true);
+      assert.equal(await page.locator("#r2-lab-choice").inputValue(),"repair-lab");
+      assert.equal(await page.locator("#repair-editor").count(),1);
+      await page.locator('[data-r2-stage="code"]').click();
+      assert.equal(await page.locator("#scratch-code").inputValue(),originalDraft);
+      const traceEnabled=await page.locator('[data-r2-practice="trace"]').isEnabled();
+      if(traceEnabled){
+        await page.locator('[data-r2-practice="trace"]').click();
+        assert.equal(await page.locator("#r2-lab-choice").inputValue(),"program-trace");
+        assert.equal(await page.locator("#r2-stage-explore").isVisible(),true);
+        await page.locator('[data-r2-stage="code"]').click();
+        assert.equal(await page.locator("#scratch-code").inputValue(),originalDraft);
+      }
+      assert.equal(await page.locator("#scratch-code").count(),1);
       await noOverflow("practice-path");
       await page.locator('[data-r2-stage="learn"]').click();
       await page.locator('[data-r2-stage="check"]').click();
