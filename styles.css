@@ -441,7 +441,14 @@
 .completion-depth p,.completion-depth ol,.completion-depth label{font-size:14px;line-height:1.6}
 .completion-depth label{display:block;font-weight:650;margin:12px 0 6px}
 .completion-depth select{width:100%;max-width:100%;min-height:44px;background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:8px;font-size:15px}
-.completion-depth pre{max-width:100%;overflow:auto;white-space:pre;font:13px/1.55 Consolas,monospace}
+/* G1/G2 WebKit mobile: the original Julia source scrolls *inside* its pre,
+   never expands the page inline size. Keep long lines and source bytes intact. */
+.completion-depth,.completion-depth>div,#completion-tracks,
+#completion-proofs,#completion-experiments{min-width:0;max-width:100%;box-sizing:border-box}
+.completion-depth pre{display:block;box-sizing:border-box;min-width:0;
+  width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;
+  white-space:pre;font:13px/1.55 Consolas,monospace}
+.completion-depth pre>code{white-space:pre}
 .completion-depth ol{padding-left:24px}
 .completion-depth li{margin:0 0 8px}
 .completion-actions{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}
