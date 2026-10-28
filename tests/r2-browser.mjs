@@ -113,6 +113,20 @@ try{
       assert.equal(await page.locator("#r2-practice-guidance").count(),1);
       assert.equal(await page.locator('[data-r2-practice="build"]').getAttribute("aria-pressed"),"true");
       assert.equal(await page.locator("#scratch-code").count(),1);
+      const touch=page.locator(".r2-touch-keys");
+      assert.equal(await touch.isVisible(),device.width<=1024);
+      assert.equal(await touch.locator("button").count(),8);
+      if(device.name==="mobile-390"&&scheme==="light"){
+        // Edit the original textarea; existing input listener owns persistence.
+        await page.locator("#scratch-code").fill("f(x)");
+        await page.locator("#scratch-code").evaluate(el=>el.setSelectionRange(2,3));
+        await touch.locator('[data-touch-key="brackets"]').click();
+        assert.equal(await page.locator("#scratch-code").inputValue(),"f([x])");
+        assert.equal(await page.locator("#scratch-code").evaluate(el=>el.selectionStart),3);
+        assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:draft:v1:09")),"f([x])");
+        assert.equal(await page.locator("#scratch-code").count(),1);
+      }
+      await noOverflow("touch-keys");
       await page.locator('[data-r2-practice="scaffold"]').click();
       assert.equal(await page.locator('[data-r2-practice="scaffold"]').getAttribute("aria-pressed"),"true");
       assert.match(await page.locator("#r2-practice-guidance").innerText(),/existing hints/);
