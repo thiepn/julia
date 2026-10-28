@@ -456,6 +456,12 @@
   .completion-depth pre,.completion-depth pre>code{
     white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;
     max-width:100%;min-width:0}
+  /* WebKit retains up to 38px of intrinsic scrollable content inside the
+     original completion panel even after code ink is wrapped. Contain that
+     scroll range on the panel rather than widening the entire document;
+     no content is removed, hidden or replaced. */
+  .r2-explore-stage>.completion-depth{
+    max-width:100%;min-width:0;overflow-x:auto;overscroll-behavior-x:contain}
 }
 .completion-depth ol{padding-left:24px}
 .completion-depth li{margin:0 0 8px}
