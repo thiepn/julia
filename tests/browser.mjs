@@ -1093,59 +1093,27 @@ try {
     await r2Locator(mobile,"#practice-mode").selectOption("b");
     await r2Locator(mobile,"#external-report-details summary").click();
     await r2Locator(mobile,"#external-report-input").fill("MethodError: no method matching near_relative(::Int64)");
+    // A fixed footer previously intercepted mobile clicks through its empty
+    // padding. Verify the original button receives a genuine Playwright click,
+    // produces source-owned feedback and leaves the footer CTA interactive.
     await mobile.evaluate(()=>{
       window.__juliaReportClickObserved=0;
-      window.__juliaReportButton=document.getElementById("external-report-inspect");
-      window.__juliaLastClickTarget=null;
-      document.addEventListener("click",event=>{
-        const el=event.target;
-        window.__juliaLastClickTarget=el?.id||el?.tagName||null;
-        window.__juliaLastClickInfo={tag:el?.tagName,id:el?.id,
-          classes:String(el?.className||""),parent:el?.parentElement?.id||el?.parentElement?.className||"",
-          closestActivity:el?.closest(".r2-activity")?.id||"",
-          closestDetails:el?.closest("details")?.id||""};
-      },{capture:true,once:true});
-      window.__juliaReportButton.addEventListener("click",()=>{
+      document.getElementById("external-report-inspect").addEventListener("click",()=>{
         window.__juliaReportClickObserved++;
-      },{capture:true,once:true});
+      },{once:true});
     });
-    // The control is already visible after the preceding real fill. Avoid
-    // the legacy adapter's extra stage/disclosure traversal which previously
-    // completed without delivering a click to this original report button.
     await mobile.locator("#external-report-inspect").click();
-    // The R2 mobile task sidebar uses a native disclosure. Read the real DOM
-    // result first, then reopen its canonical visual route before checking
-    // readability; a collapsed details element has an empty innerText.
-    const reportResults=r2Locator(mobile,"#external-report-results");
-    const diagnostic=await mobile.evaluate(()=>{
-      const results=document.getElementById("external-report-results");
-      const details=document.getElementById("external-report-details");
-      const button=document.getElementById("external-report-inspect");
-      return {route:location.hash,stage:document.body.dataset.r2Stage,
-        variant:document.getElementById("practice-mode")?.value,
-        input:document.getElementById("external-report-input")?.value,
-        detailsOpen:details?.open,taskOpen:document.querySelector(".r2-instructions")?.open,
-        output:results?.textContent,children:results?.children.length,
-        connected:button?.isConnected,clickObserved:window.__juliaReportClickObserved,
-        originalButtonConnected:window.__juliaReportButton?.isConnected,
-        capturedButtonIsCurrent:window.__juliaReportButton===button,
-        lastClickTarget:window.__juliaLastClickTarget,
-        lastClickInfo:window.__juliaLastClickInfo,
-        buttonRect:(()=>{const r=button.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};})(),
-        actualAtCenter:(()=>{const r=button.getBoundingClientRect();
-          const el=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
-          return {tag:el?.tagName,id:el?.id,classes:String(el?.className||"")};})()};
-    });
-    if(!/argument count and accepted types/.test(diagnostic.output||""))
-      console.error("J19_MOBILE_REPORT_DIAGNOSTIC",{...diagnostic,pageErrors:errors.slice(-5)});
+    assert.equal(await mobile.evaluate(()=>window.__juliaReportClickObserved),1);
+    const reportResults=mobile.locator("#external-report-results");
     assert.match(await reportResults.textContent(),/argument count and accepted types/);
     assert.equal(await reportResults.isVisible(),true);
-    // On nested native disclosures Chromium's innerText can be empty even
-    // while source-owned output exists. Verify the actual message and that
-    // its rendered child nodes are visible; do not inspect only hidden text.
-    assert.equal(await mobile.locator("#external-report-results > strong").isVisible(),true);
-    assert.equal(await mobile.locator("#external-report-results > p").first().isVisible(),true);
-    assert.match(await reportResults.textContent(),/argument count and accepted types/);
+    assert.equal(await reportResults.locator("> strong").isVisible(),true);
+    assert.equal(await reportResults.locator("> p").first().isVisible(),true);
+    const footerHit=await mobile.evaluate(()=>{
+      const button=document.getElementById("r2-mobile-next"),rect=button.getBoundingClientRect();
+      return button.contains(document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2));
+    });
+    assert.equal(footerHit,true,"Mobile primary footer action must remain interactive");
     const reportOverflow=await mobile.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
     assert.ok(reportOverflow<=2,"J19 report triage caused mobile overflow: "+reportOverflow);
     await mobile.goto("http://127.0.0.1:"+port+"/#lesson/13");
