@@ -298,6 +298,10 @@ try{
       assert.equal(await page.locator(".rehearsal-pair").count(),6);
       // The comparison is source-only and mirrors independent, volatile notes.
       const compare=page.locator(".rehearsal-item:visible .rehearsal-comparison");
+      // Snapshot must already be up to date before a native details toggle;
+      // Chromium dispatches the toggle event asynchronously.
+      assert.match(await compare.locator(".rehearsal-comparison-notes").textContent(),
+        /Proof assumptions and boundary reasoning/);
       await compare.locator("summary").click();
       assert.match(await compare.innerText(),/Original proof claim/);
       assert.match(await compare.innerText(),/Original coding task/);
