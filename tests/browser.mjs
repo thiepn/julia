@@ -1094,7 +1094,13 @@ try {
     await r2Locator(mobile,"#external-report-details summary").click();
     await r2Locator(mobile,"#external-report-input").fill("MethodError: no method matching near_relative(::Int64)");
     await r2Locator(mobile,"#external-report-inspect").click();
-    assert.match(await r2Locator(mobile,"#external-report-results").innerText(),/argument count and accepted types/);
+    // The R2 mobile task sidebar uses a native disclosure. Read the real DOM
+    // result first, then reopen its canonical visual route before checking
+    // readability; a collapsed details element has an empty innerText.
+    const reportResults=r2Locator(mobile,"#external-report-results");
+    assert.match(await reportResults.textContent(),/argument count and accepted types/);
+    assert.equal(await reportResults.isVisible(),true);
+    assert.match(await reportResults.innerText(),/argument count and accepted types/);
     const reportOverflow=await mobile.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
     assert.ok(reportOverflow<=2,"J19 report triage caused mobile overflow: "+reportOverflow);
     await mobile.goto("http://127.0.0.1:"+port+"/#lesson/13");
