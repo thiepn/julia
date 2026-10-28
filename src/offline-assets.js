@@ -1,6 +1,6 @@
 // Immutable release-scoped static-study shell. Add new first-party assets here before shipping.
 // No student drafts, runner outputs, external scripts, tokens, uploads, or account data.
-export const OFFLINE_CACHE_NAME="amp-julia-offline-codeux-20261028-8i";
+export const OFFLINE_CACHE_NAME="amp-julia-offline-codeux-20261028-9a";
 export const OFFLINE_ASSETS=Object.freeze([
   "index.html",
   "styles.css",
@@ -63,7 +63,8 @@ export const OFFLINE_ASSETS=Object.freeze([
   "src/offline-assets.js",
   "src/offline-study.js",
   "src/semester-rehearsal.js",
-  "src/semester-rehearsal-view.js"
+  "src/semester-rehearsal-view.js",
+  "src/touch-code.js"
 ]);
 const ALLOWED=new Set(OFFLINE_ASSETS);
 export function offlineAssetKey(requestUrl,scopeUrl,navigation=false){
