@@ -124,6 +124,16 @@ try{
         assert.equal(await page.locator("#scratch-code").inputValue(),"f([x])");
         assert.equal(await page.locator("#scratch-code").evaluate(el=>el.selectionStart),3);
         assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:draft:v1:09")),"f([x])");
+        // Phase 09: a complete selected block is indented and outdented
+        // through the original Julia editor's storage-owned input listener.
+        await page.locator("#scratch-code").fill("begin\\nx = 1\\nend".replace(/\\n/g,"\n"));
+        await page.locator("#scratch-code").evaluate(el=>el.setSelectionRange(6,12));
+        await touch.locator('[data-touch-key="indent"]').click();
+        assert.equal(await page.locator("#scratch-code").inputValue(),"begin\\n    x = 1\\nend".replace(/\\n/g,"\n"));
+        await touch.locator('[data-touch-key="outdent"]').click();
+        const unchanged="begin\\nx = 1\\nend".replace(/\\n/g,"\n");
+        assert.equal(await page.locator("#scratch-code").inputValue(),unchanged);
+        assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:draft:v1:09")),unchanged);
         assert.equal(await page.locator("#scratch-code").count(),1);
       }
       await noOverflow("touch-keys");
