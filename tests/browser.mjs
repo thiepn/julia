@@ -1098,7 +1098,12 @@ try {
       window.__juliaReportButton=document.getElementById("external-report-inspect");
       window.__juliaLastClickTarget=null;
       document.addEventListener("click",event=>{
-        window.__juliaLastClickTarget=event.target?.id||event.target?.tagName||null;
+        const el=event.target;
+        window.__juliaLastClickTarget=el?.id||el?.tagName||null;
+        window.__juliaLastClickInfo={tag:el?.tagName,id:el?.id,
+          classes:String(el?.className||""),parent:el?.parentElement?.id||el?.parentElement?.className||"",
+          closestActivity:el?.closest(".r2-activity")?.id||"",
+          closestDetails:el?.closest("details")?.id||""};
       },{capture:true,once:true});
       window.__juliaReportButton.addEventListener("click",()=>{
         window.__juliaReportClickObserved++;
@@ -1124,7 +1129,12 @@ try {
         connected:button?.isConnected,clickObserved:window.__juliaReportClickObserved,
         originalButtonConnected:window.__juliaReportButton?.isConnected,
         capturedButtonIsCurrent:window.__juliaReportButton===button,
-        lastClickTarget:window.__juliaLastClickTarget};
+        lastClickTarget:window.__juliaLastClickTarget,
+        lastClickInfo:window.__juliaLastClickInfo,
+        buttonRect:(()=>{const r=button.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};})(),
+        actualAtCenter:(()=>{const r=button.getBoundingClientRect();
+          const el=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
+          return {tag:el?.tagName,id:el?.id,classes:String(el?.className||"")};})()};
     });
     if(!/argument count and accepted types/.test(diagnostic.output||""))
       console.error("J19_MOBILE_REPORT_DIAGNOSTIC",{...diagnostic,pageErrors:errors.slice(-5)});
