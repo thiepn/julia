@@ -193,7 +193,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     button.setAttribute("aria-label",entry.description);
     button.addEventListener("click",()=>{
       const changed=insertJuliaTouchKey(draft,entry.key);
-      if(!changed)get("r2-editor-status").textContent="Code not inserted — draft limit or editor unavailable";
+      if(!changed)get("r2-editor-status").textContent="No edit applied — indentation, draft size, or editor availability";
     });
     touchBar.append(button);
   }
