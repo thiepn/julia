@@ -68,7 +68,7 @@ try{
    if(device.name==="mobile"){
      const keys=page.locator(".r2-touch-keys");
      assert.equal(await keys.isVisible(),true);
-     assert.equal(await keys.locator("button").count(),8);
+     assert.equal(await keys.locator("button").count(),9);
      await page.locator("#scratch-code").evaluate(el=>{
        el.setSelectionRange(el.value.length,el.value.length);
      });
