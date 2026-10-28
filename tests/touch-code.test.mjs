@@ -57,7 +57,7 @@ test("fail closed for unknown keys, disabled and read-only editors and 50 kB dra
 });
 
 test("multi-line Julia indentation preserves every source line in one input event",()=>{
-  const el=editor("function f(x)\n  y=x+1\n  y\nend",14,31);
+  const el=editor("function f(x)\n  y=x+1\n  y\nend",14,26);
   const original=el.value;
   assert.equal(insertJuliaTouchKey(el,"indent"),true);
   assert.match(el.value,/^function f\(x\)\n {4}  y=x\+1\n {4}  y/m);
@@ -85,7 +85,7 @@ test("a selection ending at newline never indents the following Julia block",()=
   assert.equal(el.effects.inputs,1);
 });
 test("oversized multi-line indentation is rejected without touching original source",()=>{
-  const value="a".repeat(24998)+"\nb";
+  const value="a".repeat(49995)+"\nb";
   const el=editor(value,0,value.length);
   assert.equal(insertJuliaTouchKey(el,"indent"),false);
   assert.equal(el.value,value);
