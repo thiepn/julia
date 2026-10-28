@@ -15,6 +15,9 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
   const attempted=new Set();
   // Volatile, per-generated-set reflections. Never persisted or graded.
   const reviewByArea=new Map();
+  // Each hypothesis belongs to this generated set's original Julia Test.
+  // It is never a verdict or runner result and stays in this browser tab.
+  const predictionsByArea=new Map();
   const comparisonSync=new Map();
 
   const node=(tag,cls,text)=>{
@@ -26,9 +29,11 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
   function render(){
     current=createSemesterRehearsal(seed);
     reviewByArea.clear();
+    predictionsByArea.clear();
     comparisonSync.clear();
     for(const task of current){
       if(!reviewByArea.has(task.area))reviewByArea.set(task.area,{assumptions:"",boundary:"",coverage:""});
+      if(task.kind==="coding")predictionsByArea.set(task.area,(task.checkDetails||[]).map(()=>""));
     }
     items.replaceChildren();
     for(const [index,task] of current.entries()){
@@ -100,6 +105,34 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
         }
       }else testDetails.append(node("p",null,"No original Julia assertions available."));
       compareBody.append(testDetails);
+      // A per-assertion prediction connects the proof assumptions to the
+      // original coding tests without evaluating anything or altering code.
+      if(codeSource.checkDetails?.length){
+        const worksheet=node("section","rehearsal-check-worksheet");
+        worksheet.append(node("h4",null,"Predict the original Julia Test assertions"));
+        codeSource.checkDetails.forEach((check,checkIndex)=>{
+          const field=node("div","rehearsal-check-field");
+          const id="rehearsal-predict-"+task.area+"-"+task.kind+"-"+checkIndex;
+          const label=node("label",null,"Prediction and justification · "+check.name);
+          label.htmlFor=id;
+          const input=node("textarea","rehearsal-check-note");
+          input.id=id;
+          input.rows=2;
+          input.dataset.checkArea=task.area;
+          input.dataset.checkIndex=String(checkIndex);
+          input.value=predictionsByArea.get(task.area)[checkIndex];
+          input.placeholder="Expected behavior and rationale · unverified in this tab";
+          input.setAttribute("spellcheck","false");
+          field.append(label,input);
+          worksheet.append(field);
+        });
+        const checkProgress=node("p","rehearsal-check-progress",
+          "0 of "+codeSource.checkDetails.length+" predictions drafted · Julia tests not run here");
+        checkProgress.dataset.checkArea=task.area;
+        checkProgress.setAttribute("role","status");
+        worksheet.append(checkProgress);
+        compareBody.append(worksheet);
+      }
       compareBody.append(node("p","rehearsal-warning",
         "Related by syllabus topic only. These are distinct original exercises; source tests are not executed here and a proof does not establish Julia test success."));
       const notes=node("div","rehearsal-comparison-notes");
@@ -181,7 +214,8 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
   regenerate.addEventListener("click",()=>{
     const hasWork=[...items.querySelectorAll(".rehearsal-working")].some(input=>input.value.trim());
     const hasReview=[...reviewByArea.values()].some(review=>Object.values(review).some(value=>value.trim()));
-    if((hasWork||hasReview||attempted.size>0)&&!doc.defaultView.confirm("Start a new set? In-page proof, coding and comparison notes and attempt markers will be discarded; saved lesson drafts remain unchanged."))return;
+    const hasPredictions=[...predictionsByArea.values()].some(notes=>notes.some(value=>value.trim()));
+    if((hasWork||hasReview||hasPredictions||attempted.size>0)&&!doc.defaultView.confirm("Start a new set? In-page proof, coding and comparison notes and attempt markers will be discarded; saved lesson drafts remain unchanged."))return;
     seed=(seed+1)>>>0;
     activeId=null;
     attempted.clear();
@@ -192,7 +226,21 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
   // The paired proof/coding panels mirror a single per-area review, not two copies.
   items.addEventListener("input",event=>{
     const input=event.target;
-    if(input.matches(".rehearsal-review-input")){
+    if(input.matches(".rehearsal-check-note")){
+      const {checkArea,checkIndex}=input.dataset;
+      const index=Number(checkIndex),notes=predictionsByArea.get(checkArea);
+      if(!notes||!Number.isInteger(index)||index<0||index>=notes.length)return;
+      notes[index]=input.value;
+      for(const other of items.querySelectorAll(".rehearsal-check-note")){
+        if(other!==input&&other.dataset.checkArea===checkArea&&Number(other.dataset.checkIndex)===index)
+          other.value=input.value;
+      }
+      const drafted=notes.filter(value=>value.trim()).length;
+      for(const progress of items.querySelectorAll(".rehearsal-check-progress")){
+        if(progress.dataset.checkArea===checkArea)
+          progress.textContent=drafted+" of "+notes.length+" predictions drafted · Julia tests not run here";
+      }
+    }else if(input.matches(".rehearsal-review-input")){
       const {reviewArea,reviewField}=input.dataset;
       const review=reviewByArea.get(reviewArea);
       if(!review||!Object.hasOwn(review,reviewField))return;
