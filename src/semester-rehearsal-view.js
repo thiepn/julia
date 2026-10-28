@@ -11,6 +11,8 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
     throw Error("Mixed rehearsal controls are missing.");
   let seed=Number.isSafeInteger(initialSeed)&&initialSeed>=0?initialSeed:0;
   let current=[],activeId=null;
+  // Session-only attempt indicators, never grades or persistent progress.
+  const attempted=new Set();
 
   const node=(tag,cls,text)=>{
     const el=doc.createElement(tag);
@@ -32,12 +34,32 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
       const prompt=node("p","rehearsal-question",task.prompt);
       const context=node("p","rehearsal-context",task.context);
       article.append(eyebrow,title,prompt,context);
+      const indicator=node("p","rehearsal-attempt-status","Not yet attempted · not graded");
+      indicator.setAttribute("role","status");
+      article.append(indicator);
+      const markAttempt=()=>{
+        attempted.add(task.kind+":"+task.id);
+        indicator.textContent="Attempt started · not graded";
+      };
+      const plan=node("details","rehearsal-reasoning");
+      plan.append(node("summary",null,"Plan before revealing the approach"));
+      const prompts=node("ol");
+      const questions=task.kind==="proof"?
+        ["What is the precise claim or counterexample?",
+         "Which assumptions and definitions are necessary?",
+         "How can each implication and boundary case be checked?"]:
+        ["What inputs and outputs must the algorithm handle?",
+         "Which edge cases should the Julia tests cover?",
+         "What would constitute actual execution evidence?"];
+      for(const question of questions)prompts.append(node("li",null,question));
+      plan.append(prompts);article.append(plan);
       if(task.kind==="proof"){
         const input=node("textarea","rehearsal-working");
         input.rows=4;
         input.placeholder="Write your derivation (this tab only)";
         input.setAttribute("aria-label","Your attempt: "+task.title);
         input.setAttribute("spellcheck","false");
+        input.addEventListener("input",markAttempt);
         article.append(input);
       }
       const controls=node("div","rehearsal-actions");
@@ -62,7 +84,7 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
         reveal.textContent=approach.hidden?"Show approach":"Hide approach";
         reveal.setAttribute("aria-expanded",String(!approach.hidden));
       });
-      work.addEventListener("click",()=>{activeId=task.id;onOpen({...task});});
+      work.addEventListener("click",()=>{activeId=task.id;markAttempt();onOpen({...task});});
       controls.append(reveal,work);
       article.append(controls,approach);
       items.append(article);
@@ -71,9 +93,10 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
   }
   regenerate.addEventListener("click",()=>{
     const hasWork=[...items.querySelectorAll(".rehearsal-working")].some(input=>input.value.trim());
-    if(hasWork&&!doc.defaultView.confirm("Discard your written rehearsal attempts and create a new set?"))return;
+    if((hasWork||attempted.size>0)&&!doc.defaultView.confirm("Start a new set? In-page notes and attempt markers will be discarded; saved lesson drafts remain unchanged."))return;
     seed=(seed+1)>>>0;
     activeId=null;
+    attempted.clear();
     render();
     onNewSet();
   });
