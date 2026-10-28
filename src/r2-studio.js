@@ -585,6 +585,19 @@ export function initR2Studio({doc=document,lessons,navigate}){
     get("semester-rehearsal-items"),{childList:true});
   get("r2-mixed-prev").addEventListener("click",()=>{mixedIndex--;syncMixed();});
   get("r2-mixed-next").addEventListener("click",()=>{mixedIndex++;syncMixed();});
+  // Each area has an original proof and coding task. Switch within that pair
+  // without regenerating the source-authored set or discarding either note.
+  get("semester-rehearsal-items").addEventListener("click",event=>{
+    const button=event.target.closest("[data-rehearsal-pair]");
+    if(!button)return;
+    const item=button.closest(".rehearsal-item");
+    const peers=[...get("semester-rehearsal-items").children];
+    const target=peers.findIndex(candidate=>candidate.dataset.area===item.dataset.area&&
+      candidate.dataset.kind!==item.dataset.kind);
+    if(target<0)return;
+    mixedIndex=target;syncMixed();
+    peers[target].querySelector(".rehearsal-working")?.focus({preventScroll:true});
+  });
   const quickLabs=[
     ["numerical-explorer","Norms & matrices"],["elimination-lab","Elimination"],
     ["factor-lab","QR & Cholesky"],["sensitivity-lab","Conditioning"],
