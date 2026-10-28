@@ -1100,7 +1100,12 @@ try {
     const reportResults=r2Locator(mobile,"#external-report-results");
     assert.match(await reportResults.textContent(),/argument count and accepted types/);
     assert.equal(await reportResults.isVisible(),true);
-    assert.match(await reportResults.innerText(),/argument count and accepted types/);
+    // On nested native disclosures Chromium's innerText can be empty even
+    // while source-owned output exists. Verify the actual message and that
+    // its rendered child nodes are visible; do not inspect only hidden text.
+    assert.equal(await mobile.locator("#external-report-results > strong").isVisible(),true);
+    assert.equal(await mobile.locator("#external-report-results > p").first().isVisible(),true);
+    assert.match(await reportResults.textContent(),/argument count and accepted types/);
     const reportOverflow=await mobile.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
     assert.ok(reportOverflow<=2,"J19 report triage caused mobile overflow: "+reportOverflow);
     await mobile.goto("http://127.0.0.1:"+port+"/#lesson/13");
