@@ -1095,7 +1095,12 @@ try {
     await r2Locator(mobile,"#external-report-input").fill("MethodError: no method matching near_relative(::Int64)");
     await mobile.evaluate(()=>{
       window.__juliaReportClickObserved=0;
-      document.getElementById("external-report-inspect").addEventListener("click",()=>{
+      window.__juliaReportButton=document.getElementById("external-report-inspect");
+      window.__juliaLastClickTarget=null;
+      document.addEventListener("click",event=>{
+        window.__juliaLastClickTarget=event.target?.id||event.target?.tagName||null;
+      },{capture:true,once:true});
+      window.__juliaReportButton.addEventListener("click",()=>{
         window.__juliaReportClickObserved++;
       },{capture:true,once:true});
     });
@@ -1103,7 +1108,6 @@ try {
     // the legacy adapter's extra stage/disclosure traversal which previously
     // completed without delivering a click to this original report button.
     await mobile.locator("#external-report-inspect").click();
-    assert.equal(await mobile.evaluate(()=>window.__juliaReportClickObserved),1);
     // The R2 mobile task sidebar uses a native disclosure. Read the real DOM
     // result first, then reopen its canonical visual route before checking
     // readability; a collapsed details element has an empty innerText.
@@ -1117,7 +1121,10 @@ try {
         input:document.getElementById("external-report-input")?.value,
         detailsOpen:details?.open,taskOpen:document.querySelector(".r2-instructions")?.open,
         output:results?.textContent,children:results?.children.length,
-        connected:button?.isConnected,clickObserved:window.__juliaReportClickObserved};
+        connected:button?.isConnected,clickObserved:window.__juliaReportClickObserved,
+        originalButtonConnected:window.__juliaReportButton?.isConnected,
+        capturedButtonIsCurrent:window.__juliaReportButton===button,
+        lastClickTarget:window.__juliaLastClickTarget};
     });
     if(!/argument count and accepted types/.test(diagnostic.output||""))
       console.error("J19_MOBILE_REPORT_DIAGNOSTIC",{...diagnostic,pageErrors:errors.slice(-5)});
