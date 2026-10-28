@@ -62,6 +62,42 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
         input.addEventListener("input",markAttempt);
         article.append(input);
       }
+      // The comparison is a read-only source reference, not a proof checker.
+      const comparison=node("details","rehearsal-comparison");
+      comparison.append(node("summary",null,"Compare proof assumptions and Julia test obligations"));
+      const compareBody=node("div","rehearsal-comparison-body");
+      const sourceTasks=current.filter(other=>other.area===task.area);
+      const proofSource=sourceTasks.find(other=>other.kind==="proof");
+      const codeSource=sourceTasks.find(other=>other.kind==="coding");
+      for(const [heading,content] of [
+        ["Original proof claim",proofSource.prompt],
+        ["Proof assumptions",proofSource.context],
+        ["Original coding task",codeSource.prompt],
+        ["Algorithm context",codeSource.context],
+        ["Source-authored Julia Test names",codeSource.checks?.join(", ")||"No named tests supplied"]
+      ]){
+        const section=node("section","rehearsal-comparison-source");
+        section.append(node("h4",null,heading),node("p",null,content));
+        compareBody.append(section);
+      }
+      compareBody.append(node("p","rehearsal-warning",
+        "Related by syllabus topic only. These are distinct original exercises; a proof does not establish Julia test success."));
+      const notes=node("div","rehearsal-comparison-notes");
+      const syncComparison=()=>{
+        notes.replaceChildren();
+        for(const related of sourceTasks){
+          const relatedItem=[...items.children].find(item=>item.dataset.sourceId===related.id);
+          const label=related.kind==="proof"?"Your proof reasoning":"Your coding and test plan";
+          notes.append(node("h4",null,label),node("p",null,
+            relatedItem?.querySelector(".rehearsal-working")?.value||"No attempt written in this session."));
+        }
+      };
+      comparison.addEventListener("toggle",()=>{if(comparison.open)syncComparison();});
+      items.addEventListener("input",event=>{
+        if(comparison.open&&event.target.matches(".rehearsal-working"))syncComparison();
+      });
+      comparison.append(compareBody,notes);
+      article.append(comparison);
       const controls=node("div","rehearsal-actions");
       const reveal=node("button","secondary","Show approach");
       reveal.type="button";
