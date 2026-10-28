@@ -787,7 +787,11 @@ export function initR2Studio({doc=document,lessons,navigate}){
     if(i>=0)navigate(i);
   });
   updateCursor();
-  return {show,showStage,update,selectLab:id=>{
+  return {show,showStage,update,focusMixedTask:id=>{
+    const index=[...get("semester-rehearsal-items").children].findIndex(item=>item.dataset.sourceId===id);
+    if(index<0)return false;
+    mixedIndex=index;syncMixed();return true;
+  },selectLab:id=>{
     const choice=get("r2-lab-choice");
     if([...choice.options].some(opt=>opt.value===id)){
       choice.value=id;syncLabs();
