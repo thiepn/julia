@@ -174,6 +174,8 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
       article.append(controls,approach);
       items.append(article);
     }
+    // Populate source note mirrors before the first details toggle event.
+    for(const sync of comparisonSync.values())sync();
     status.textContent="Six exercises · three syllabus areas · no automatic grade";
   }
   regenerate.addEventListener("click",()=>{
@@ -205,7 +207,12 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
           progress.textContent=drafted+" of 3 review sections drafted · not checked or graded";
       }
     }else if(input.matches(".rehearsal-working")){
-      for(const [comparison,sync] of comparisonSync)if(comparison.open)sync();
+      // Update both paired snapshots immediately, even while collapsed.
+      // A browser's native details "toggle" event may arrive asynchronously.
+      const area=input.closest(".rehearsal-item")?.dataset.area;
+      for(const [comparison,sync] of comparisonSync){
+        if(comparison.closest(".rehearsal-item")?.dataset.area===area)sync();
+      }
     }
   });
   launch.addEventListener("click",()=>{
