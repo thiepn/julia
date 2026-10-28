@@ -267,6 +267,14 @@ try{
       await coding.locator(".rehearsal-working").fill("Inputs, outputs, pivot edge cases; Julia execution pending.");
       const codingId=await coding.getAttribute("data-source-id");
       await coding.locator(".rehearsal-work").click();
+      await page.waitForURL(/#lesson\/\d{2}$/);
+      await page.locator("#r2-stage-explore").waitFor({state:"visible"});
+      assert.equal(await page.locator("#semester-rehearsal-return").evaluate(
+        el=>Boolean(el.closest(".r2-lesson-head"))),true);
+      assert.equal(await page.locator("#semester-rehearsal-return").isVisible(),true);
+      // Returning must remain possible after a genuine stage interruption,
+      // not depend on the completion-depth lab being the selected experiment.
+      await page.locator('[data-r2-stage="code"]').click();
       assert.equal(await page.locator("#semester-rehearsal-return").isVisible(),true);
       await page.locator("#semester-rehearsal-return").click();
       assert.equal(await page.locator(".rehearsal-item:visible").getAttribute("data-source-id"),codingId);
