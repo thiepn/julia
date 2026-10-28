@@ -104,7 +104,7 @@ try{
             }
             return out;
           });
-          console.error("G1G2_MOBILE_OVERFLOW_GEOMETRY",kind,device,geometry,ancestors);
+          console.error("G1G2_MOBILE_OVERFLOW_GEOMETRY",kind,device,JSON.stringify({geometry,ancestors}));
         }
         assert.ok(geometry.excess<=2,kind+" "+device+" horizontal overflow: "+geometry.excess);
        const stored=await page.evaluate(()=>JSON.stringify(Object.entries(localStorage)));
