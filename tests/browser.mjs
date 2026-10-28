@@ -1107,8 +1107,8 @@ try {
     const reportResults=mobile.locator("#external-report-results");
     assert.match(await reportResults.textContent(),/argument count and accepted types/);
     assert.equal(await reportResults.isVisible(),true);
-    assert.equal(await reportResults.locator("> strong").isVisible(),true);
-    assert.equal(await reportResults.locator("> p").first().isVisible(),true);
+    assert.equal(await reportResults.locator(":scope > strong").isVisible(),true);
+    assert.equal(await reportResults.locator(":scope > p").first().isVisible(),true);
     const footerHit=await mobile.evaluate(()=>{
       const button=document.getElementById("r2-mobile-next"),rect=button.getBoundingClientRect();
       return button.contains(document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2));
