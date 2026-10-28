@@ -115,7 +115,7 @@ try{
       assert.equal(await page.locator("#scratch-code").count(),1);
       const touch=page.locator(".r2-touch-keys");
       assert.equal(await touch.isVisible(),device.width<=1024);
-      assert.equal(await touch.locator("button").count(),8);
+      assert.equal(await touch.locator("button").count(),9);
       if(device.name==="mobile-390"&&scheme==="light"){
         // Edit the original textarea; existing input listener owns persistence.
         await page.locator("#scratch-code").fill("f(x)");
