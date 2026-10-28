@@ -294,7 +294,54 @@ try{
       await page.locator(".rehearsal-item:visible .rehearsal-pair").click();
       await page.locator(".rehearsal-item:visible .rehearsal-pair").click();
       assert.match(await compare.innerText(),/Revised proof assumption/);
-      assert.equal(await page.locator("#scratch-code").count(),1);
+      // Original test assertions are displayed as inert source reference,
+      // never copied into the runner or interpreted as executable results.
+      assert.ok(await compare.locator(".rehearsal-source-check code").count()>0);
+      assert.match(await compare.locator(".rehearsal-source-check code").first().innerText(),/@test/);
+      assert.match(await compare.innerText(),/Original proof reference/);
+      assert.match(await compare.innerText(),/Original coding reference/);
+      const audit=compare.locator(".rehearsal-transfer-review");
+      assert.equal(await audit.locator(".rehearsal-review-input").count(),3);
+      assert.match(await audit.locator(".rehearsal-review-progress").innerText(),/0 of 3/);
+      const adversarial='<img src=x onerror="window.__injected=true">';
+      await audit.locator('[data-review-field="assumptions"]').fill(adversarial);
+      await audit.locator('[data-review-field="boundary"]').fill("x = 0: test the limiting assumption");
+      await audit.locator('[data-review-field="coverage"]').fill("Check named Julia tests; input outside their documented cases unverified");
+      assert.match(await audit.locator(".rehearsal-review-progress").innerText(),/3 of 3.*not checked or graded/);
+      assert.equal(await compare.locator("img").count(),0);
+      assert.equal(await page.evaluate(()=>Boolean(window.__injected)),false);
+      await page.locator(".rehearsal-item:visible .rehearsal-pair").click();
+      const codeAudit=page.locator(".rehearsal-item:visible .rehearsal-transfer-review");
+      assert.equal(await codeAudit.locator('[data-review-field="assumptions"]').inputValue(),adversarial);
+      assert.equal(await codeAudit.locator('[data-review-field="boundary"]').inputValue(),
+        "x = 0: test the limiting assumption");
+      assert.match(await codeAudit.locator(".rehearsal-review-progress").innerText(),/3 of 3/);
+      await codeAudit.locator('[data-review-field="coverage"]').fill("Revised gap: no observed Julia execution");
+      await page.locator(".rehearsal-item:visible .rehearsal-pair").click();
+      assert.equal(await audit.locator('[data-review-field="coverage"]').inputValue(),
+        "Revised gap: no observed Julia execution");
+      // A different syllabus area must never inherit this review.
+      await page.locator("#r2-mixed-next").click();
+      await page.locator("#r2-mixed-next").click();
+      const different=page.locator(".rehearsal-item:visible .rehearsal-transfer-review");
+      assert.equal(await different.locator('[data-review-field="assumptions"]').inputValue(),"");
+      await page.locator("#r2-mixed-prev").click();
+      await page.locator("#r2-mixed-prev").click();
+      assert.equal(await audit.locator('[data-review-field="assumptions"]').inputValue(),adversarial);
+      // Review edits survive canonical lesson navigation and cancellation,
+      // but an explicitly accepted new set clears all volatile reflections.
+      await page.locator(".rehearsal-item:visible .rehearsal-work").click();
+      await page.locator("#semester-rehearsal-return").click();
+      assert.equal(await audit.locator('[data-review-field="assumptions"]').inputValue(),adversarial);
+      page.once("dialog",dialog=>dialog.dismiss());
+      await page.locator("#semester-rehearsal-new").click();
+      assert.equal(await audit.locator('[data-review-field="assumptions"]').inputValue(),adversarial);
+      page.once("dialog",dialog=>dialog.accept());
+      await page.locator("#semester-rehearsal-new").click();
+      assert.equal(await page.locator(".rehearsal-review-input").count(),18);
+      for(const input of await page.locator(".rehearsal-review-input").all())
+        assert.equal(await input.inputValue(),"");
+      assert.match(await page.locator(".rehearsal-review-progress").first().innerText(),/0 of 3/);
       assert.equal(await page.locator("#scratch-code").count(),1);
 
       await noOverflow("mixed");await shot("mixed");
