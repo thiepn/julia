@@ -1098,6 +1098,19 @@ try {
     // result first, then reopen its canonical visual route before checking
     // readability; a collapsed details element has an empty innerText.
     const reportResults=r2Locator(mobile,"#external-report-results");
+    const diagnostic=await mobile.evaluate(()=>{
+      const results=document.getElementById("external-report-results");
+      const details=document.getElementById("external-report-details");
+      const button=document.getElementById("external-report-inspect");
+      return {route:location.hash,stage:document.body.dataset.r2Stage,
+        variant:document.getElementById("practice-mode")?.value,
+        input:document.getElementById("external-report-input")?.value,
+        detailsOpen:details?.open,taskOpen:document.querySelector(".r2-instructions")?.open,
+        output:results?.textContent,children:results?.children.length,
+        connected:button?.isConnected};
+    });
+    if(!/argument count and accepted types/.test(diagnostic.output||""))
+      console.error("J19_MOBILE_REPORT_DIAGNOSTIC",diagnostic);
     assert.match(await reportResults.textContent(),/argument count and accepted types/);
     assert.equal(await reportResults.isVisible(),true);
     // On nested native disclosures Chromium's innerText can be empty even
