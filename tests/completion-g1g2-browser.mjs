@@ -69,7 +69,24 @@ try{
        assert.match(await r2Locator(page,"#completion-track-starter").innerText(),/vector_amplification/);
        await r2Locator(page,"#completion-proof-choice").selectOption("G2-multivariable");
        assert.match(await r2Locator(page,"#completion-proof-target").innerText(),/Derive this formula/);
-       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth<=2));
+       const geometry=await page.evaluate(()=>{
+          const excess=document.documentElement.scrollWidth-innerWidth;
+          if(excess<=2)return {excess,offenders:[]};
+          const offenders=[...document.querySelectorAll("body *")].filter(el=>{
+            const css=getComputedStyle(el),rect=el.getBoundingClientRect();
+            return css.display!=="none"&&css.visibility!=="hidden"&&rect.width>0&&
+              rect.right>innerWidth+2&&rect.left<innerWidth;
+          }).sort((a,b)=>b.getBoundingClientRect().right-a.getBoundingClientRect().right)
+            .slice(0,15).map(el=>{
+              const rect=el.getBoundingClientRect();
+              return {tag:el.tagName,id:el.id,cls:String(el.className).slice(0,80),
+                left:Math.round(rect.left),right:Math.round(rect.right),
+                width:Math.round(rect.width),scrollWidth:el.scrollWidth,clientWidth:el.clientWidth};
+            });
+          return {excess,offenders};
+        });
+        if(geometry.excess>2)console.error("G1G2_MOBILE_OVERFLOW_GEOMETRY",kind,device,geometry);
+        assert.ok(geometry.excess<=2,kind+" "+device+" horizontal overflow: "+geometry.excess);
        const stored=await page.evaluate(()=>JSON.stringify(Object.entries(localStorage)));
        assert.ok(!stored.includes(code));
        assert.deepEqual(errors,[]);
