@@ -1,3 +1,4 @@
+import {JULIA_TOUCH_KEYS,insertJuliaTouchKey} from "./touch-code.js";
 // R2 UI-only controller. Reparents existing canonical elements without copying
 // exercises, drafts, model state, local Julia execution, progress or results.
 export function initR2Studio({doc=document,lessons,navigate}){
@@ -179,9 +180,26 @@ export function initR2Studio({doc=document,lessons,navigate}){
     '<strong>Julia tests</strong><span id="r2-test-case-count">0 cases</span>'),externalTests);
   testDesk.open=true;
   editorWell.append(lineNumbers,draft);
+  // One editor only: touch keys insert at the native textarea selection.
+  // The existing bubbled input listener is the only draft persistence path.
+  const touchBar=node("div","r2-touch-keys");
+  touchBar.setAttribute("role","toolbar");
+  touchBar.setAttribute("aria-label","Julia code insertion keys");
+  for(const entry of JULIA_TOUCH_KEYS){
+    const button=node("button","r2-touch-key");
+    button.type="button";
+    button.textContent=entry.label;
+    button.dataset.touchKey=entry.key;
+    button.setAttribute("aria-label",entry.description);
+    button.addEventListener("click",()=>{
+      const changed=insertJuliaTouchKey(draft,entry.key);
+      if(!changed)get("r2-editor-status").textContent="Code not inserted — draft limit or editor unavailable";
+    });
+    touchBar.append(button);
+  }
   // Canonical file actions live in the workspace toolbar: do not create copies.
   editorActions.insertBefore(draftActions,get("r2-exports"));
-  editor.append(editorHead,editorActions,draftTitle,editorWell,editorFoot);
+  editor.append(editorHead,editorActions,draftTitle,touchBar,editorWell,editorFoot);
   const extras=node("details","r2-compiler-extras");
   extras.append(node("summary",null,"External compiler and comparison tools · unverified"));
   const runner=compiler.querySelector(".local-runner");
