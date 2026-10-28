@@ -120,6 +120,14 @@ try{
       assert.match(await page.locator("#r2-scaffold-count").innerText(),/Cue 1 of/);
       await page.locator("#r2-scaffold-next").click();
       assert.match(await page.locator("#r2-scaffold-count").innerText(),/Cue 2 of/);
+      // On narrow viewports the canonical task is intentionally collapsed in
+      // a native details element. Open it before interacting with its select.
+      if(!await page.locator("#practice-mode").isVisible()){
+        const taskPanel=page.locator(".r2-instructions");
+        assert.equal(await taskPanel.evaluate(el=>el.open),false);
+        await taskPanel.locator("summary").click();
+      }
+      assert.equal(await page.locator("#practice-mode").isVisible(),true);
       await page.locator("#practice-mode").selectOption("a");
       assert.match(await page.locator("#r2-scaffold-count").innerText(),/Cue 1 of/);
       assert.equal(await page.locator("#scratch-code").count(),1);
