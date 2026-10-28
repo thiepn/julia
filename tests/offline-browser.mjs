@@ -28,15 +28,18 @@ try{
    await r2Locator(page,"#local-runner-disable-embed").click();
    await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
    await r2Locator(page,"#offline-access").evaluate(el=>el.open=true);
-   await r2Locator(page,"#offline-status").getByText("Lessons and browser-based practice available offline on this device.").waitFor({timeout:30000});
-   // On a first mobile install an activated worker may not yet control the
-   // existing document. An online reload is the real first-use activation
-   // path; offline acceptance only starts after confirmed controller custody.
+   await page.waitForFunction(()=>/Lessons and browser-based practice available offline|Offline files installed\. Reload/.test(
+     document.querySelector("#offline-status")?.textContent||""),null,{timeout:30000});
+   // On first mobile installation an active worker need not yet control the
+   // already-open page. Do not claim offline readiness until a controlled
+   // reload proves the first-party shell can serve navigation.
    if(!await page.evaluate(()=>navigator.serviceWorker.controller!==null)){
+     assert.match(await page.locator("#offline-status").textContent(),/Reload this page while online/);
      await page.reload();
      await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
    }
    await page.waitForFunction(()=>navigator.serviceWorker.controller!==null,null,{timeout:10000});
+   await r2Locator(page,"#offline-status").getByText("Lessons and browser-based practice available offline on this device.").waitFor();
    const cached=await page.evaluate(async()=>{
      const worker=await navigator.serviceWorker.ready;
      const keys=await caches.keys();
