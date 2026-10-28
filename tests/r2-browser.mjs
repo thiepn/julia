@@ -344,6 +344,23 @@ try{
       assert.match(await compare.locator(".rehearsal-source-check code").first().innerText(),/@test/);
       assert.match(await compare.innerText(),/Original proof reference/);
       assert.match(await compare.innerText(),/Original coding reference/);
+      // Learner hypotheses stay distinct from read-only original tests.
+      const predictions=compare.locator(".rehearsal-check-worksheet");
+      const sourceTestCount=await compare.locator(".rehearsal-source-check code").count();
+      assert.ok(sourceTestCount>0);
+      assert.equal(await predictions.locator(".rehearsal-check-note").count(),sourceTestCount);
+      assert.match(await predictions.locator(".rehearsal-check-progress").textContent(),/0 of .*not run here/);
+      const predictionInjection='<svg onload="window.__injected=true"></svg>';
+      const firstPrediction=predictions.locator(".rehearsal-check-note").first();
+      await firstPrediction.fill(predictionInjection);
+      assert.match(await predictions.locator(".rehearsal-check-progress").textContent(),/1 of .*not run here/);
+      assert.equal(await compare.locator("svg").count(),0);
+      assert.equal(await page.evaluate(()=>Boolean(window.__injected)),false);
+      await page.locator(".rehearsal-item:visible .rehearsal-pair").click();
+      assert.equal(await page.locator(".rehearsal-item:visible .rehearsal-check-note").first().inputValue(),
+        predictionInjection);
+      await page.locator(".rehearsal-item:visible .rehearsal-pair").click();
+      assert.equal(await firstPrediction.inputValue(),predictionInjection);
       const audit=compare.locator(".rehearsal-transfer-review");
       assert.equal(await audit.locator(".rehearsal-review-input").count(),3);
       assert.match(await audit.locator(".rehearsal-review-progress").innerText(),/0 of 3/);
@@ -371,23 +388,42 @@ try{
       await page.locator("#r2-mixed-next").click();
       const different=page.locator(".rehearsal-item:visible .rehearsal-transfer-review");
       assert.equal(await different.locator('[data-review-field="assumptions"]').inputValue(),"");
+      assert.equal(await page.locator(".rehearsal-item:visible .rehearsal-check-note").first().inputValue(),"");
       await page.locator("#r2-mixed-prev").click();
       await page.locator("#r2-mixed-prev").click();
       assert.equal(await audit.locator('[data-review-field="assumptions"]').inputValue(),adversarial);
+      assert.equal(await firstPrediction.inputValue(),predictionInjection);
       // Review edits survive canonical lesson navigation and cancellation,
       // but an explicitly accepted new set clears all volatile reflections.
       await page.locator(".rehearsal-item:visible .rehearsal-work").click();
       await page.locator("#semester-rehearsal-return").click();
       assert.equal(await audit.locator('[data-review-field="assumptions"]').inputValue(),adversarial);
+      assert.equal(await firstPrediction.inputValue(),predictionInjection);
+      assert.equal(await page.locator(".rehearsal-item:visible .rehearsal-working").evaluate(
+        el=>document.activeElement===el),true);
       page.once("dialog",dialog=>dialog.dismiss());
       await page.locator("#semester-rehearsal-new").click();
       assert.equal(await audit.locator('[data-review-field="assumptions"]').inputValue(),adversarial);
+      assert.equal(await firstPrediction.inputValue(),predictionInjection);
       page.once("dialog",dialog=>dialog.accept());
       await page.locator("#semester-rehearsal-new").click();
       assert.equal(await page.locator(".rehearsal-review-input").count(),18);
       for(const input of await page.locator(".rehearsal-review-input").all())
         assert.equal(await input.inputValue(),"");
       assert.match(await page.locator(".rehearsal-review-progress").first().textContent(),/0 of 3/);
+      for(const input of await page.locator(".rehearsal-check-note").all())
+        assert.equal(await input.inputValue(),"");
+      assert.match(await page.locator(".rehearsal-check-progress").first().textContent(),/0 of/);
+      // Prediction-only work must trigger confirmation on destructive reset.
+      await page.locator(".rehearsal-item:visible .rehearsal-comparison > summary").click();
+      await page.locator(".rehearsal-item:visible .rehearsal-check-note").first().fill("Prediction only");
+      page.once("dialog",dialog=>dialog.dismiss());
+      await page.locator("#semester-rehearsal-new").click();
+      assert.equal(await page.locator(".rehearsal-item:visible .rehearsal-check-note").first().inputValue(),
+        "Prediction only");
+      page.once("dialog",dialog=>dialog.accept());
+      await page.locator("#semester-rehearsal-new").click();
+      assert.equal(await page.locator(".rehearsal-check-note").first().inputValue(),"");
       assert.equal(await page.locator("#scratch-code").count(),1);
 
       await noOverflow("mixed");await shot("mixed");
