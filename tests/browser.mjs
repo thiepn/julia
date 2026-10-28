@@ -1099,7 +1099,11 @@ try {
         window.__juliaReportClickObserved++;
       },{capture:true,once:true});
     });
-    await r2Locator(mobile,"#external-report-inspect").click();
+    // The control is already visible after the preceding real fill. Avoid
+    // the legacy adapter's extra stage/disclosure traversal which previously
+    // completed without delivering a click to this original report button.
+    await mobile.locator("#external-report-inspect").click();
+    assert.equal(await mobile.evaluate(()=>window.__juliaReportClickObserved),1);
     // The R2 mobile task sidebar uses a native disclosure. Read the real DOM
     // result first, then reopen its canonical visual route before checking
     // readability; a collapsed details element has an empty innerText.
