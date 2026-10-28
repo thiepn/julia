@@ -13,6 +13,7 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
   let current=[],activeId=null;
   // Session-only attempt indicators, never grades or persistent progress.
   const attempted=new Set();
+  let comparisonListeners=new AbortController();
 
   const node=(tag,cls,text)=>{
     const el=doc.createElement(tag);
@@ -21,6 +22,8 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
     return el;
   };
   function render(){
+    comparisonListeners.abort();
+    comparisonListeners=new AbortController();
     current=createSemesterRehearsal(seed);
     items.replaceChildren();
     for(const [index,task] of current.entries()){
@@ -95,7 +98,7 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
       comparison.addEventListener("toggle",()=>{if(comparison.open)syncComparison();});
       items.addEventListener("input",event=>{
         if(comparison.open&&event.target.matches(".rehearsal-working"))syncComparison();
-      });
+      },{signal:comparisonListeners.signal});
       comparison.append(compareBody,notes);
       article.append(comparison);
       const controls=node("div","rehearsal-actions");
