@@ -266,6 +266,21 @@ try{
         "Inputs, outputs, pivot edge cases; Julia execution pending.");
       assert.match(await page.locator(".rehearsal-item:visible .rehearsal-attempt-status").innerText(),/not graded/);
       assert.equal(await page.locator("#scratch-code").count(),1);
+      // Source-paired proof/coding transfer must retain independent attempts
+      // and never silently execute or grade Julia code.
+      await page.locator(".rehearsal-item:visible .rehearsal-pair").click();
+      assert.equal(await page.locator(".rehearsal-item:visible").getAttribute("data-kind"),"proof");
+      const pairProof=page.locator(".rehearsal-item:visible .rehearsal-working");
+      await pairProof.fill("Proof assumptions and boundary reasoning");
+      await page.locator(".rehearsal-item:visible .rehearsal-pair").click();
+      assert.equal(await page.locator(".rehearsal-item:visible").getAttribute("data-source-id"),codingId);
+      assert.equal(await page.locator(".rehearsal-item:visible .rehearsal-working").inputValue(),
+        "Inputs, outputs, pivot edge cases; Julia execution pending.");
+      await page.locator(".rehearsal-item:visible .rehearsal-pair").click();
+      assert.equal(await page.locator(".rehearsal-item:visible .rehearsal-working").inputValue(),
+        "Proof assumptions and boundary reasoning");
+      assert.equal(await page.locator(".rehearsal-pair").count(),6);
+      assert.equal(await page.locator("#scratch-code").count(),1);
 
       await noOverflow("mixed");await shot("mixed");
       await page.locator("#r2-utilities-open").click();
