@@ -116,6 +116,16 @@ try{
       await page.locator('[data-r2-practice="scaffold"]').click();
       assert.equal(await page.locator('[data-r2-practice="scaffold"]').getAttribute("aria-pressed"),"true");
       assert.match(await page.locator("#r2-practice-guidance").innerText(),/existing hints/);
+      assert.equal(await page.locator("#r2-scaffold").isVisible(),true);
+      assert.match(await page.locator("#r2-scaffold-count").innerText(),/Cue 1 of/);
+      await page.locator("#r2-scaffold-next").click();
+      assert.match(await page.locator("#r2-scaffold-count").innerText(),/Cue 2 of/);
+      await page.locator("#practice-mode").selectOption("a");
+      assert.match(await page.locator("#r2-scaffold-count").innerText(),/Cue 1 of/);
+      assert.equal(await page.locator("#scratch-code").count(),1);
+      await page.locator("#practice-mode").selectOption("original");
+      await page.locator('[data-r2-practice="build"]').click();
+      assert.equal(await page.locator("#r2-scaffold").isVisible(),false);
       await noOverflow("practice-path");
       await page.locator('[data-r2-stage="learn"]').click();
       await page.locator('[data-r2-stage="check"]').click();
