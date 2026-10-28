@@ -125,7 +125,7 @@ try{
       if(!await page.locator("#practice-mode").isVisible()){
         const taskPanel=page.locator(".r2-instructions");
         assert.equal(await taskPanel.evaluate(el=>el.open),false);
-        await taskPanel.locator("summary").click();
+        await taskPanel.locator(":scope > summary").click();
       }
       assert.equal(await page.locator("#practice-mode").isVisible(),true);
       await page.locator("#practice-mode").selectOption("a");
