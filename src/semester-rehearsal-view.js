@@ -85,7 +85,12 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
         reveal.setAttribute("aria-expanded",String(!approach.hidden));
       });
       work.addEventListener("click",()=>{activeId=task.id;markAttempt();onOpen({...task});});
-      controls.append(reveal,work);
+      const paired=node("button","secondary rehearsal-pair",
+        task.kind==="proof"?"Continue with Julia coding in this topic":"Review the proof for this topic");
+      paired.type="button";
+      paired.dataset.rehearsalPair=task.area;
+      paired.setAttribute("aria-label",(task.kind==="proof"?"Open coding transfer":"Open proof reasoning")+" · "+task.topic);
+      controls.append(reveal,paired,work);
       article.append(controls,approach);
       items.append(article);
     }
