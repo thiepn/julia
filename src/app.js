@@ -93,9 +93,10 @@ const semesterRehearsal=initSemesterRehearsal({
 });
 $("#semester-rehearsal-return").addEventListener("click",()=>{
   r2.show("mixed");
-  if(!semesterRehearsal.returnToActive()){
+  const active=semesterRehearsal.returnToActive();
+  if(!active){
     $("#semester-rehearsal-return").hidden=true;
-  }
+  }else r2.focusMixedTask(active);
 });
 const courseBackup=initCourseBackup({download:downloadLocalJulia,isEmbedActive:()=>Boolean(readEmbedUrl()),
   disableEmbed:()=>$("#local-runner-disable-embed").click()});
