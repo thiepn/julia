@@ -3,6 +3,7 @@ import {createServer} from "node:http";
 import {readFile,mkdir} from "node:fs/promises";
 import {resolve,extname,sep} from "node:path";
 import {chromium} from "playwright";
+import {openLegacyWorkspace} from "./r2-legacy-navigation.mjs";
 const root=resolve(".");
 const mime={".html":"text/html; charset=utf-8",".css":"text/css; charset=utf-8",
   ".js":"text/javascript; charset=utf-8",".json":"application/json",".svg":"image/svg+xml"};
@@ -82,7 +83,8 @@ try{
       await noOverflow("course");await shot("course");
       if(scheme==="light"&&device.name==="desktop"){
         await page.locator("#r2-next-code").click();
-        await page.locator("#r2-stage-code").waitFor({state:"visible"});
+        await page.locator("#r2-stage-learn").waitFor({state:"visible"});
+        await openLegacyWorkspace(page);
         assert.equal(await page.locator("#lesson-jump").inputValue(),"01");
         await page.locator("#r2-course-open").click();
         await page.locator("#r2-course").waitFor({state:"visible"});
@@ -108,7 +110,7 @@ try{
       assert.match(await page.locator("#example-code").innerText(),/isapprox/);
       assert.equal(await page.locator("#r2-example-source").innerText(),"Kalicharan ch. 2; AMP VL01");
       await noOverflow("learn");await shot("learn");
-      await page.locator('[data-r2-stage="code"]').click();
+      await openLegacyWorkspace(page);
       await page.locator("#r2-stage-code").waitFor({state:"visible"});
       assert.equal(await page.locator("#r2-practice-guidance").count(),1);
       assert.equal(await page.locator('[data-r2-practice="build"]').getAttribute("aria-pressed"),"true");
@@ -165,14 +167,14 @@ try{
       assert.equal(await page.locator("#r2-stage-explore").isVisible(),true);
       assert.equal(await page.locator("#r2-lab-choice").inputValue(),"repair-lab");
       assert.equal(await page.locator("#repair-editor").count(),1);
-      await page.locator('[data-r2-stage="code"]').click();
+      await openLegacyWorkspace(page);
       assert.equal(await page.locator("#scratch-code").inputValue(),originalDraft);
       const traceEnabled=await page.locator('[data-r2-practice="trace"]').isEnabled();
       if(traceEnabled){
         await page.locator('[data-r2-practice="trace"]').click();
         assert.equal(await page.locator("#r2-lab-choice").inputValue(),"program-trace");
         assert.equal(await page.locator("#r2-stage-explore").isVisible(),true);
-        await page.locator('[data-r2-stage="code"]').click();
+        await openLegacyWorkspace(page);
         assert.equal(await page.locator("#scratch-code").inputValue(),originalDraft);
       }
       assert.equal(await page.locator("#scratch-code").count(),1);
@@ -198,7 +200,8 @@ try{
         await page.locator("#r2-review-concept").click();
         assert.equal(await page.locator("#r2-stage-learn").isVisible(),true);
         await page.locator("#r2-example-code").click();
-        assert.equal(await page.locator("#r2-stage-code").isVisible(),true);
+        assert.equal(await page.locator("#r2-stage-explore").isVisible(),true);
+        await openLegacyWorkspace(page);
         await page.locator('[data-r2-stage="check"]').click();
         await page.locator('#r2-question-steps button[data-r2-question="0"]').click();
       }
@@ -206,6 +209,8 @@ try{
       assert.match(await page.locator("#r2-question-index").innerText(),/Question 2 of 3/);
       await noOverflow("check");await shot("check");
       await page.locator("#r2-check-code-button").click();
+      assert.equal(await page.locator("#r2-stage-explore").isVisible(),true);
+      await openLegacyWorkspace(page);
       const editor=page.locator("#scratch-code");
       assert.equal(await editor.isVisible(),true);
       assert.equal(await page.locator("#compiler-panel").isVisible(),true);
@@ -217,7 +222,7 @@ try{
       assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:draft:v1:09")),
         'println("R2 original persisted source")');
       await page.locator('[data-r2-stage="learn"]').click();
-      await page.locator('button[data-r2-stage="code"]').click();
+      await openLegacyWorkspace(page);
       assert.equal(await editor.inputValue(),'println("R2 original persisted source")');
       if(device.name==="desktop"&&scheme==="light"){
         await page.locator("#r2-course-open").click();
@@ -258,7 +263,7 @@ try{
         await page.locator("#ue02-code").textContent());
       await page.locator("#r2-lab-choice").selectOption("precision-lab");
       await noOverflow("explore");await shot("explore");
-      await page.locator("#r2-explore-open-code").click();
+      await openLegacyWorkspace(page);
       assert.equal(await page.locator("#r2-stage-code").isVisible(),true);
       assert.equal(await editor.inputValue(),'println("R2 original persisted source")');
       await page.locator('button[data-r2-stage="explore"]').click();
@@ -298,7 +303,7 @@ try{
       assert.equal(await page.locator("#semester-rehearsal-return").isVisible(),true);
       // Returning must remain possible after a genuine stage interruption,
       // not depend on the completion-depth lab being the selected experiment.
-      await page.locator('[data-r2-stage="code"]').click();
+      await openLegacyWorkspace(page);
       assert.equal(await page.locator("#semester-rehearsal-return").isVisible(),true);
       await page.locator("#semester-rehearsal-return").click();
       assert.equal(await page.locator(".rehearsal-item:visible").getAttribute("data-source-id"),codingId);
@@ -431,6 +436,8 @@ try{
       await page.locator("#r2-utilities-open").click();
       await page.locator("#course-backup summary").click();
       assert.equal(await page.locator("#course-backup-export").isVisible(),true);
+      await page.locator(".r2-legacy-tools > summary").click();
+      await page.locator(".r2-reference-submission > summary").click();
       assert.equal(await page.locator("#embed-url").isVisible(),true);
       assert.equal(await page.locator("#submission-workflow").isVisible(),true);
       await noOverflow("utilities");await shot("utilities");
@@ -447,7 +454,7 @@ try{
           assert.equal(await page.locator("#r2-stage-learn").isVisible(),true);
           await page.locator('[data-r2-stage="check"]').click();
           assert.equal(await page.locator("#questions .question:visible").count(),1);
-          await page.locator('button[data-r2-stage="code"]').click();
+          await openLegacyWorkspace(page);
           assert.equal(await page.locator("#scratch-code").isVisible(),true);
           await page.locator('button[data-r2-stage="explore"]').click();
           assert.ok(await page.locator("#r2-lab-choice option").count()>=1);

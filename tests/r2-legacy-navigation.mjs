@@ -1,6 +1,6 @@
-// Legacy browser-acceptance adapter for R2. Each action uses the *visible*
-// R2 Course / Check / Code / Explore / Tools controls first. Existing assertions
-// keep reading the original canonical elements, progress and Julia output.
+// Legacy browser acceptance follows real L1 controls. The old Julia editor is
+// deliberately reachable only from Reference > Previous coding workspace.
+// Original storage, tests and source controls remain under their canonical IDs.
 const browserActions=new Set(["click","fill","selectOption","setInputFiles","check","uncheck","press","type","dblclick"]);
 const childLocators=new Set(["first","last","nth","locator","getByRole","getByText","getByLabel","filter","and","or"]);
 const buttonIds=[
@@ -24,6 +24,13 @@ function roleTarget(page,role,opts){
   const mapping=role==="button"&&buttonIds.find(([key])=>key===name);
   if(mapping)return page.locator(mapping[1]);
   return page.getByRole(role,{...opts,includeHidden:true});
+}
+export async function openLegacyWorkspace(page){
+  await page.locator("#r2-utilities-open").click();
+  const archive=page.locator(".r2-legacy-tools");
+  if(!await archive.evaluate(el=>el.open))await archive.locator(":scope > summary").click();
+  await page.locator("#r2-legacy-open").click();
+  await page.locator("#r2-stage-code").waitFor({state:"visible"});
 }
 async function showCanonical(page,locator) {
   const info=await locator.first().evaluate(el=>{
@@ -65,8 +72,12 @@ async function showCanonical(page,locator) {
       // Hash-route changes render asynchronously; wait for the visible lesson view.
       await page.locator("#lesson-main").waitFor({state:"visible"});
     }
-    const tab=page.locator('button[data-r2-stage="'+info.stage+'"]');
-    if(await tab.getAttribute("aria-pressed")!=="true") await tab.click();
+    if(info.stage==="code"){
+      if(!await page.locator("#r2-stage-code").isVisible())await openLegacyWorkspace(page);
+    }else{
+      const tab=page.locator('button[data-r2-stage="'+info.stage+'"]');
+      if(await tab.getAttribute("aria-pressed")!=="true")await tab.click();
+    }
     if(info.lab) {
       const labChoice=page.locator("#r2-lab-choice");
       if(await labChoice.inputValue()!==info.lab)await labChoice.selectOption(info.lab);

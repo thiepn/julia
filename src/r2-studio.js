@@ -608,7 +608,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     if(stage==="code")syncPractice();
     get("r2-mobile-next").textContent=stage==="learn"?"Try a question →":
       stage==="check"?(question===2?"Try practice →":"Next question →"):
-      stage==="code"?"Return to practice":"Review lesson →";
+      stage==="code"?"Run Julia":"Review lesson →";
     doc.defaultView.scrollTo(0,0);
   }
   function show(view){if(validStages.includes(view))showStage(view);
@@ -801,7 +801,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
   get("r2-mobile-next").addEventListener("click",()=>{
     if(currentStage==="learn")showStage("check");
     else if(currentStage==="check")advanceQuestion(1);
-    else if(currentStage==="code")showStage("explore");
+    else if(currentStage==="code")get("local-runner-run").click();
     else showStage("learn");
   });
   learn.querySelector("[data-r2-forward]").addEventListener("click",()=>showStage("check"));
