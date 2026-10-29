@@ -28,7 +28,7 @@ try{
     assert.equal(await page.locator(".lesson-link").count(),16);
     assert.deepEqual(await page.locator(".r2-global-nav button").allInnerTexts(),
       ["Course","Practice","Reference"]);
-    assert.deepEqual(await page.locator("[data-r2-stage]").allInnerTexts(),
+    assert.deepEqual(await page.locator(".r2-stage-tabs button[data-r2-stage]").allInnerTexts(),
       ["01 Learn","02 Quiz","03 Practice"]);
     assert.equal(await page.locator("#r2-stage-code").isVisible(),false);
     assert.equal(thirdParty.length,0,"No third-party compiler during normal learning");
