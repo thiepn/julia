@@ -30,6 +30,9 @@ try{
     await r2Role(page,"heading",{name:"Plot mathematical functions"}).waitFor();
     await openLegacyWorkspace(page);
     await r2Role(page,"button",{name:"Disable JDoodle and reload for local execution"}).click();
+    // Reference is the current route after the page reload. Explicitly return
+    // to the lesson before checking its heading; do not expose Code as a tab.
+    await page.goto(origin+"/#lesson/04");
     await r2Role(page,"heading",{name:"Plot mathematical functions"}).waitFor();
     await openLegacyWorkspace(page);
     const noEmbed=await page.evaluate(()=>document.querySelector("#embed-slot .jdoodle-embed")===null);

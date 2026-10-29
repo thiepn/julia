@@ -34,6 +34,9 @@ try{
    await r2Role(page,"heading",{name:"Plot mathematical functions"}).waitFor();
    await openLegacyWorkspace(page);
    await r2Locator(page,"#local-runner-disable-embed").click();
+   // After disabling the embed the current route can be Reference.
+   // Navigate to the lesson as a real learner would before checking its heading.
+   await page.goto(origin+"/#lesson/04");
    await r2Role(page,"heading",{name:"Plot mathematical functions"}).waitFor();
    await openLegacyWorkspace(page);
    await r2Locator(page,"#local-runner-token").fill(token);
