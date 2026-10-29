@@ -483,7 +483,7 @@ function render() {
     r2.selectLab("completion-depth");
     depthPractice.focusItem(selected.kind,selected.id);
   }
-  document.title = l.title + " — Julia Lab";
+  document.title = l.title + " — Julia Learn";
 }
 function setupEmbed() {
   const url = readEmbedUrl();
@@ -964,5 +964,10 @@ render();
 if(location.hash==="#course")r2.show("course");
 else if(/^#mixed(?:\/\d{2})?$/.test(location.hash))r2.show("mixed");
 else if(/^#utilities(?:\/\d{2})?$/.test(location.hash))r2.show("utilities");
-setupEmbed();
+// L1: defer third-party compiler loading unless the legacy workspace is explicitly opened.
+let legacyEmbedLoaded=false;
+window.addEventListener("julia-legacy-workspace",()=>{
+  if(legacyEmbedLoaded)return;
+  legacyEmbedLoaded=true;setupEmbed();
+});
 initOfflineStudy();

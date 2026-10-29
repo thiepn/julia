@@ -129,6 +129,8 @@ jobs:
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install chromium
+      - name: L1 learning-only navigation and preserved learner records
+        run: node tests/learning-first-browser.mjs
       - name: R2 responsive and real screenshot acceptance
         run: R2_SCREENSHOTS=1 node tests/r2-browser.mjs
       - name: R2 legacy original Chromium learner acceptance (no Julia install needed)

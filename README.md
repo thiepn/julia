@@ -1,5 +1,12 @@
 # Julia Lab — AMP (v1.0)
 
+## Learning-first L1 draft (PR #16)
+
+The primary UI is now **Course → Learn → Quiz → Practice**, with a **Reference** area for the lesson index and existing local data/backup. Practice presents the original challenge and both transfer tasks as **read-only source and success criteria**, with hints and a Copy for VS Code action. Original numerical diagrams, traces, repairs and six mixed-semester tasks remain available; the former editor/runner and submission tools are retained under Reference for safe transition, not removed or graded.
+
+The third-party JDoodle script is no longer loaded on ordinary page visits. It can load only after intentionally opening the previous coding workspace under Reference. Existing local storage keys, 16 lesson identities, 48 quiz answers, transfer/repair drafts, backup logic and offline assets remain unchanged; a first-party static cache version change is the only cache migration. No learner-facing Julia interpreter or invented code grading was added. L2 will introduce per-example expected-output and explanation records.
+
+
 A static, browser-based Julia learning companion for **Algorithmische Mathematik und Programmieren**, Universität zu Köln, WS 2026/27. It is independent study material, **not** an official course tool or homework submission system.
 
 ## Start
