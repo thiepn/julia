@@ -5,7 +5,7 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { resolve, extname, sep } from "node:path";
 import { chromium } from "playwright";
-import {r2Locator,r2Role,r2Text} from "./r2-legacy-navigation.mjs";
+import {r2Locator,r2Role,r2Text,openLegacyWorkspace} from "./r2-legacy-navigation.mjs";
 
 const root = resolve(".");
 const types = { ".html":"text/html; charset=utf-8", ".css":"text/css; charset=utf-8", ".js":"text/javascript; charset=utf-8" };
@@ -44,7 +44,7 @@ try {
     assert.equal(await r2Locator(page,'a[href="https://www.jdoodle.com/online-compiler-julia"]').count(),1);
     assert.equal(await r2Locator(page,'a[href="https://onecompiler.com/julia"]').count(),1);
     assert.deepEqual(errors,[]);
-    assert.equal(await page.evaluate(()=>window.__jdoodleLoaderFixture),true);
+    assert.equal(await page.evaluate(()=>window.__jdoodleLoaderFixture),undefined);
   });
   await check("MCQ checks persist across reload and hash navigation",async()=>{
     await r2Locator(page,'[data-question="0"][data-choice="2"]').click();
@@ -931,7 +931,8 @@ try {
       await r2Role(page,"heading",{name:"Variables & numbers"}).waitFor();
     }
   });
-  await check("provided JDoodle embed is configured on all lessons without claiming Julia execution",async()=>{
+  await openLegacyWorkspace(page);
+  await check("legacy JDoodle embed is configured only after entering old workspace",async()=>{
     const slot = r2Locator(page,".jdoodle-embed");
     await slot.waitFor();
     assert.equal(await slot.getAttribute("data-pym-src"),"https://www.jdoodle.com/embed/v1/d74ec9cf98a1b5b");
@@ -978,6 +979,7 @@ try {
     await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js", route=>route.abort());
     await page.evaluate(()=>localStorage.setItem("amp-julia-lab:jdoodle-embed-v1","https://www.jdoodle.com/embed/v1/testembed"));
     await page.reload();
+    await openLegacyWorkspace(page);
     await r2Text(page,"Embed failed to load").waitFor();
     assert.equal(await r2Locator(page,".compiler-links a").count(),2);
     assert.equal(await r2Locator(page,".jdoodle-embed").count(),1);
@@ -988,10 +990,12 @@ try {
     await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>route.abort());
     await r2Role(page,"button",{name:"Compiler settings"}).click();
     await r2Role(page,"button",{name:"Disable embedded editor"}).click();
+    await openLegacyWorkspace(page);
     await r2Text(page,"Compiler not connected").waitFor();
     assert.equal(await r2Locator(page,"#progress-label").innerText(),"1 of 16 concept sets reviewed");
     await r2Role(page,"button",{name:"Compiler settings"}).click();
     await r2Role(page,"button",{name:"Restore course editor"}).click();
+    await openLegacyWorkspace(page);
     await r2Text(page,"Embed failed to load").waitFor();
     assert.equal(await r2Locator(page,".jdoodle-embed").getAttribute("data-pym-src"),"https://www.jdoodle.com/embed/v1/d74ec9cf98a1b5b");
     assert.equal(await r2Locator(page,"#progress-label").innerText(),"1 of 16 concept sets reviewed");
@@ -1007,6 +1011,7 @@ try {
     status:200,contentType:"text/html",body:"<!doctype html><title>Fixture: not JDoodle</title>"
   }));
   await probe.goto("http://127.0.0.1:"+port+"/#lesson/01");
+  await openLegacyWorkspace(probe);
   await check("simulated matching iframe is diagnosed without grading or capturing output",async()=>{
     await r2Locator(probe,".jdoodle-embed iframe").waitFor();
     const frame=probe.frame({url:/jdoodle\.com\/embed\/v1\/d74ec9cf98a1b5b/});

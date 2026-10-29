@@ -438,8 +438,8 @@ try{
       assert.equal(await page.locator("#course-backup-export").isVisible(),true);
       await page.locator(".r2-legacy-tools > summary").click();
       await page.locator(".r2-reference-submission > summary").click();
-      assert.equal(await page.locator("#embed-url").isVisible(),true);
-      assert.equal(await page.locator("#submission-workflow").isVisible(),true);
+      assert.equal(await page.locator(".r2-legacy-tools #embed-url").count(),1);
+      assert.equal(await page.locator(".r2-reference-submission #submission-workflow").count(),1);
       await noOverflow("utilities");await shot("utilities");
       assert.equal(new URL(page.url()).hash,"#utilities/"+lessonBeforeUtilities);
       await page.reload();
