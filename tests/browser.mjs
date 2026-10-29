@@ -1193,7 +1193,7 @@ try {
     assert.ok(overflow<=2,"J10 numerical explorer caused horizontal overflow: "+overflow);
     await r2Locator(mobile,"#r2-lab-choice").selectOption("repair-lab");
     assert.equal(await r2Role(mobile,"button",{name:"Compare with example"}).isVisible(),true);
-    await r2Locator(mobile,'button[data-r2-stage="code"]').click();
+    await openLegacyWorkspace(mobile);
     await r2Locator(mobile,"#compiler-title").waitFor();
     assert.equal(await r2Locator(mobile,"#scratch-code").isVisible(),true);
     await r2Locator(mobile,"#scratch-code").click();
