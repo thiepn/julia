@@ -320,19 +320,19 @@ const chapters=[
   {
     "id": "loops",
     "title": "Loops and accumulators",
-    "explain": "A `for` loop visits the values of an iterable, including a range such as `1:4`, in order. In a running-sum algorithm, define an accumulator outside the loop, update it each iteration, and print its final value after the loop. A `while` loop instead repeats as long as its Boolean condition remains true. Both use `end` to mark the close of the block.\n\nThe values of a loop variable and a stored accumulator are different: a loop variable identifies the current item, while the accumulator remembers past work. In a while loop, the body should normally update the variable involved in its stopping condition. Tracing the condition before every iteration is necessary to predict termination and avoid off-by-one mistakes.",
+    "explain": "A `for` loop visits the values of an iterable, including a range such as `1:4`, in order. In a running-sum algorithm, define an accumulator outside the loop, update it each iteration, and print its final value after the loop. A `while` loop instead repeats as long as its Boolean condition remains true. Both use `end` to mark the close of the block. In a noninteractive Julia script, wrap the working accumulator and loop in a `let ... end` local scope to avoid the special global-loop scoping rules.\n\nThe values of a loop variable and a stored accumulator are different: a loop variable identifies the current item, while the accumulator remembers past work. In a while loop, the body should normally update the variable involved in its stopping condition. Tracing the condition before every iteration is necessary to predict termination and avoid off-by-one mistakes.",
     "concepts": [
       "A `for` loop processes iterable values in order.",
-      "Accumulators preserve intermediate totals.",
+      "Use `let ... end` around mutable accumulators in standalone script examples.",
       "A `while` condition is checked before each iteration."
     ],
     "examples": [
       {
         "title": "Sum a range",
-        "code": "total = 0\nfor k in 1:4\n    total += k\nend\nprintln(total)",
+        "code": "let\n    total = 0\n    for k in 1:4\n        total += k\n    end\n    println(total)\nend",
         "output": "10",
         "steps": [
-          "Start total at zero.",
+          "Open a local let block and initialize total to zero.",
           "Accumulate 1, 2, 3 and 4.",
           "Print 10 after the loop."
         ],
@@ -341,10 +341,10 @@ const chapters=[
       },
       {
         "title": "Double until a threshold",
-        "code": "n = 1\nwhile n < 8\n    n *= 2\nend\nprintln(n)",
+        "code": "let\n    n = 1\n    while n < 8\n        n *= 2\n    end\n    println(n)\nend",
         "output": "8",
         "steps": [
-          "Start at one and check the condition.",
+          "Start a local let block with n equal to one.",
           "Double to 2, then 4, then 8.",
           "Stop because 8 is not less than 8."
         ],
@@ -355,7 +355,7 @@ const chapters=[
     "checks": [
       {
         "prompt": "What is the final sum?",
-        "code": "s = 0\nfor k in 1:3\n    s += k\nend\nprintln(s)",
+        "code": "let\n    s = 0\n    for k in 1:3\n        s += k\n    end\n    println(s)\nend",
         "options": [
           "3",
           "4",
@@ -374,7 +374,7 @@ const chapters=[
       },
       {
         "prompt": "What value ends the loop?",
-        "code": "x = 1\nwhile x < 5\n    x *= 2\nend\nprintln(x)",
+        "code": "let\n    x = 1\n    while x < 5\n        x *= 2\n    end\n    println(x)\nend",
         "options": [
           "4",
           "5",
