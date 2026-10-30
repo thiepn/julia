@@ -22,6 +22,7 @@ export function initTransferAssessmentView({doc,mount}){
  const questions=make("div","r2-transfer-questions");
  const whyHeading=make("h4",null,"Mathematical justification");
  const justification=make("div","r2-transfer-justification");
+ justification.id="r2-transfer-justification";
  mount.append(h,overview,pickerRow,status,title,exposition,assumption,
   workHeading,questions,whyHeading,justification);
  let active=TRANSFER_CASES[0].id;
