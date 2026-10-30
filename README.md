@@ -1,3 +1,7 @@
+## Julia Learn L5: Algorithmic problem-solving (draft PR #16)
+
+Six original units in Learn cover contracts/boundaries, loop invariants, vector scans and complexity, matrix products/elimination, root bracketing and bisection, and numerical precision/guards. Each has a substantive mathematical explanation, a contract/invariant, two worked Julia scripts with a three-step trace and pitfalls, and two answer-specific reasoning checks. All 24 code/output pairs are independently verified using Julia 1.11 CI. The learner browser only renders read-only code and keyed feedback; it does not interpret or execute Julia. The separate answer key `amp-julia-learn:algorithms-v1` preserves prior L1–L4 progress, canonical lessons, original MCQs, drafts and backup data. Desktop/mobile Chromium acceptance verifies all six chapters, output, feedback, reload and absence of third-party interpreter requests. Offline assets are versioned.
+
 ## Julia Learn L4 — substantial Julia fundamentals (draft PR #16)
 
 Eight original fundamentals chapters are embedded in the **Learn** stage: variables, types, strings, conditions, loops, functions, arrays/indexing and ranges/broadcasting. Each chapter includes two detailed explanation paragraphs, three precise rules, two original code/output examples with three-step traces and common-mistake notes, and two independently keyed conceptual checks (16 examples and 16 checks total). Topics can be selected independently of the 16 canonical lesson positions. The first default topic adapts to several relevant lessons.

@@ -1559,3 +1559,9 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 .r2-fundamentals-hint{font-size:15px;line-height:1.6;margin:5px 0}
 @media(max-width:620px){.r2-fundamentals{padding:18px 15px;margin:20px 0}
  .r2-fundamentals-options{grid-template-columns:minmax(0,1fr)}}
+
+/* L5 algorithmic extension uses the proven L4 learning-paper structure with unique IDs. */
+#r2-algorithms-topic{font-size:15px;min-height:44px;max-width:100%;padding:7px 12px;
+ color:var(--ink);border:1px solid var(--line);border-radius:5px;background:var(--surface)}
+#r2-algorithms-why,#r2-algorithms-trap{font-size:15px;line-height:1.75;margin:0 0 16px}
+#r2-algorithms .r2-fundamentals-concepts li{line-height:1.75;overflow-wrap:anywhere}

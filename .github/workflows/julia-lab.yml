@@ -38,6 +38,9 @@ jobs:
           node --check src/fundamentals.js
           node --check src/fundamentals-view.js
           node tests/fundamentals-unit.mjs
+          node --check src/algorithmic-learning.js
+          node --check src/algorithmic-view.js
+          node tests/algorithmic-unit.mjs
           npm test
       - name: Install Julia 1.11 for authentic generated-test qualification
         uses: julia-actions/setup-julia@v2
@@ -49,6 +52,8 @@ jobs:
         run: node tests/learning-quiz-julia.mjs
       - name: L4 fundamentals exact stdout in real Julia 1.11
         run: node tests/fundamentals-julia.mjs
+      - name: L5 exact code and output checks in Julia 1.11
+        run: node tests/algorithmic-julia.mjs
       - name: Execute generated Julia Test suites with fixed reference code
         run: node tests/julia-qualification.mjs
       - name: Run Julia UE02 numeric and syntax qualifications
@@ -149,6 +154,8 @@ jobs:
         run: node tests/learning-quiz-browser.mjs
       - name: L4 fundamentals Chromium mobile and desktop acceptance
         run: node tests/fundamentals-browser.mjs
+      - name: L5 algorithmic mobile and desktop Chromium acceptance
+        run: node tests/algorithmic-browser.mjs
       - name: R2 responsive and real screenshot acceptance
         run: R2_SCREENSHOTS=1 node tests/r2-browser.mjs
       - name: R2 legacy original Chromium learner acceptance (no Julia install needed)

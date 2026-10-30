@@ -3,6 +3,7 @@ import {transferForLesson} from "./transfer-cases.js";
 import {examplesForLesson} from "./learning-examples.js";
 import {initLearningQuizView} from "./learning-quiz-view.js";
 import {initFundamentalsView} from "./fundamentals-view.js";
+import {initAlgorithmView} from "./algorithmic-view.js";
 // R2 UI-only controller. Reparents existing canonical elements without copying
 // exercises, drafts, model state, local Julia execution, progress or results.
 export function initR2Studio({doc=document,lessons,navigate}){
@@ -193,7 +194,9 @@ export function initR2Studio({doc=document,lessons,navigate}){
   learnPanel.classList.add("r2-learn-paper");
   const fundamentalsMount=node("section","r2-fundamentals");
   const fundamentals=initFundamentalsView({doc,mount:fundamentalsMount});
-  learn.append(learnPanel,fundamentalsMount,node("footer","r2-stage-footer",
+  const algorithmMount=node("section","r2-algorithm-host");
+  const algorithms=initAlgorithmView({doc,mount:algorithmMount});
+  learn.append(learnPanel,fundamentalsMount,algorithmMount,node("footer","r2-stage-footer",
     '<span id="r2-reading-source"></span>'+
     '<button type="button" data-r2-forward="check" class="r2-button r2-primary">Start quiz →</button>'));
 
@@ -812,6 +815,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     get("lesson-jump").value=lesson.id;
     renderWorkedExamples(lesson.id);
     fundamentals.showLesson(lesson.id);
+    algorithms.showLesson(lesson.id);
     appliedQuiz.showLesson(lesson.id);
     refreshStudyTask();
     get("r2-example-feedback").textContent="";
