@@ -31,7 +31,10 @@ jobs:
           node --check src/checks.js
           node --check src/lessons.js
           node --check src/learning-examples.js
+          node --check src/learning-quiz.js
+          node --check src/learning-quiz-view.js
           node tests/learning-examples-schema.mjs
+          node tests/learning-quiz-unit.mjs
           npm test
       - name: Install Julia 1.11 for authentic generated-test qualification
         uses: julia-actions/setup-julia@v2
@@ -39,6 +42,8 @@ jobs:
           version: '1.11'
       - name: Verify authored learning examples against real Julia 1.11
         run: node tests/learning-examples-julia.mjs
+      - name: Verify 15 authored quiz reference outputs with genuine Julia 1.11
+        run: node tests/learning-quiz-julia.mjs
       - name: Execute generated Julia Test suites with fixed reference code
         run: node tests/julia-qualification.mjs
       - name: Run Julia UE02 numeric and syntax qualifications
@@ -135,6 +140,8 @@ jobs:
           npx playwright install chromium
       - name: L1 learning-only navigation and preserved learner records
         run: node tests/learning-first-browser.mjs
+      - name: L3 applied quiz mobile and desktop acceptance
+        run: node tests/learning-quiz-browser.mjs
       - name: R2 responsive and real screenshot acceptance
         run: R2_SCREENSHOTS=1 node tests/r2-browser.mjs
       - name: R2 legacy original Chromium learner acceptance (no Julia install needed)

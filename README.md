@@ -1,3 +1,7 @@
+## Julia Learn L3 — authored interactive quiz pilot (draft)
+
+All original 48 concept questions and stored progress remain unchanged. Lessons 01–03 additionally provide **15 authored applied questions**: predict stdout, choose statement order, fix a bug, select the missing expression, and enter a numeric answer. Hints, specific wrong-answer feedback, retries, correct-answer feedback and per-lesson correctness counts are displayed. Answers persist in a separate `amp-julia-learn:quiz-v1` localStorage namespace; the original `amp-julia-lab:v1` grades and drafts are untouched. These checks indicate conceptual understanding only, not Julia coding mastery. No code, including error examples, is executed or interpreted in a learner's browser. Reference solutions and exact stdout are verified in Julia 1.11 CI.
+
 ## Julia Learn L2: verified worked-output pilot (draft)
 
 Lessons 01–03 have 18 original, deterministic Julia examples. Each presents source code, an expected stdout reveal, a three-step walkthrough, a conceptual explanation and a common mistake. The source is **displayed, never executed or interpreted in the browser**. The example selector resets on lesson navigation and creates no new grades or browser storage. The first example for each lesson is byte-for-byte the original canonical example. CI checks all 18 stdout pairs with actual Julia 1.11 and verifies the desktop/mobile display and existing learner progress.
