@@ -30,11 +30,15 @@ jobs:
           node --check src/app.js
           node --check src/checks.js
           node --check src/lessons.js
+          node --check src/learning-examples.js
+          node tests/learning-examples-schema.mjs
           npm test
       - name: Install Julia 1.11 for authentic generated-test qualification
         uses: julia-actions/setup-julia@v2
         with:
           version: '1.11'
+      - name: Verify authored learning examples against real Julia 1.11
+        run: node tests/learning-examples-julia.mjs
       - name: Execute generated Julia Test suites with fixed reference code
         run: node tests/julia-qualification.mjs
       - name: Run Julia UE02 numeric and syntax qualifications

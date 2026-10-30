@@ -1,5 +1,6 @@
 import {JULIA_TOUCH_KEYS,insertJuliaTouchKey} from "./touch-code.js";
 import {transferForLesson} from "./transfer-cases.js";
+import {examplesForLesson} from "./learning-examples.js";
 // R2 UI-only controller. Reparents existing canonical elements without copying
 // exercises, drafts, model state, local Julia execution, progress or results.
 export function initR2Studio({doc=document,lessons,navigate}){
@@ -132,8 +133,60 @@ export function initR2Studio({doc=document,lessons,navigate}){
     originalHeading=learnPanel.querySelector(".section-title"),
     originalLabel=learnPanel.querySelector(".code-label");
   if(!examplePre||!originalHeading||!originalLabel)throw Error("Canonical Julia example missing.");
+  const workedHeading=node("header","r2-worked-heading",
+    '<h3>Worked examples</h3><span id="r2-worked-count"></span>');
+  const workedNav=node("nav","r2-worked-nav");
+  workedNav.setAttribute("aria-label","Choose a worked Julia example");
+  const workedTitle=node("h4","r2-worked-title");
+  const workedOutput=node("details","r2-worked-output",
+    '<summary>Reveal expected output</summary>'+
+    '<pre><code id="r2-worked-stdout"></code></pre>');
+  const workedExplanation=node("section","r2-worked-explanation",
+    '<h4>Why this works</h4><p id="r2-worked-why"></p>'+
+    '<ol id="r2-worked-steps"></ol>'+
+    '<h4>Common mistake</h4><p id="r2-worked-pitfall"></p>');
+  const workedPieces=[workedHeading,workedNav,workedTitle,workedOutput,workedExplanation];
+  const renderWorkedExamples=id=>{
+    const lesson=lessons.find(item=>item.id===id)||lessons[0];
+    const examples=examplesForLesson(lesson.id);
+    for(const piece of workedPieces)piece.hidden=!examples;
+    workedNav.replaceChildren();
+    if(!examples){
+      get("example-code").textContent=lesson.example;
+      return;
+    }
+    get("r2-worked-count").textContent=examples.length+" examples";
+    const select=index=>{
+      const example=examples[index];
+      get("example-code").textContent=example.code;
+      workedTitle.textContent=example.title;
+      get("r2-worked-stdout").textContent=example.output;
+      get("r2-worked-why").textContent=example.explanation;
+      get("r2-worked-pitfall").textContent=example.pitfall;
+      get("r2-worked-steps").replaceChildren(...example.steps.map(step=>{
+        const item=doc.createElement("li");item.textContent=step;return item;
+      }));
+      workedOutput.open=false;
+      for(const button of workedNav.children){
+        const active=Number(button.dataset.exampleIndex)===index;
+        button.setAttribute("aria-pressed",String(active));
+      }
+      get("r2-example-feedback").textContent="";
+    };
+    examples.forEach((example,index)=>{
+      const button=doc.createElement("button");
+      button.type="button";
+      button.textContent=String(index+1).padStart(2,"0");
+      button.dataset.exampleIndex=String(index);
+      button.setAttribute("aria-label","Example "+(index+1)+": "+example.title);
+      button.addEventListener("click",()=>select(index));
+      workedNav.append(button);
+    });
+    select(0);
+  };
   reading.append(originalHeading,get("lesson-theory"));
-  examplePane.append(exampleHead,examplePre,exampleActions);
+  examplePane.append(exampleHead,workedHeading,workedNav,workedTitle,examplePre,
+    workedOutput,workedExplanation,exampleActions);
   learnPanel.replaceChildren(reading,examplePane);
   learnPanel.classList.add("r2-learn-paper");
   learn.append(learnPanel,node("footer","r2-stage-footer",
@@ -748,6 +801,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     get("r2-example-source").textContent=lesson.source;
     get("r2-check-source").textContent=lesson.source;
     get("r2-check-code").textContent=lesson.example;
+    renderWorkedExamples(lesson.id);
     refreshStudyTask();
     get("r2-example-feedback").textContent="";
     get("r2-task-summary-text").textContent=get("challenge-text").textContent;

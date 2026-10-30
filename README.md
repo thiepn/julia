@@ -1,3 +1,7 @@
+## Julia Learn L2: verified worked-output pilot (draft)
+
+Lessons 01–03 have 18 original, deterministic Julia examples. Each presents source code, an expected stdout reveal, a three-step walkthrough, a conceptual explanation and a common mistake. The source is **displayed, never executed or interpreted in the browser**. The example selector resets on lesson navigation and creates no new grades or browser storage. The first example for each lesson is byte-for-byte the original canonical example. CI checks all 18 stdout pairs with actual Julia 1.11 and verifies the desktop/mobile display and existing learner progress.
+
 # Julia Lab — AMP (v1.0)
 
 ## Learning-first L1 draft (PR #16)

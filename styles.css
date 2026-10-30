@@ -1438,3 +1438,32 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 .r2-legacy-tools>p{font-size:14px;color:var(--muted);max-width:65ch}
 .r2-legacy-tools button{margin:8px 0 16px}
 @media(max-width:550px){.r2-reference-index{grid-template-columns:1fr}.r2-study-task{padding:15px}.r2-study-task .code{font-size:12px}}
+
+
+/* L2 source-verified worked examples: read and predict; no browser execution. */
+.r2-worked-heading{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;
+  gap:10px;padding:15px 19px 4px;color:#e7edf8}
+.r2-worked-heading h3{font-size:17px;line-height:1.35;margin:0;font-weight:700}
+#r2-worked-count{font-size:14px;color:#bbc8dd}
+.r2-worked-nav{display:flex;gap:9px;overflow-x:auto;padding:9px 19px 12px;scrollbar-width:thin}
+.r2-worked-nav button{flex:0 0 auto;min-width:44px;min-height:43px;border-radius:5px;
+  border:1px solid #62728d;background:#1e2938;color:#e7edf8;font-size:14px;font-weight:700}
+.r2-worked-nav button[aria-pressed="true"]{border-color:#c5b6ff;background:#43376d;color:#fff}
+.r2-worked-nav button:hover{border-color:#c5b6ff}
+.r2-worked-title{padding:0 19px;margin:5px 0 0;font-size:17px;color:#e7edf8;line-height:1.4}
+.r2-example-pane .r2-worked-output{margin:0;padding:16px 19px;
+  border-top:1px solid #344154;border-bottom:1px solid #344154}
+.r2-example-pane .r2-worked-output summary{color:#e7edf8;font-size:15px;font-weight:700;cursor:pointer}
+.r2-example-pane .r2-worked-output pre{font:14px/1.7 "Cascadia Code",Consolas,monospace;
+  white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%;color:#d5f7df;
+  background:#17252b;border-radius:5px;padding:14px;margin:12px 0 0}
+.r2-worked-explanation{padding:17px 19px;color:#e7edf8}
+.r2-worked-explanation h4{font-size:16px;margin:3px 0 8px;font-weight:700}
+.r2-worked-explanation p,.r2-worked-explanation li{font-size:15px;line-height:1.75;color:#d2def0}
+.r2-worked-explanation p{margin:0 0 15px}
+.r2-worked-explanation ol{padding-left:22px;margin:0 0 20px}
+.r2-worked-explanation li{padding-left:3px;margin:0 0 8px}
+.r2-worked-heading[hidden],.r2-worked-nav[hidden],.r2-worked-title[hidden],
+.r2-example-pane .r2-worked-output[hidden],.r2-worked-explanation[hidden]{display:none!important}
+@media(max-width:560px){.r2-worked-heading,.r2-worked-nav,.r2-worked-title{padding-left:16px;padding-right:16px}
+  .r2-worked-explanation,.r2-example-pane .r2-worked-output{padding-left:16px;padding-right:16px}}

@@ -35,6 +35,31 @@ try{
     await page.locator("#r2-next-code").click();
     await page.locator("#r2-stage-learn").waitFor({state:"visible"});
     assert.match(await page.locator("#example-code").innerText(),/println/);
+    // L2 read-only examples: switching code changes the authored output only.
+    for(const id of ["01","02","03"]){
+      assert.equal(await page.locator("#lesson-jump").inputValue(),id);
+      assert.equal(await page.locator(".r2-worked-nav button").count(),6);
+      assert.equal(await page.locator(".r2-worked-steps li").count(),3);
+      assert.equal(await page.locator(".r2-worked-output").isVisible(),true);
+      await page.locator(".r2-worked-output > summary").click();
+      assert.ok((await page.locator("#r2-worked-stdout").innerText()).length>0);
+      await page.locator(".r2-worked-nav button").nth(1).click();
+      assert.equal(await page.locator(".r2-worked-nav button[aria-pressed=true]").count(),1);
+      assert.equal(await page.locator(".r2-worked-output").evaluate(el=>el.open),false);
+      assert.ok((await page.locator("#r2-worked-why").innerText()).length>=90);
+      assert.ok((await page.locator("#r2-worked-pitfall").innerText()).length>=60);
+      assert.ok((await page.locator("#example-code").innerText()).length>10);
+      if(id!=="03"){
+        await page.locator("#r2-lesson-next").click();
+        const next=String(Number(id)+1).padStart(2,"0");
+        await page.waitForFunction(next=>document.querySelector("#lesson-jump")?.value===next,next);
+      }
+    }
+    await page.locator("#r2-course-open").click();
+    await page.locator('.lesson-link[href="#lesson/01"]').click();
+    await page.waitForFunction(()=>document.querySelector("#lesson-jump")?.value==="01");
+    assert.equal(await page.locator(".r2-worked-nav button[aria-pressed=true]").count(),1);
+    assert.equal(await page.locator("#r2-worked-stdout").textContent(),"8");
     await page.locator("[data-r2-stage=check]").click();
     await page.locator("#r2-stage-check").waitFor({state:"visible"});
     await page.locator('#questions button[data-question="0"][data-choice="2"]').click();
