@@ -186,7 +186,7 @@ const chapters=[
         "code": "a = 4\nb = 5\nprintln(\"Sum: $(a + b)\")",
         "output": "Sum: 9",
         "steps": [
-          "Assign 4 and 5.",
+          "Assign the values 4 and 5 to the two variables.",
           "Evaluate a + b inside interpolation.",
           "Insert 9 into the final string."
         ],
@@ -253,7 +253,7 @@ const chapters=[
         "code": "x = -3\nif x < 0\n    println(\"negative\")\nelse\n    println(\"nonnegative\")\nend",
         "output": "negative",
         "steps": [
-          "Check -3 < 0.",
+          "Evaluate whether -3 is less than zero.",
           "The condition is true, so enter the first branch.",
           "Print negative and skip else."
         ],
