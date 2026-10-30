@@ -4,7 +4,7 @@
 const browserActions=new Set(["click","fill","selectOption","setInputFiles","check","uncheck","press","type","dblclick"]);
 const childLocators=new Set(["first","last","nth","locator","getByRole","getByText","getByLabel","filter","and","or"]);
 const buttonIds=[
-  ["next lesson","#next"],["previous","#previous"],["reset repair","#repair-reset"],
+  ["next lesson","#r2-lesson-next"],["previous","#r2-lesson-previous"],["reset repair","#repair-reset"],
   ["download .jl","#download-draft"],["compiler settings","#r2-utilities-open"],
   ["run current julia draft","#local-runner-run"],
   ["disable jdoodle and reload for local execution","#local-runner-disable-embed"],

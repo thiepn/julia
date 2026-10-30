@@ -56,7 +56,7 @@ try{
     await r2Locator(page,"#submission-workflow").evaluate(el=>el.open=true);
     assert.equal(await r2Locator(page,"#submission-name").isDisabled(),true);
     await r2Locator(page,"#submission-disable-embed").click();
-    await r2Role(page,"heading",{name:"Tools & settings"}).waitFor();
+    await page.locator("#r2-utilities").waitFor({state:"visible"});
     await r2Locator(page,"#submission-workflow").evaluate(el=>el.open=true);
     assert.equal(await r2Locator(page,"#submission-name").isEnabled(),true);
     await page.evaluate(()=>window.print=()=>{window.__didPrint=true;});
