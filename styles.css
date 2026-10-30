@@ -1589,3 +1589,42 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 .r2-paths-unit[data-evidence="review"]{border-left:3px solid var(--error)}
 @media(max-width:850px){.r2-paths-suggested{grid-template-columns:1fr}.r2-paths-list{grid-template-columns:1fr}}
 @media(max-width:620px){#r2-learning-paths{padding:18px 15px;margin:20px 0}}
+
+
+/* L7 original multistep AMP cases; readable source and independent, accessible checks. */
+#r2-assessments{max-width:1260px;margin:28px auto;padding:clamp(18px,2.8vw,34px);min-width:0;
+ background:var(--surface);border:1px solid var(--line);border-radius:8px}
+#r2-assessments h2{font-size:clamp(23px,2.4vw,30px);margin:0 0 14px}
+#r2-assessments h3{font-size:21px;margin:25px 0 16px}
+#r2-assessments h4{font-size:19px;margin:22px 0 14px}
+#r2-assessments h5{font-size:16px;line-height:1.5;margin:0 0 12px}
+.r2-assessment-scope,.r2-assessment-context p,#r2-assessments .r2-assessment-principle,
+#r2-assessments .r2-assessment-progress{font-size:15px;line-height:1.7;max-width:82ch}
+.r2-assessment-picker{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0}
+.r2-assessment-picker label{font-size:15px;font-weight:700}
+#r2-assessment-select{min-height:44px;max-width:100%;font-size:15px;
+ background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:5px;padding:8px 12px}
+.r2-assessment-principle{border-left:3px solid var(--accent);padding:12px 16px;background:var(--surface-muted)}
+.r2-assessment-steps{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+.r2-assessment-question{padding:18px;min-width:0;border:1px solid var(--line);border-radius:6px}
+.r2-assessment-code{font:14px/1.75 "Cascadia Code",Consolas,monospace;
+ background:#111923;color:#ecf0ff;border:1px solid #364359;padding:16px;
+ white-space:pre;overflow-x:auto;max-width:100%;border-radius:5px}
+.r2-assessment-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:15px 0}
+.r2-assessment-option{min-height:44px;font-size:15px;line-height:1.5;color:var(--ink);
+ text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:5px;
+ padding:11px 14px;overflow-wrap:anywhere}
+.r2-assessment-option[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.r2-assessment-hint{font-size:15px;line-height:1.65;margin:10px 0}
+.r2-assessment-hint summary{font-weight:700;min-height:44px;padding:10px 0;cursor:pointer}
+.r2-assessment-answer{padding:12px 15px;font-size:15px;line-height:1.7;
+ border-left:3px solid var(--line);background:var(--surface-muted);white-space:pre-wrap;overflow-wrap:anywhere}
+.r2-assessment-answer:empty{display:none}
+.r2-assessment-answer[data-status="correct"]{border-left-color:var(--success)}
+.r2-assessment-answer[data-status="retry"]{border-left-color:var(--error)}
+#r2-assessment-remedy:not(:empty){border-top:2px solid var(--line);margin-top:28px;padding-top:15px}
+#r2-assessment-remedy>p{font-size:15px;line-height:1.7}
+.r2-assessment-remedy-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media(max-width:800px){.r2-assessment-remedy-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:620px){#r2-assessments{padding:18px 15px;margin:20px 0}
+ .r2-assessment-question{padding:14px 10px}.r2-assessment-options{grid-template-columns:minmax(0,1fr)}}

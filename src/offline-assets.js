@@ -1,6 +1,6 @@
 // Immutable release-scoped static-study shell. Add new first-party assets here before shipping.
 // No student drafts, runner outputs, external scripts, tokens, uploads, or account data.
-export const OFFLINE_CACHE_NAME="amp-julia-offline-learn-l6-20261030-a1";
+export const OFFLINE_CACHE_NAME="amp-julia-offline-learn-l7-20261030-a1";
 export const OFFLINE_ASSETS=Object.freeze([
   "index.html",
   "styles.css",
@@ -43,6 +43,13 @@ export const OFFLINE_ASSETS=Object.freeze([
   "src/algorithmic-view.js",
   "src/learning-paths.js",
   "src/learning-paths-view.js",
+  "src/assessments.js",
+  "src/assessments-view.js",
+  "src/assessment-quadrature.js",
+  "src/assessment-bracketing.js",
+  "src/assessment-elimination.js",
+  "src/assessment-stability.js",
+  "src/assessment-newton.js",
   "src/linear-depth.js",
   "src/linear-methods-view.js",
   "src/linear-methods.js",

@@ -44,6 +44,9 @@ jobs:
           node --check src/learning-paths.js
           node --check src/learning-paths-view.js
           node tests/learning-paths-unit.mjs
+          node --check src/assessments.js
+          node --check src/assessments-view.js
+          node tests/assessments-unit.mjs
           npm test
       - name: Install Julia 1.11 for authentic generated-test qualification
         uses: julia-actions/setup-julia@v2
@@ -57,6 +60,8 @@ jobs:
         run: node tests/fundamentals-julia.mjs
       - name: L5 exact code and output checks in Julia 1.11
         run: node tests/algorithmic-julia.mjs
+      - name: L7 authentic Julia 1.11 multistep assessments and independent remediation
+        run: node tests/assessments-julia.mjs
       - name: Execute generated Julia Test suites with fixed reference code
         run: node tests/julia-qualification.mjs
       - name: Run Julia UE02 numeric and syntax qualifications
@@ -161,6 +166,8 @@ jobs:
         run: node tests/algorithmic-browser.mjs
       - name: L6 prerequisite paths and targeted revision in desktop/mobile Chromium
         run: node tests/learning-paths-browser.mjs
+      - name: L7 five multistep AMP assessments in desktop and mobile Chromium
+        run: node tests/assessments-browser.mjs
       - name: R2 responsive and real screenshot acceptance
         run: R2_SCREENSHOTS=1 node tests/r2-browser.mjs
       - name: R2 legacy original Chromium learner acceptance (no Julia install needed)
