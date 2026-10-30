@@ -51,6 +51,7 @@ async function showCanonical(page,locator) {
     if(el.closest("#r2-course"))view="course";
     else if(el.closest("#r2-mixed"))view="mixed";
     else if(el.closest("#r2-utilities"))view="utilities";
+    else if(el.closest("#lesson-main"))view="lesson";
     return {stage,lab,questionIndex,mixedIndex,closed,view};
   });
   if(info.view==="course" && !(await page.locator("#r2-course").isVisible()))
@@ -64,6 +65,12 @@ async function showCanonical(page,locator) {
   }
   if(info.view==="utilities" && !(await page.locator("#r2-utilities").isVisible()))
     await page.locator("#r2-utilities-open").click();
+  if(info.view==="lesson" && !(await page.locator("#lesson-main").isVisible())){
+    const id=await page.locator("#lesson-jump").inputValue();
+    await page.locator("#r2-course-open").click();
+    await page.locator('.lesson-link[href="#lesson/'+id+'"]').click();
+    await page.locator("#lesson-main").waitFor({state:"visible"});
+  }
   if(info.stage) {
     if(!(await page.locator("#lesson-main").isVisible())){
       const id=await page.locator("#lesson-jump").inputValue();
