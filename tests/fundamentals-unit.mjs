@@ -28,7 +28,7 @@ for(const unit of FUNDAMENTALS){
   assert.equal(new Set(q.options).size,4);
   assert.equal(q.feedback.length,4);
   assert.ok(q.hint.length>18);
-  assert.equal(q.output.trim().length>0);
+  assert.ok(q.output.trim().length>0);
   assert.ok(Number.isInteger(q.answer)&&q.answer>=0&&q.answer<4);
   q.options.forEach((_,i)=>{
    const result=gradeFundamentalsCheck(q,String(i));
