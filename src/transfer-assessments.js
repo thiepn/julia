@@ -113,7 +113,7 @@ const authored=[
           "4"
         ],
         "key": 0,
-        "reason": "The values -1 and 4 multiply to -4.",
+        "reason": "The endpoint evaluations are -1 and 4; their product is -4, which confirms the required opposing signs.",
         "hint": "Evaluate f(2) and f(3) separately.",
         "feedback": [
           "The values -1 and 4 multiply to -4.",
@@ -217,7 +217,7 @@ const authored=[
       },
       {
         "kind": "output",
-        "ask": "Find the regression intercept.",
+        "ask": "Calculate the least-squares regression intercept from the recorded slope and sample means.",
         "code": "xbar=1.0\nybar=5.0/3.0\nm=0.5\nprintln(round(ybar-m*xbar,digits=6))",
         "stdout": "1.166667",
         "options": [
@@ -248,7 +248,7 @@ const authored=[
           "0.333333"
         ],
         "key": 2,
-        "reason": "The squared errors sum to 1/6, not zero.",
+        "reason": "The sum of all three squared residuals equals 1/6, demonstrating nonzero error despite an optimal line.",
         "hint": "Square each residual before summing.",
         "feedback": [
           "The observations are not all on the fitted line.",
@@ -382,7 +382,7 @@ const authored=[
     "steps": [
       {
         "kind": "output",
-        "ask": "Compute the forward difference.",
+        "ask": "Compute the forward finite-difference estimate of f′(2) using h=0.1.",
         "code": "x=2.0\nh=0.1\nprintln(round(((x+h)^3-x^3)/h,digits=2))",
         "stdout": "12.61",
         "options": [
@@ -403,7 +403,7 @@ const authored=[
       },
       {
         "kind": "output",
-        "ask": "Compute the centered difference.",
+        "ask": "Compute the centered finite-difference estimate of f′(2) with h=0.1.",
         "code": "x=2.0\nh=0.1\nprintln(round(((x+h)^3-(x-h)^3)/(2*h),digits=2))",
         "stdout": "12.01",
         "options": [
