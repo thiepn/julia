@@ -13,7 +13,7 @@ const writeFundamentalsAnswer=writeAlgorithmAnswer;
 const gradeFundamentalsCheck=gradeAlgorithmCheck;
 
 // L4 reads authored sources only. No JS evaluation, Julia compilation, or new grading of old MCQs.
-export function initAlgorithmView({doc,mount}){
+export function initAlgorithmView({doc,mount,onAnswer}){
  const make=(tag,className,text)=>{const n=doc.createElement(tag);
   if(className)n.className=className.replaceAll("r2-algorithms","r2-fundamentals");if(text!==undefined)n.textContent=text;return n;};
  mount.id="r2-algorithms";mount.classList.add("r2-fundamentals");mount.setAttribute("aria-labelledby","r2-algorithms-title");
@@ -81,6 +81,7 @@ export function initAlgorithmView({doc,mount}){
     button.addEventListener("click",()=>{
      const result=writeFundamentalsAnswer(q,String(index),stores());
      show(String(index),result.saved);
+     onAnswer?.();
      const progress=readFundamentalsAnswers(stores());
      quizProgress.textContent=unit.checks.filter(item=>progress[item.id]!==undefined&&
       gradeFundamentalsCheck(item,progress[item.id]).correct).length+

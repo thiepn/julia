@@ -2,7 +2,7 @@ import {FUNDAMENTALS,readFundamentalsAnswers,writeFundamentalsAnswer,
  gradeFundamentalsCheck} from "./fundamentals.js";
 
 // L4 reads authored sources only. No JS evaluation, Julia compilation, or new grading of old MCQs.
-export function initFundamentalsView({doc,mount}){
+export function initFundamentalsView({doc,mount,onAnswer}){
  const make=(tag,className,text)=>{const n=doc.createElement(tag);
   if(className)n.className=className;if(text!==undefined)n.textContent=text;return n;};
  mount.id="r2-fundamentals";mount.setAttribute("aria-labelledby","r2-fundamentals-title");
@@ -67,6 +67,7 @@ export function initFundamentalsView({doc,mount}){
     button.addEventListener("click",()=>{
      const result=writeFundamentalsAnswer(q,String(index),stores());
      show(String(index),result.saved);
+     onAnswer?.();
      const progress=readFundamentalsAnswers(stores());
      quizProgress.textContent=unit.checks.filter(item=>progress[item.id]!==undefined&&
       gradeFundamentalsCheck(item,progress[item.id]).correct).length+
