@@ -801,6 +801,8 @@ export function initR2Studio({doc=document,lessons,navigate}){
     get("r2-example-source").textContent=lesson.source;
     get("r2-check-source").textContent=lesson.source;
     get("r2-check-code").textContent=lesson.example;
+    // Resolve the selected lesson before rendering its read-only practice prompt.
+    get("lesson-jump").value=lesson.id;
     renderWorkedExamples(lesson.id);
     refreshStudyTask();
     get("r2-example-feedback").textContent="";
@@ -808,7 +810,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     doc.defaultView.queueMicrotask(()=>{updateCursor();syncTestAccess();});
     const lessonChanged=currentLesson!==id;
     if(lessonChanged){question=0;currentLesson=id;}
-    get("lesson-jump").value=id;syncLabs();syncQuestions();syncPractice();
+    syncLabs();syncQuestions();syncPractice();
     const target=nextStage||"learn";nextStage=null;showStage(target);
     if(lessonChanged)get("lesson-title").focus({preventScroll:true});
   }
