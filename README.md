@@ -1,3 +1,9 @@
+## Julia Learn L4 — substantial Julia fundamentals (draft PR #16)
+
+Eight original fundamentals chapters are embedded in the **Learn** stage: variables, types, strings, conditions, loops, functions, arrays/indexing and ranges/broadcasting. Each chapter includes two detailed explanation paragraphs, three precise rules, two original code/output examples with three-step traces and common-mistake notes, and two independently keyed conceptual checks (16 examples and 16 checks total). Topics can be selected independently of the 16 canonical lesson positions. The first default topic adapts to several relevant lessons.
+
+Fundamentals answers persist under **`amp-julia-learn:fundamentals-v1`** and do not alter the original course MCQ scores, L3 answers or any code drafts. Unknown or malformed stored data is ignored; denied storage is reported rather than presented as saved. No source is executed in the browser. CI runs all **32 published Julia code/output pairs using actual Julia 1.11**, checks authored answer keys, and exercises all eight chapters in desktop/mobile Chromium with offline-only requests.
+
 ## Julia Learn L3 — authored interactive quiz pilot (draft)
 
 All original 48 concept questions and stored progress remain unchanged. Lessons 01–03 additionally provide **15 authored applied questions**: predict stdout, choose statement order, fix a bug, select the missing expression, and enter a numeric answer. Hints, specific wrong-answer feedback, retries, correct-answer feedback and per-lesson correctness counts are displayed. Answers persist in a separate `amp-julia-learn:quiz-v1` localStorage namespace; the original `amp-julia-lab:v1` grades and drafts are untouched. These checks indicate conceptual understanding only, not Julia coding mastery. No code, including error examples, is executed or interpreted in a learner's browser. Reference solutions and exact stdout are verified in Julia 1.11 CI.

@@ -2,6 +2,7 @@ import {JULIA_TOUCH_KEYS,insertJuliaTouchKey} from "./touch-code.js";
 import {transferForLesson} from "./transfer-cases.js";
 import {examplesForLesson} from "./learning-examples.js";
 import {initLearningQuizView} from "./learning-quiz-view.js";
+import {initFundamentalsView} from "./fundamentals-view.js";
 // R2 UI-only controller. Reparents existing canonical elements without copying
 // exercises, drafts, model state, local Julia execution, progress or results.
 export function initR2Studio({doc=document,lessons,navigate}){
@@ -190,7 +191,9 @@ export function initR2Studio({doc=document,lessons,navigate}){
     workedOutput,workedExplanation,exampleActions);
   learnPanel.replaceChildren(reading,examplePane);
   learnPanel.classList.add("r2-learn-paper");
-  learn.append(learnPanel,node("footer","r2-stage-footer",
+  const fundamentalsMount=node("section","r2-fundamentals");
+  const fundamentals=initFundamentalsView({doc,mount:fundamentalsMount});
+  learn.append(learnPanel,fundamentalsMount,node("footer","r2-stage-footer",
     '<span id="r2-reading-source"></span>'+
     '<button type="button" data-r2-forward="check" class="r2-button r2-primary">Start quiz →</button>'));
 
@@ -808,6 +811,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     // Resolve the selected lesson before rendering its read-only practice prompt.
     get("lesson-jump").value=lesson.id;
     renderWorkedExamples(lesson.id);
+    fundamentals.showLesson(lesson.id);
     appliedQuiz.showLesson(lesson.id);
     refreshStudyTask();
     get("r2-example-feedback").textContent="";

@@ -1511,3 +1511,51 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 .r2-extra-footer button:disabled{opacity:.5;cursor:default}
 @media(max-width:580px){.r2-extra-quiz{margin:23px 0;padding:17px 15px}
   .r2-extra-choices{grid-template-columns:minmax(0,1fr)}}
+
+
+/* L4 substantial fundamentals within the learning paper, independent of course MCQ grade. */
+.r2-fundamentals{max-width:1260px;margin:26px auto 16px;padding:clamp(18px,2.8vw,34px);
+ background:var(--surface);border:1px solid var(--line);border-radius:8px;min-width:0}
+.r2-fundamentals h2{font-size:clamp(23px,2.4vw,30px);margin:0 0 20px}
+.r2-fundamentals h3{font-size:clamp(20px,2vw,26px);margin:16px 0}
+.r2-fundamentals h4{font-size:19px;margin:22px 0 13px}
+.r2-fundamentals h5{font-size:17px;margin:13px 0;line-height:1.45}
+.r2-fundamentals-picker{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.r2-fundamentals-picker label{font-size:15px;font-weight:700}
+#r2-fundamentals-topic{font-size:15px;min-height:44px;max-width:100%;padding:7px 12px;
+ color:var(--ink);border:1px solid var(--line);border-radius:5px;background:var(--surface)}
+.r2-fundamentals-intro p{font-size:16px;line-height:1.8;margin:0 0 16px;max-width:80ch}
+.r2-fundamentals-concepts{padding:18px 20px 18px 38px;margin:20px 0 0;
+ background:var(--surface-muted);border-left:3px solid var(--accent)}
+.r2-fundamentals-concepts li{font-size:15px;line-height:1.7;margin:4px 0}
+.r2-fundamentals-worked,.r2-fundamentals-tested{margin-top:28px;border-top:1px solid var(--line);padding-top:14px}
+.r2-fundamentals-example-nav{display:flex;gap:10px;flex-wrap:wrap}
+.r2-fundamentals-example-nav button{font-size:14px;min-height:44px;padding:9px 15px;
+ background:var(--surface);border:1px solid var(--line);border-radius:5px;color:var(--ink)}
+.r2-fundamentals-example-nav button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);font-weight:700}
+.r2-fundamentals-source{font:14px/1.8 "Cascadia Code",Consolas,monospace;
+ background:#111923;color:#ecf0ff;padding:18px;border:1px solid #364359;
+ border-radius:6px;max-width:100%;overflow-x:auto;white-space:pre;margin:14px 0}
+.r2-fundamentals-output{font-size:15px;margin:14px 0}
+.r2-fundamentals-output summary,.r2-fundamentals-hint summary{font-weight:700;cursor:pointer;min-height:44px;padding:10px 0}
+.r2-fundamentals-output pre{font:14px/1.7 "Cascadia Code",Consolas,monospace;
+ white-space:pre-wrap;overflow-wrap:anywhere;background:var(--surface-muted);
+ padding:13px 16px;border-radius:5px}
+.r2-fundamentals-steps{padding-left:23px;margin:18px 0}
+.r2-fundamentals-steps li{font-size:15px;line-height:1.75;margin:0 0 9px}
+#r2-fundamentals-why,#r2-fundamentals-trap{font-size:15px;line-height:1.75;margin:0 0 16px}
+.r2-fundamentals-progress{font-size:15px;line-height:1.6;font-weight:650}
+.r2-fundamentals-question{border-top:1px solid var(--line);padding:16px 0}
+.r2-fundamentals-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.r2-fundamentals-option{border:1px solid var(--line);background:var(--surface);
+ color:var(--ink);text-align:left;border-radius:5px;padding:12px 15px;
+ font-size:15px;line-height:1.5;min-height:48px;overflow-wrap:anywhere}
+.r2-fundamentals-option[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.r2-fundamentals-feedback{margin:12px 0;padding:12px 15px;font-size:15px;line-height:1.7;
+ border-left:3px solid var(--line);background:var(--surface-muted)}
+.r2-fundamentals-feedback:empty{display:none}
+.r2-fundamentals-feedback[data-status="correct"]{border-left-color:var(--success)}
+.r2-fundamentals-feedback[data-status="retry"]{border-left-color:var(--error)}
+.r2-fundamentals-hint{font-size:15px;line-height:1.6;margin:5px 0}
+@media(max-width:620px){.r2-fundamentals{padding:18px 15px;margin:20px 0}
+ .r2-fundamentals-options{grid-template-columns:minmax(0,1fr)}}
