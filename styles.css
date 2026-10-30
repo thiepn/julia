@@ -1628,3 +1628,44 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 @media(max-width:800px){.r2-assessment-remedy-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:620px){#r2-assessments{padding:18px 15px;margin:20px 0}
  .r2-assessment-question{padding:14px 10px}.r2-assessment-options{grid-template-columns:minmax(0,1fr)}}
+
+
+/* L8 independent transfer: math-first questions with Julia-verified reference output. */
+#r2-transfer{max-width:1260px;margin:28px auto;padding:clamp(18px,2.5vw,34px);min-width:0;
+ border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+#r2-transfer h2{font-size:clamp(23px,2.5vw,30px);margin:0 0 14px}
+#r2-transfer h3{font-size:21px;margin:24px 0 14px}
+#r2-transfer h4{font-size:19px;margin:24px 0 14px}
+#r2-transfer h5{font-size:16px;line-height:1.5;margin:0 0 12px}
+.r2-transfer-overview,.r2-transfer-exposition p,.r2-transfer-assumption,
+.r2-transfer-status{font-size:15px;line-height:1.75;max-width:83ch;overflow-wrap:anywhere}
+.r2-transfer-assumption{padding:13px 16px;border-left:3px solid var(--accent);
+ background:var(--surface-muted)}
+.r2-transfer-picker{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:20px 0}
+.r2-transfer-picker label{font-size:15px;font-weight:700}
+#r2-transfer-select{font-size:15px;min-height:44px;max-width:100%;background:var(--surface);
+ color:var(--ink);border:1px solid var(--line);border-radius:5px;padding:8px 12px}
+.r2-transfer-questions{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.r2-transfer-question{border:1px solid var(--line);border-radius:6px;padding:18px;min-width:0}
+.r2-transfer-code{font:14px/1.75 "Cascadia Code",Consolas,monospace;color:#ecf0ff;
+ background:#111923;border:1px solid #364359;border-radius:5px;padding:16px;
+ overflow-x:auto;max-width:100%;white-space:pre}
+.r2-transfer-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.r2-transfer-option{min-height:44px;border:1px solid var(--line);border-radius:5px;
+ background:var(--surface);color:var(--ink);padding:12px 14px;text-align:left;
+ font-size:15px;line-height:1.6;overflow-wrap:anywhere}
+.r2-transfer-option[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.r2-transfer-hint{font-size:15px;line-height:1.65}
+.r2-transfer-hint summary{min-height:44px;padding:10px 0;cursor:pointer;font-weight:700}
+.r2-transfer-feedback{padding:12px 15px;font-size:15px;line-height:1.75;
+ background:var(--surface-muted);border-left:3px solid var(--line);white-space:pre-wrap;
+ overflow-wrap:anywhere}
+.r2-transfer-feedback:empty{display:none}
+.r2-transfer-feedback[data-status="correct"]{border-color:var(--success)}
+.r2-transfer-feedback[data-status="review"]{border-color:var(--error)}
+#r2-transfer-justification .r2-transfer-question{border-left:3px solid var(--accent)}
+@media(max-width:640px){
+ #r2-transfer{margin:20px 0;padding:18px 15px}
+ .r2-transfer-question{padding:14px 10px}
+ .r2-transfer-options{grid-template-columns:minmax(0,1fr)}
+}
