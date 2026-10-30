@@ -39,7 +39,7 @@ try{
     for(const id of ["01","02","03"]){
       assert.equal(await page.locator("#lesson-jump").inputValue(),id);
       assert.equal(await page.locator(".r2-worked-nav button").count(),6);
-      assert.equal(await page.locator(".r2-worked-steps li").count(),3);
+      assert.equal(await page.locator("#r2-worked-steps li").count(),3);
       assert.equal(await page.locator(".r2-worked-output").isVisible(),true);
       await page.locator(".r2-worked-output > summary").click();
       assert.ok((await page.locator("#r2-worked-stdout").innerText()).length>0);

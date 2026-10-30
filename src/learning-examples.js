@@ -59,7 +59,7 @@ const raw = {
       "code": "x = 4\ny = 2\nprintln(x + y)\nprintln(x - y)\nprintln(x * y)",
       "output": "6\n2\n8",
       "steps": [
-        "Assign x = 4 and y = 2.",
+        "Assign 4 to x and 2 to y before evaluating the expressions.",
         "Addition gives 6 and subtraction gives 2.",
         "Multiplication gives 8; each println uses its own line."
       ],
