@@ -41,7 +41,7 @@ export default {
       ],
       "correct": 1,
       "hint": "First solve x₂=1, then use 2x₁+x₂=5.",
-      "explanation": "The triangular system yields x₂=1.0 and x₁=2.0.",
+      "explanation": "The triangular second row gives x₂=1.0; substitution into 2x₁+x₂=5 then gives x₁=2.0.",
       "feedback": [
         "This reverses the unknowns.",
         "The triangular system yields x₂=1.0 and x₁=2.0.",
@@ -61,7 +61,7 @@ export default {
       ],
       "correct": 1,
       "hint": "Multiply original A by x, then subtract original b.",
-      "explanation": "A*x=[5,11], so both residual components are zero.",
+      "explanation": "Multiplication by the original matrix gives A*x=[5,11], which matches b and leaves the zero residual vector.",
       "feedback": [
         "The first equation is satisfied too.",
         "A*x=[5,11], so both residual components are zero.",

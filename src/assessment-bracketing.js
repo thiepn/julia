@@ -41,7 +41,7 @@ export default {
       ],
       "correct": 1,
       "hint": "Since 1.5² exceeds 2, the upper endpoint becomes 1.5.",
-      "explanation": "The new bracket [1.0,1.5] has width 0.5.",
+      "explanation": "Because 1.5 squared is above two, the root stays in [1.0,1.5], whose width is 0.5 after the first halving.",
       "feedback": [
         "0.25 would require another halving.",
         "The new bracket [1.0,1.5] has width 0.5.",
@@ -105,7 +105,7 @@ export default {
       "hint": "Calculate width/limit=16 and log₂(16).",
       "explanation": "Four halvings reduce interval width 2 to the target 0.125.",
       "feedback": [
-        "Two halvings leave 0.5.",
+        "Two halvings leave the interval too wide at 0.5.",
         "Three halvings leave 0.25.",
         "Four halvings reduce interval width 2 to the target 0.125.",
         "Five is not the minimum required count."

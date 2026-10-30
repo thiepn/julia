@@ -21,7 +21,7 @@ export default {
       ],
       "correct": 2,
       "hint": "For f(x)=x²−2, the derivative is 2x evaluated at the present guess.",
-      "explanation": "The derivative at 1.5 is 2×1.5=3.0.",
+      "explanation": "The derivative of x²−2 is 2x, so substituting x=1.5 produces 2×1.5=3.0 rather than the function value.",
       "feedback": [
         "The starting point is not its derivative.",
         "Two is the coefficient before evaluation.",
@@ -41,7 +41,7 @@ export default {
       ],
       "correct": 2,
       "hint": "Divide residual 0.25 by derivative 3 before subtracting.",
-      "explanation": "The new iterate is 1.5−0.25/3=1.416667 to six digits.",
+      "explanation": "At x=1.5 the residual is 0.25 and derivative is 3.0; subtracting 0.25/3 yields 1.416667 to six decimals.",
       "feedback": [
         "The correction in this choice is too large.",
         "1.414214 is closer to a later Newton iterate.",
