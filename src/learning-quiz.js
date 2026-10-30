@@ -82,8 +82,8 @@ const bank = {
       "feedback": [
         "4 + 3 is 7, which is not the rectangle's area.",
         "4 cubed is 64, which is not 12.",
-        "The product 4 × 3 is 12.",
-        "4 divided by 3 is not 12."
+        "The product 4 × 3 equals 12, the rectangle's required area.",
+        "Dividing 4 by 3 is approximately 1.33, not the rectangle's area of 12."
       ],
       "hint": "Area is obtained from both side lengths, not by adding them.",
       "verifySource": "width = 4\nheight = 3\nprintln(width * height)",

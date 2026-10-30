@@ -14,7 +14,7 @@ for(const lesson of lessons.slice(0,3)){
    assert.ok(q.id.startsWith(lesson.id+"-"));
    for(const field of ["prompt","code","hint","verifySource","expectedOutput"]){
      assert.equal(typeof q[field],"string",q.id+" "+field);
-     assert.ok(q[field].length>=4,q.id+" "+field);
+     assert.ok(q[field].trim().length>=(field==="expectedOutput"?1:4),q.id+" "+field);
    }
    if(q.kind==="numeric"){
      assert.equal(typeof q.answer,"number");
