@@ -50,9 +50,9 @@ try{
    // Incorrect answer, then correct answer: source-authored feedback and local persistence.
    const correct=chapter.checks[0].correct;
    const incorrect=(correct+1)%4;
-   await page.locator("#r2-algorithms .r2-fundamentals-question").first().locator("#r2-algorithms .r2-fundamentals-option").nth(incorrect).click();
-   assert.match(await page.locator("#r2-algorithms .r2-fundamentals-question").first().locator("#r2-algorithms .r2-fundamentals-feedback").innerText(),/Try again/);
-   await page.locator("#r2-algorithms .r2-fundamentals-question").first().locator("#r2-algorithms .r2-fundamentals-option").nth(correct).click();
+   await page.locator("#r2-algorithms .r2-fundamentals-question").first().locator(".r2-fundamentals-option").nth(incorrect).click();
+   assert.match(await page.locator("#r2-algorithms .r2-fundamentals-question").first().locator(".r2-fundamentals-feedback").innerText(),/Try again/);
+   await page.locator("#r2-algorithms .r2-fundamentals-question").first().locator(".r2-fundamentals-option").nth(correct).click();
    assert.match(await page.locator("#r2-algorithms-progress").innerText(),/1 of 2 correct/);
    const data=JSON.parse(await page.evaluate(()=>localStorage.getItem("amp-julia-learn:algorithms-v1")));
    assert.equal(data[chapter.checks[0].id],String(correct));

@@ -36,23 +36,23 @@ try{
   for(const chapter of FUNDAMENTALS){
    await page.locator("#r2-fundamentals-topic").selectOption(chapter.id);
    assert.equal(await page.locator("#r2-fundamentals-unit").innerText(),chapter.title);
-   assert.equal(await page.locator(".r2-fundamentals-intro p").count(),2);
-   assert.equal(await page.locator(".r2-fundamentals-concepts li").count(),3);
-   assert.equal(await page.locator(".r2-fundamentals-example-nav button").count(),2);
-   assert.equal(await page.locator(".r2-fundamentals-steps li").count(),3);
+   assert.equal(await page.locator("#r2-fundamentals .r2-fundamentals-intro p").count(),2);
+   assert.equal(await page.locator("#r2-fundamentals .r2-fundamentals-concepts li").count(),3);
+   assert.equal(await page.locator("#r2-fundamentals .r2-fundamentals-example-nav button").count(),2);
+   assert.equal(await page.locator("#r2-fundamentals .r2-fundamentals-steps li").count(),3);
    assert.equal(await page.locator("#r2-fundamentals-code").innerText(),chapter.examples[0].code);
-   await page.locator(".r2-fundamentals-output > summary").click();
+   await page.locator("#r2-fundamentals .r2-fundamentals-output > summary").click();
    assert.equal(await page.locator("#r2-fundamentals-stdout").textContent(),chapter.examples[0].output);
-   await page.locator(".r2-fundamentals-example-nav button").nth(1).click();
+   await page.locator("#r2-fundamentals .r2-fundamentals-example-nav button").nth(1).click();
    assert.equal(await page.locator("#r2-fundamentals-code").innerText(),chapter.examples[1].code);
-   assert.equal(await page.locator(".r2-fundamentals-output").evaluate(el=>el.open),false);
-   assert.equal(await page.locator(".r2-fundamentals-question").count(),2);
+   assert.equal(await page.locator("#r2-fundamentals .r2-fundamentals-output").evaluate(el=>el.open),false);
+   assert.equal(await page.locator("#r2-fundamentals .r2-fundamentals-question").count(),2);
    // Incorrect answer, then correct answer: source-authored feedback and local persistence.
    const correct=chapter.checks[0].answer;
    const incorrect=(correct+1)%4;
-   await page.locator(".r2-fundamentals-question").first().locator(".r2-fundamentals-option").nth(incorrect).click();
-   assert.match(await page.locator(".r2-fundamentals-question").first().locator(".r2-fundamentals-feedback").innerText(),/Try again/);
-   await page.locator(".r2-fundamentals-question").first().locator(".r2-fundamentals-option").nth(correct).click();
+   await page.locator("#r2-fundamentals .r2-fundamentals-question").first().locator(".r2-fundamentals-option").nth(incorrect).click();
+   assert.match(await page.locator("#r2-fundamentals .r2-fundamentals-question").first().locator(".r2-fundamentals-feedback").innerText(),/Try again/);
+   await page.locator("#r2-fundamentals .r2-fundamentals-question").first().locator(".r2-fundamentals-option").nth(correct).click();
    assert.match(await page.locator("#r2-fundamentals-progress").innerText(),/1 of 2 correct/);
    const data=JSON.parse(await page.evaluate(()=>localStorage.getItem("amp-julia-learn:fundamentals-v1")));
    assert.equal(data[chapter.checks[0].id],String(correct));
