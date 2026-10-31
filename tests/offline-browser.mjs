@@ -4,7 +4,7 @@ import {createServer} from "node:http";
 import {readFile} from "node:fs/promises";
 import {resolve,extname,sep} from "node:path";
 import {chromium} from "playwright";
-import {r2Locator,r2Role} from "./r2-legacy-navigation.mjs";
+import {r2Locator,r2Role,openLegacyWorkspace} from "./r2-legacy-navigation.mjs";
 const root=resolve("."),types={".html":"text/html; charset=utf-8",".css":"text/css; charset=utf-8",".js":"text/javascript; charset=utf-8",".svg":"image/svg+xml",".png":"image/png",".webmanifest":"application/manifest+json"};
 const server=createServer(async(req,res)=>{
  const path=decodeURIComponent(new URL(req.url,"http://127.0.0.1").pathname);
@@ -94,6 +94,15 @@ try{
    await page.locator('.lesson-link[href="#lesson/09"]').click();
    await page.reload();
    await r2Role(page,"heading",{name:"Floating-point numbers"}).waitFor();
+   // The third-party compiler is intentionally lazy: a newly reloaded page
+   // does not initialize it until the learner opens the legacy workspace.
+   assert.equal(await page.locator("#embed-slot .jdoodle-embed").count(),0);
+   await openLegacyWorkspace(page);
+   await page.locator("#r2-stage-code").waitFor({state:"visible"});
+   // Check the real offline runtime state only after the compiler is opened.
+   // This verifies deferred loading and that no third-party editor is fetched.
+   await page.waitForFunction(()=>document.querySelector("#runtime-state")?.textContent?.includes("Offline"),
+     null,{timeout:10000});
    assert.match(await r2Locator(page,"#runtime-state").innerText(),/Offline/);
    assert.equal(await r2Locator(page,"#embed-slot .jdoodle-embed").count(),0);
    assert.equal(await r2Locator(page,'script[src^="https://www.jdoodle.com/"]').count(),0);
