@@ -976,10 +976,11 @@ export function initR2Studio({doc=document,lessons,navigate}){
     const index=[...get("semester-rehearsal-items").children].findIndex(item=>item.dataset.sourceId===id);
     if(index<0)return false;
     mixedIndex=index;syncMixed();
-    // Returning from a canonical lesson must focus the task after it becomes
-    // visible; focusing a still-hidden card breaks keyboard recovery.
+    // Make the selected card visible before restoring keyboard focus.
+    // The original returnToActive() focuses its "Open exercise" control;
+    // moving focus to the working textarea afterwards breaks keyboard return.
     const target=get("semester-rehearsal-items").children[index];
-    target.querySelector(".rehearsal-working")?.focus({preventScroll:true});
+    target.querySelector(".rehearsal-work")?.focus({preventScroll:true});
     target.scrollIntoView({behavior:"auto",block:"start"});
     return true;
   },selectLab:id=>{
