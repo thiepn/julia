@@ -76,7 +76,10 @@ try{
     await r2Locator(page,"#semester-rehearsal-return").click();
     assert.equal(await r2Locator(page,"#semester-rehearsal").evaluate(el=>el.open),true);
     assert.equal(await r2Locator(page,".rehearsal-item").count(),6);
-    assert.equal(await r2Locator(page,'.rehearsal-item[data-source-id="pivoted_lr"] .rehearsal-work').evaluate(el=>el===document.activeElement),true);
+    // Return places keyboard focus on the same editable work area: the
+    // learner can resume the preserved draft without an extra Tab.
+    assert.equal(await r2Locator(page,'.rehearsal-item[data-source-id="pivoted_lr"] .rehearsal-working').evaluate(
+      el=>el===document.activeElement&&el.getClientRects().length>0),true);
     assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1")),JSON.parse(before)["amp-julia-lab:v1"]??null);
     assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:draft:v1:01")),JSON.parse(before)["amp-julia-lab:draft:v1:01"]??null);
     assert.ok((await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth))<=2,spec.name+" horizontal overflow");

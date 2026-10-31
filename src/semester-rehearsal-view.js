@@ -275,8 +275,9 @@ export function initSemesterRehearsal({doc=document,onOpen=()=>{},onNewSet=()=>{
       panel.open=true;
       const target=[...items.children].find(item=>item.dataset.sourceId===activeId);
       if(!target){panel.scrollIntoView({behavior:"auto",block:"start"});return false;}
+      // R2 focuses the active working area after making its card visible.
+      // Do not briefly focus a different control during the same return.
       target.scrollIntoView({behavior:"auto",block:"start"});
-      target.querySelector(".rehearsal-work")?.focus({preventScroll:true});
       return activeId;
     }
   };
