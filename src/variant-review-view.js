@@ -16,7 +16,9 @@ export function initVariantReviewView({doc,mount}){
  const progress=make("p","r2-variants-progress");progress.id="r2-variants-progress";progress.setAttribute("role","status");
  const title=make("h3");title.id="r2-variants-case-title";
  const context=make("p","r2-variants-context"),assumption=make("p","r2-variants-assumption");
+ assumption.id="r2-variants-assumption";
  const questions=make("div","r2-variants-questions");
+ questions.id="r2-variants-questions";
  const reviewHeading=make("h3",null,"Saved-answer review export");
  const reviewExplain=make("p","r2-variants-review-explain",
   "Exports only validated latest L3–L9 answer selections and their current correctness. No learner code, drafts, original L1 grades, attempt history or mastery claims.");
