@@ -1,10 +1,10 @@
-// Legacy browser-acceptance adapter for R2. Each action uses the *visible*
-// R2 Course / Check / Code / Explore / Tools controls first. Existing assertions
-// keep reading the original canonical elements, progress and Julia output.
+// Legacy browser acceptance follows real L1 controls. The old Julia editor is
+// deliberately reachable only from Reference > Previous coding workspace.
+// Original storage, tests and source controls remain under their canonical IDs.
 const browserActions=new Set(["click","fill","selectOption","setInputFiles","check","uncheck","press","type","dblclick"]);
 const childLocators=new Set(["first","last","nth","locator","getByRole","getByText","getByLabel","filter","and","or"]);
 const buttonIds=[
-  ["next lesson","#next"],["previous","#previous"],["reset repair","#repair-reset"],
+  ["next lesson","#r2-lesson-next"],["previous","#r2-lesson-previous"],["reset repair","#repair-reset"],
   ["download .jl","#download-draft"],["compiler settings","#r2-utilities-open"],
   ["run current julia draft","#local-runner-run"],
   ["disable jdoodle and reload for local execution","#local-runner-disable-embed"],
@@ -25,6 +25,13 @@ function roleTarget(page,role,opts){
   if(mapping)return page.locator(mapping[1]);
   return page.getByRole(role,{...opts,includeHidden:true});
 }
+export async function openLegacyWorkspace(page){
+  await page.locator("#r2-utilities-open").click();
+  const archive=page.locator(".r2-legacy-tools");
+  if(!await archive.evaluate(el=>el.open))await archive.locator(":scope > summary").click();
+  await page.locator("#r2-legacy-open").click();
+  await page.locator("#r2-stage-code").waitFor({state:"visible"});
+}
 async function showCanonical(page,locator) {
   const info=await locator.first().evaluate(el=>{
     const activity=el.closest(".r2-activity");
@@ -44,6 +51,7 @@ async function showCanonical(page,locator) {
     if(el.closest("#r2-course"))view="course";
     else if(el.closest("#r2-mixed"))view="mixed";
     else if(el.closest("#r2-utilities"))view="utilities";
+    else if(el.closest("#lesson-main"))view="lesson";
     return {stage,lab,questionIndex,mixedIndex,closed,view};
   });
   if(info.view==="course" && !(await page.locator("#r2-course").isVisible()))
@@ -57,6 +65,12 @@ async function showCanonical(page,locator) {
   }
   if(info.view==="utilities" && !(await page.locator("#r2-utilities").isVisible()))
     await page.locator("#r2-utilities-open").click();
+  if(info.view==="lesson" && !(await page.locator("#lesson-main").isVisible())){
+    const id=await page.locator("#lesson-jump").inputValue();
+    await page.locator("#r2-course-open").click();
+    await page.locator('.lesson-link[href="#lesson/'+id+'"]').click();
+    await page.locator("#lesson-main").waitFor({state:"visible"});
+  }
   if(info.stage) {
     if(!(await page.locator("#lesson-main").isVisible())){
       const id=await page.locator("#lesson-jump").inputValue();
@@ -65,8 +79,12 @@ async function showCanonical(page,locator) {
       // Hash-route changes render asynchronously; wait for the visible lesson view.
       await page.locator("#lesson-main").waitFor({state:"visible"});
     }
-    const tab=page.locator('button[data-r2-stage="'+info.stage+'"]');
-    if(await tab.getAttribute("aria-pressed")!=="true") await tab.click();
+    if(info.stage==="code"){
+      if(!await page.locator("#r2-stage-code").isVisible())await openLegacyWorkspace(page);
+    }else{
+      const tab=page.locator('button[data-r2-stage="'+info.stage+'"]');
+      if(await tab.getAttribute("aria-pressed")!=="true")await tab.click();
+    }
     if(info.lab) {
       const labChoice=page.locator("#r2-lab-choice");
       if(await labChoice.inputValue()!==info.lab)await labChoice.selectOption(info.lab);

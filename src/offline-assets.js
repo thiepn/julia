@@ -1,6 +1,6 @@
 // Immutable release-scoped static-study shell. Add new first-party assets here before shipping.
 // No student drafts, runner outputs, external scripts, tokens, uploads, or account data.
-export const OFFLINE_CACHE_NAME="amp-julia-offline-r2-20261022-1";
+export const OFFLINE_CACHE_NAME="amp-julia-offline-learn-l9-20261031-a1";
 export const OFFLINE_ASSETS=Object.freeze([
   "index.html",
   "styles.css",
@@ -34,6 +34,32 @@ export const OFFLINE_ASSETS=Object.freeze([
   "src/jdoodle-bridge.js",
   "src/julia-report.js",
   "src/lessons.js",
+  "src/learning-examples.js",
+  "src/learning-quiz.js",
+  "src/learning-quiz-view.js",
+  "src/fundamentals.js",
+  "src/fundamentals-view.js",
+  "src/algorithmic-learning.js",
+  "src/algorithmic-view.js",
+  "src/learning-paths.js",
+  "src/learning-paths-view.js",
+  "src/assessments.js",
+  "src/assessments-view.js",
+  "src/transfer-assessments.js",
+  "src/transfer-assessments-view.js",
+  "src/variant-quartic.js",
+  "src/variant-contraction.js",
+  "src/variant-euler.js",
+  "src/variant-power.js",
+  "src/variant-conditioning.js",
+  "src/variant-assessments.js",
+  "src/learner-review.js",
+  "src/variant-review-view.js",
+  "src/assessment-quadrature.js",
+  "src/assessment-bracketing.js",
+  "src/assessment-elimination.js",
+  "src/assessment-stability.js",
+  "src/assessment-newton.js",
   "src/linear-depth.js",
   "src/linear-methods-view.js",
   "src/linear-methods.js",
@@ -63,7 +89,8 @@ export const OFFLINE_ASSETS=Object.freeze([
   "src/offline-assets.js",
   "src/offline-study.js",
   "src/semester-rehearsal.js",
-  "src/semester-rehearsal-view.js"
+  "src/semester-rehearsal-view.js",
+  "src/touch-code.js"
 ]);
 const ALLOWED=new Set(OFFLINE_ASSETS);
 export function offlineAssetKey(requestUrl,scopeUrl,navigation=false){

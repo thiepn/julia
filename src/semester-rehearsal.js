@@ -47,6 +47,7 @@ export function createSemesterRehearsal(seed=0){
       title:track.title,source:track.source,prompt:track.question,
       context:track.concept,steps:Object.freeze([...track.steps]),
       checks:Object.freeze(track.checks.map(x=>x.name)),
+      checkDetails:Object.freeze(track.checks.map(x=>Object.freeze({name:x.name,assertion:x.assertion}))),
       followup:"Write code in the existing lesson editor and run its Julia Test cases when available.",
       warning:""
     }));

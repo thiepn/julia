@@ -49,6 +49,10 @@ try{
     assert.equal(await first.locator(".rehearsal-approach").isVisible(),true);
     assert.ok(await first.locator(".rehearsal-approach li").count()>=3);
     const initial=await r2Locator(page,".rehearsal-item").evaluateAll(nodes=>nodes.map(n=>n.dataset.sourceId).join("|"));
+    // Opening the original approach and drafting a proof marks an attempt.
+    // A genuine new set must be explicitly confirmed; Playwright dismisses
+    // unhandled confirmations and correctly preserves the prior set.
+    page.once("dialog",dialog=>dialog.accept());
     await r2Locator(page,"#semester-rehearsal-new").click();
     const next=await r2Locator(page,".rehearsal-item").evaluateAll(nodes=>nodes.map(n=>n.dataset.sourceId).join("|"));
     assert.notEqual(initial,next);

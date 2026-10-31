@@ -4,6 +4,7 @@ import {readFile} from "node:fs/promises";
 import {resolve,extname,sep} from "node:path";
 import {spawnSync} from "node:child_process";
 import {chromium} from "playwright";
+import {openLegacyWorkspace} from "./r2-legacy-navigation.mjs";
 import {r2Locator,r2Role} from "./r2-legacy-navigation.mjs";
 import {crc32} from "../src/submission-package.js";
 import {createLocalRunner} from "../local-runner/server.mjs";
@@ -55,7 +56,7 @@ try{
     await r2Locator(page,"#submission-workflow").evaluate(el=>el.open=true);
     assert.equal(await r2Locator(page,"#submission-name").isDisabled(),true);
     await r2Locator(page,"#submission-disable-embed").click();
-    await r2Role(page,"heading",{name:"Tools & settings"}).waitFor();
+    await page.locator("#r2-utilities").waitFor({state:"visible"});
     await r2Locator(page,"#submission-workflow").evaluate(el=>el.open=true);
     assert.equal(await r2Locator(page,"#submission-name").isEnabled(),true);
     await page.evaluate(()=>window.print=()=>{window.__didPrint=true;});
@@ -70,7 +71,7 @@ try{
       'println("AMP-REAL-PLOT-OK")'
     ].join("\n"): '# UTF-8: α, ε, π\nprintln("AMP-REAL-CODE-OK")\nprintln(6 * 7)';
     await page.goto(origin+"/#lesson/04");
-    await r2Locator(page,'button[data-r2-stage="code"]').click();
+    await openLegacyWorkspace(page);
     await r2Locator(page,"#scratch-code").fill(source);
     await r2Locator(page,"#local-runner-token").fill("fixture-session-code-only-in-ci");
     await r2Locator(page,"#local-runner-run").click();
@@ -109,7 +110,7 @@ try{
     await r2Locator(page,"#submission-task").fill("2.2b");
     const nextSource='function f(t)\n    return sqrt(1+t) - 1\nend\n# Print exactly this source in PDF';
     await page.goto(origin+"/#lesson/09");
-    await r2Locator(page,'button[data-r2-stage="code"]').click();
+    await openLegacyWorkspace(page);
     await r2Locator(page,"#scratch-code").fill(nextSource);
     await r2Locator(page,"#r2-utilities-open").click();
     await r2Locator(page,"#submission-workflow").evaluate(el=>el.open=true);

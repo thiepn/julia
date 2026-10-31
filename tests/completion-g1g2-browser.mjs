@@ -69,7 +69,54 @@ try{
        assert.match(await r2Locator(page,"#completion-track-starter").innerText(),/vector_amplification/);
        await r2Locator(page,"#completion-proof-choice").selectOption("G2-multivariable");
        assert.match(await r2Locator(page,"#completion-proof-target").innerText(),/Derive this formula/);
-       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth<=2));
+       if(kind==="WebKit"&&device==="mobile"){
+         // Guard against the later .r2-lab overflow:visible rule silently
+         // overriding the panel scroller (the reproduced 24px regression).
+         const panel=await page.locator("#completion-depth").evaluate(el=>({
+           overflow:getComputedStyle(el).overflowX,
+           client:el.clientWidth,scroll:el.scrollWidth
+         }));
+         assert.equal(panel.overflow,"auto","WebKit mobile source panel must own horizontal overflow");
+         assert.ok(panel.client>0);
+       }
+       const geometry=await page.evaluate(()=>{
+          const excess=document.documentElement.scrollWidth-innerWidth;
+          if(excess<=2)return {excess,offenders:[]};
+          const offenders=[...document.querySelectorAll("body *")].filter(el=>{
+            const css=getComputedStyle(el),rect=el.getBoundingClientRect();
+            return css.display!=="none"&&css.visibility!=="hidden"&&rect.width>0&&
+              rect.right>innerWidth+2&&rect.left<innerWidth;
+          }).sort((a,b)=>b.getBoundingClientRect().right-a.getBoundingClientRect().right)
+            .slice(0,15).map(el=>{
+              const rect=el.getBoundingClientRect();
+              return {tag:el.tagName,id:el.id,cls:String(el.className).slice(0,80),
+                left:Math.round(rect.left),right:Math.round(rect.right),
+                width:Math.round(rect.width),scrollWidth:el.scrollWidth,clientWidth:el.clientWidth};
+            });
+          return {excess,offenders};
+        });
+        if(geometry.excess>2){
+          const ancestors=await page.evaluate(()=>{
+            const out={viewport:innerWidth,root:document.documentElement.scrollWidth,
+              body:document.body.scrollWidth,chains:[]};
+            for(const selector of ["#completion-track-starter","#completion-experiment-code"]){
+              let current=document.querySelector(selector);const nodes=[];
+              while(current&&nodes.length<12){
+                const rect=current.getBoundingClientRect(),css=getComputedStyle(current);
+                nodes.push({tag:current.tagName,id:current.id,cls:String(current.className).slice(0,60),
+                  left:Math.round(rect.left),right:Math.round(rect.right),
+                  width:Math.round(rect.width),client:current.clientWidth,scroll:current.scrollWidth,
+                  overflow:css.overflowX,display:css.display,box:css.boxSizing,
+                  padding:css.paddingLeft+"/"+css.paddingRight});
+                current=current.parentElement;
+              }
+              out.chains.push({selector,nodes});
+            }
+            return out;
+          });
+          console.error("G1G2_MOBILE_OVERFLOW_GEOMETRY",kind,device,JSON.stringify({geometry,ancestors}));
+        }
+        assert.ok(geometry.excess<=2,kind+" "+device+" horizontal overflow: "+geometry.excess);
        const stored=await page.evaluate(()=>JSON.stringify(Object.entries(localStorage)));
        assert.ok(!stored.includes(code));
        assert.deepEqual(errors,[]);

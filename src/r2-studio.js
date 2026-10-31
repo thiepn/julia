@@ -1,3 +1,13 @@
+import {JULIA_TOUCH_KEYS,insertJuliaTouchKey} from "./touch-code.js";
+import {transferForLesson} from "./transfer-cases.js";
+import {examplesForLesson} from "./learning-examples.js";
+import {initLearningQuizView} from "./learning-quiz-view.js";
+import {initFundamentalsView} from "./fundamentals-view.js";
+import {initAlgorithmView} from "./algorithmic-view.js";
+import {initLearningPathsView} from "./learning-paths-view.js";
+import {initAssessmentsView} from "./assessments-view.js";
+import {initTransferAssessmentView} from "./transfer-assessments-view.js";
+import {initVariantReviewView} from "./variant-review-view.js";
 // R2 UI-only controller. Reparents existing canonical elements without copying
 // exercises, drafts, model state, local Julia execution, progress or results.
 export function initR2Studio({doc=document,lessons,navigate}){
@@ -12,32 +22,75 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const course=node("section","r2-page r2-course"),mixed=node("section","r2-page r2-mixed"),
     utils=node("section","r2-page r2-utilities");
   course.id="r2-course";mixed.id="r2-mixed";utils.id="r2-utilities";
-  course.append(node("header","r2-course-hero",
-    '<div class="r2-kicker">AMP · JULIA</div><h1>Algorithmische Mathematik<br><em>und Programmieren.</em></h1>'+
-    '<p>16 lessons · Julia programming and numerical mathematics</p>'+
-    '<button type="button" id="r2-hero-continue" class="r2-button r2-primary">Continue learning →</button>'+
-    '<span id="r2-course-progress" role="status"></span>'),
-    node("header","r2-course-heading",'<h2>Course curriculum</h2><p>Choose a lesson to begin.</p>'),sidebar);
+  // Course home is a syllabus and a preview of real lesson source, not a dashboard.
+  const courseHero=node("header","r2-course-hero",
+    '<div class="r2-course-identity"><span class="r2-course-language">Julia</span>'+
+    '<span>AMP · Universität zu Köln</span></div>'+
+    '<div class="r2-course-hero-main"><div><h1>Algorithmische Mathematik<br>und Programmieren</h1>'+
+    '<p>16 lessons · Julia programming and numerical methods</p></div>'+
+    '<div class="r2-course-hero-actions"><span id="r2-course-progress" role="status"></span>'+
+    '<button type="button" id="r2-hero-continue" class="r2-button r2-primary">Continue learning →</button></div></div>');
+  const coursePath=node("section","r2-course-path");
+  coursePath.append(node("header","r2-course-heading",
+    '<h2>Course curriculum</h2>'),sidebar);
   sidebar.classList.add("r2-course-list");
+  const nextPreview=node("aside","r2-next-lesson");
+  nextPreview.setAttribute("aria-labelledby","r2-next-lesson-title");
+  nextPreview.innerHTML=
+    '<div class="r2-preview-header"><span id="r2-preview-mode">UP NEXT · LESSON SOURCE</span><span>Julia</span></div>'+
+    '<p id="r2-next-lesson-title" class="r2-preview-lesson"></p><p id="r2-next-lesson-goal"></p>'+
+    '<div class="r2-preview-checkpoint" id="r2-preview-checkpoint"></div>'+
+    '<nav class="r2-preview-prereqs" aria-label="Suggested previous lessons" id="r2-preview-prereqs"></nav>'+
+    '<div class="r2-preview-file"><span>example.jl</span><span>Read-only</span></div>'+
+    '<pre class="r2-preview-code"><code id="r2-next-lesson-code"></code></pre>'+
+    '<div class="r2-preview-footer"><span id="r2-next-lesson-source"></span>'+
+    '<div class="r2-preview-actions"><button type="button" id="r2-resume-current" class="r2-button r2-secondary" hidden></button>'+
+    '<button type="button" id="r2-next-code" class="r2-button r2-primary">Study this lesson →</button></div></div>';
+  const courseLayout=node("div","r2-course-layout");
+  courseLayout.append(nextPreview,coursePath);
+  course.append(courseHero,courseLayout);
   mixed.append(node("header","r2-page-heading",'<span class="r2-kicker">CUMULATIVE PRACTICE</span>'+
     '<h1>Mixed semester practice</h1><p>Six original source-linked reasoning and Julia coding exercises.</p>'),
     get("semester-rehearsal"),
     node("footer","r2-mixed-navigation",'<button id="r2-mixed-prev" class="r2-button r2-secondary">← Previous</button>'+
     '<span id="r2-mixed-progress" role="status">1 of 6</span>'+
     '<button id="r2-mixed-next" class="r2-button r2-primary">Next →</button>'));
-  utils.append(node("header","r2-page-heading",'<span class="r2-kicker">COURSE UTILITIES</span>'+
-    '<h1>Tools & settings</h1><p>Local backups, ILIAS preparation, offline access, and compiler setup.</p>'));
-  for(const id of ["submission-workflow","course-backup","offline-access","settings-panel","bridge-diagnostics"]){
-    const x=get(id);if(x)utils.append(x);
+  utils.append(node("header","r2-page-heading",'<h1>Reference</h1>'));
+  const quickReference=node("nav","r2-reference-index");
+  quickReference.setAttribute("aria-label","Julia lesson reference");
+  quickReference.append(node("h2",null,"Julia topics"));
+  for(const lesson of lessons){
+    const link=doc.createElement("a");link.href="#lesson/"+lesson.id;
+    link.textContent=lesson.id+" · "+lesson.title;
+    quickReference.append(link);
+  }
+  const archived=node("details","r2-legacy-tools");
+  archived.append(node("summary",null,"Previous coding workspace and settings"));
+  archived.append(node("p",null,"Retained for access to existing Julia drafts and submission tools. Learning and quizzes do not require this workspace."));
+  const legacyOpen=node("button","r2-button r2-secondary","Open previous coding workspace");
+  legacyOpen.type="button";legacyOpen.id="r2-legacy-open";archived.append(legacyOpen);
+  const submissionTools=node("details","r2-reference-submission");
+  const oldSubmission=get("submission-workflow");
+  submissionTools.append(node("summary",null,"Submission tools"));
+  if(oldSubmission)submissionTools.append(oldSubmission);
+  utils.append(quickReference);
+  for(const id of ["course-backup","offline-access"]){
+    const item=get(id);if(item)utils.append(item);
+  }
+  utils.append(submissionTools);
+  for(const id of ["settings-panel","bridge-diagnostics"]){
+    const item=get(id);if(item)archived.append(item);
   }
   const settings=get("settings-panel");if(settings)settings.hidden=false;
+  utils.append(archived);
   const top=doc.querySelector(".topbar");
   top.querySelector(".brand").href="#course";
-  top.querySelector(".brand small").textContent="Interactive Mathematics Studio";
+  top.querySelector(".brand small").textContent="Julia programming · AMP";
+  top.querySelector(".brand strong").textContent="Julia Learn";
   get("settings-toggle").hidden=true;
   const globalNav=node("nav","r2-global-nav",'<button id="r2-course-open" type="button">Course</button>'+
-    '<button id="r2-mixed-open" type="button">Mixed practice</button>'+
-    '<button id="r2-utilities-open" type="button" aria-label="Tools and settings">Tools</button>');
+    '<button id="r2-mixed-open" type="button">Practice</button>'+
+    '<button id="r2-utilities-open" type="button" aria-label="Julia reference and saved data">Reference</button>');
   globalNav.setAttribute("aria-label","Main navigation");
   top.querySelector(".top-right").prepend(globalNav);
   const lessonHead=node("header","r2-lesson-head",'<div class="r2-breadcrumb">'+
@@ -46,12 +99,21 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const toolbar=doc.querySelector(".study-toolbar");
   const picker=toolbar.querySelector(".study-lesson-select");
   picker.classList.add("r2-lesson-picker");
-  lessonHead.append(picker,get("lesson-meta"),get("lesson-title"),get("lesson-goal"));
+  lessonHead.append(picker,get("lesson-meta"),get("lesson-title"),get("lesson-goal"),
+    node("div","r2-lesson-path",
+      '<nav id="r2-lesson-prereqs" aria-label="Suggested prior lessons"></nav>'+
+      '<div class="r2-lesson-path-actions">'+
+      '<span id="r2-lesson-checkpoint" role="status"></span>'+
+      '<button type="button" id="r2-lesson-previous">← Previous lesson</button>'+
+      '<button type="button" id="r2-lesson-next">Next lesson →</button></div>'));
+  // Reparent the SAME return control after the lesson actions exist. It stays
+  // accessible across lesson stages and original experiment selections.
+  const mixedReturn=get("semester-rehearsal-return");
+  if(mixedReturn)lessonHead.querySelector(".r2-lesson-path-actions").append(mixedReturn);
   toolbar.remove();
   const tabs=node("nav","r2-stage-tabs",'<button type="button" data-r2-stage="learn">01 <span>Learn</span></button>'+
-    '<button type="button" data-r2-stage="check">02 <span>Check</span></button>'+
-    '<button type="button" data-r2-stage="code">03 <span>Code</span></button>'+
-    '<button type="button" data-r2-stage="explore">04 <span>Explore</span></button>');
+    '<button type="button" data-r2-stage="check">02 <span>Quiz</span></button>'+
+    '<button type="button" data-r2-stage="explore">03 <span>Practice</span></button>');
   tabs.setAttribute("aria-label","Lesson activities");
   const learn=node("section","r2-activity r2-learn"),
     check=node("section","r2-activity r2-check"),
@@ -63,50 +125,388 @@ export function initR2Studio({doc=document,lessons,navigate}){
     checkPanel=get("practice-title")?.closest("section"),
     codePanel=get("coding-title")?.closest("section");
   if(!learnPanel||!checkPanel||!codePanel)throw Error("Canonical lesson sections missing.");
-  learn.append(learnPanel,node("footer","r2-stage-footer",
-    '<span>Concept & worked example</span>'+
-    '<button type="button" data-r2-forward="check" class="r2-button r2-primary">Try a question →</button>'));
-  check.append(node("header","r2-inner-head",'<span class="r2-kicker">UNDERSTANDING</span>'+
-    '<h2>Check your understanding</h2><span id="r2-question-index" role="status">Question 1 of 3</span>'),
-    checkPanel,node("footer","r2-stage-footer",
+  // Reuse the exact canonical lesson text and Julia example; move, never duplicate,
+  // their authoritative DOM nodes into a source-led reading workspace.
+  const reading=node("div","r2-learn-reading"),
+    examplePane=node("section","r2-example-pane"),
+    exampleHead=node("header","r2-example-head",
+      '<span>example.jl <span class="r2-example-mode">Read-only · not executed</span></span>'+
+      '<button type="button" id="r2-copy-example">Copy example</button>'),
+    exampleActions=node("footer","r2-example-actions",
+      '<span id="r2-example-source"></span>'+
+      '<button type="button" id="r2-example-code" class="r2-button r2-primary">Practice this topic →</button>'+
+      '<span id="r2-example-feedback" role="status" aria-live="polite"></span>');
+  const examplePre=get("example-code").closest("pre"),
+    originalHeading=learnPanel.querySelector(".section-title"),
+    originalLabel=learnPanel.querySelector(".code-label");
+  if(!examplePre||!originalHeading||!originalLabel)throw Error("Canonical Julia example missing.");
+  const workedHeading=node("header","r2-worked-heading",
+    '<h3>Worked examples</h3><span id="r2-worked-count"></span>');
+  const workedNav=node("nav","r2-worked-nav");
+  workedNav.setAttribute("aria-label","Choose a worked Julia example");
+  const workedTitle=node("h4","r2-worked-title");
+  const workedOutput=node("details","r2-worked-output",
+    '<summary>Reveal expected output</summary>'+
+    '<pre><code id="r2-worked-stdout"></code></pre>');
+  const workedExplanation=node("section","r2-worked-explanation",
+    '<h4>Why this works</h4><p id="r2-worked-why"></p>'+
+    '<ol id="r2-worked-steps"></ol>'+
+    '<h4>Common mistake</h4><p id="r2-worked-pitfall"></p>');
+  const workedPieces=[workedHeading,workedNav,workedTitle,workedOutput,workedExplanation];
+  const renderWorkedExamples=id=>{
+    const lesson=lessons.find(item=>item.id===id)||lessons[0];
+    const examples=examplesForLesson(lesson.id);
+    for(const piece of workedPieces)piece.hidden=!examples;
+    workedNav.replaceChildren();
+    if(!examples){
+      get("example-code").textContent=lesson.example;
+      return;
+    }
+    get("r2-worked-count").textContent=examples.length+" examples";
+    const select=index=>{
+      const example=examples[index];
+      get("example-code").textContent=example.code;
+      workedTitle.textContent=example.title;
+      get("r2-worked-stdout").textContent=example.output;
+      get("r2-worked-why").textContent=example.explanation;
+      get("r2-worked-pitfall").textContent=example.pitfall;
+      get("r2-worked-steps").replaceChildren(...example.steps.map(step=>{
+        const item=doc.createElement("li");item.textContent=step;return item;
+      }));
+      workedOutput.open=false;
+      for(const button of workedNav.children){
+        const active=Number(button.dataset.exampleIndex)===index;
+        button.setAttribute("aria-pressed",String(active));
+      }
+      get("r2-example-feedback").textContent="";
+    };
+    examples.forEach((example,index)=>{
+      const button=doc.createElement("button");
+      button.type="button";
+      button.textContent=String(index+1).padStart(2,"0");
+      button.dataset.exampleIndex=String(index);
+      button.setAttribute("aria-label","Example "+(index+1)+": "+example.title);
+      button.addEventListener("click",()=>select(index));
+      workedNav.append(button);
+    });
+    select(0);
+  };
+  reading.append(originalHeading,get("lesson-theory"));
+  examplePane.append(exampleHead,workedHeading,workedNav,workedTitle,examplePre,
+    workedOutput,workedExplanation,exampleActions);
+  learnPanel.replaceChildren(reading,examplePane);
+  learnPanel.classList.add("r2-learn-paper");
+  let learningPaths;
+  const refreshPathGuide=()=>learningPaths?.refresh();
+  const fundamentalsMount=node("section","r2-fundamentals");
+  const fundamentals=initFundamentalsView({doc,mount:fundamentalsMount,onAnswer:refreshPathGuide});
+  const algorithmMount=node("section","r2-algorithm-host");
+  const algorithms=initAlgorithmView({doc,mount:algorithmMount,onAnswer:refreshPathGuide});
+  const pathsMount=node("section","r2-paths-host");
+  learningPaths=initLearningPathsView({doc,mount:pathsMount});
+  const assessmentMount=node("section","r2-assessment-host");
+  const assessments=initAssessmentsView({doc,mount:assessmentMount});
+  const transferMount=node("section","r2-transfer-host");
+  const transfer=initTransferAssessmentView({doc,mount:transferMount});
+  const variantMount=node("section","r2-variant-host");
+  const variants=initVariantReviewView({doc,mount:variantMount});
+  learn.append(learnPanel,pathsMount,fundamentalsMount,algorithmMount,assessmentMount,transferMount,variantMount,node("footer","r2-stage-footer",
+    '<span id="r2-reading-source"></span>'+
+    '<button type="button" data-r2-forward="check" class="r2-button r2-primary">Start quiz →</button>'));
+
+  // The original question nodes, evaluator and feedback stay inside checkPanel.
+  // The question index only reflects that DOM's selected/correct/retry state.
+  const checkLayout=node("div","r2-check-layout"),
+    questionTools=node("nav","r2-question-tools",
+      '<span id="r2-question-index" role="status">Question 1 of 3</span>'+
+      '<div id="r2-question-steps" role="group" aria-label="Choose checkpoint question"></div>'),
+    checkReference=node("aside","r2-check-reference",
+      '<header class="r2-check-reference-head"><span>example.jl</span><span>Read-only</span></header>'+
+      '<pre class="r2-check-reference-code"><code id="r2-check-code"></code></pre>'+
+      '<div class="r2-check-reference-actions"><span id="r2-check-source"></span>'+
+      '<button type="button" id="r2-review-concept">Review concept</button>'+
+      '<button type="button" id="r2-check-code-button">Practice this topic</button></div>');
+  checkReference.setAttribute("aria-label","Lesson Julia source reference");
+  checkPanel.classList.add("r2-check-paper");
+  checkLayout.append(checkPanel,checkReference);
+  const extraQuiz=node("section","r2-extra-quiz");
+  check.append(questionTools,checkLayout,node("footer","r2-stage-footer",
     '<button type="button" id="r2-question-prev" class="r2-button r2-secondary">← Previous</button>'+
-    '<button type="button" id="r2-question-next" class="r2-button r2-primary">Next question →</button>'));
+    '<button type="button" id="r2-question-next" class="r2-button r2-primary">Next question →</button>'),
+    extraQuiz);
+  const appliedQuiz=initLearningQuizView({doc,mount:extraQuiz});
   const layout=node("div","r2-code-layout"),
     instructions=node("details","r2-instructions"),
     editor=node("section","r2-editor"),
-    editorHead=node("header","r2-editor-head",'<span>main.jl</span>'+
-      '<span id="r2-editor-status" role="status">Saved locally</span>'),
+    editorHead=node("header","r2-editor-head",
+      '<div class="r2-file-tab" aria-label="Current Julia source file"><span class="r2-file-badge">jl</span>'+
+      '<span>main.jl</span></div><span id="r2-editor-status" role="status">Saved locally</span>'),
     editorActions=node("div","r2-editor-actions",
       '<button id="r2-run" type="button" class="r2-button r2-primary">Run Julia</button>'+
-      '<button id="r2-export" type="button" class="r2-button r2-secondary">Download .jl</button>'+
-      '<button id="r2-exports" type="button" class="r2-button r2-text">Export & backup</button>');
+      '<button id="r2-tests-jump" type="button" class="r2-button r2-secondary" hidden>Julia tests</button>'+
+      '<button id="r2-exports" type="button" class="r2-button r2-text">Export & backup</button>'),
+    editorWell=node("div","r2-editor-well"),
+    lineNumbers=node("div","r2-line-numbers"),
+    editorFoot=node("div","r2-editor-foot",
+      '<span id="r2-cursor-location">Ln 1, Col 1</span>'+
+      '<span id="r2-draft-size">0 / 50000 bytes</span>'),
+    terminal=node("section","r2-terminal",
+      '<header class="r2-terminal-head"><span>Julia terminal</span>'+
+      '<button type="button" id="r2-terminal-clear" class="r2-terminal-clear">Clear output</button></header>'),
+    testDesk=node("details","r2-test-desk"),
+    testPane=node("div","r2-test-panes"),
+    casePane=node("section","r2-test-cases-pane"),
+    resultPane=node("section","r2-test-results-pane"),
+    runnerSetup=node("details","r2-runner-setup");
+  lineNumbers.setAttribute("aria-hidden","true");
   const draftTitle=codePanel.querySelector(".draft-title"),
-    draft=get("scratch-code"),draftActions=codePanel.querySelector(".draft-actions");
-  editor.append(editorHead,editorActions,draftTitle,draft,draftActions);
+    draft=get("scratch-code"),draftActions=codePanel.querySelector(".draft-actions"),
+    externalTests=get("external-tests");
+  // Keep the original test controls, assertions and authentic local result targets.
+  const originalTestActions=externalTests.querySelector(".external-test-actions"),
+    originalTestPreview=get("external-test-details"),
+    originalTestIntro=externalTests.querySelector(".external-test-run"),
+    originalTestOutput=get("external-test-local-output").closest("pre");
+  casePane.append(get("external-test-heading"),get("external-test-cases"),
+    originalTestActions,originalTestPreview);
+  resultPane.append(node("header","r2-test-results-head",
+      '<span>Local Julia Test results</span><span id="r2-test-verification" role="status">Not run</span>'),
+    originalTestIntro,get("external-test-feedback"),
+    get("external-test-local-status"),originalTestOutput);
+  testPane.append(casePane,resultPane);
+  externalTests.prepend(testPane);
+  testDesk.id="r2-test-desk";
+  testDesk.append(node("summary","r2-test-desk-summary",
+    '<strong>Julia tests</strong><span id="r2-test-case-count">0 cases</span>'),externalTests);
+  testDesk.open=true;
+  editorWell.append(lineNumbers,draft);
+  // One editor only: touch keys insert at the native textarea selection.
+  // The existing bubbled input listener is the only draft persistence path.
+  const touchBar=node("div","r2-touch-keys");
+  touchBar.setAttribute("role","toolbar");
+  touchBar.setAttribute("aria-label","Julia code insertion keys");
+  for(const entry of JULIA_TOUCH_KEYS){
+    const button=node("button","r2-touch-key");
+    button.type="button";
+    button.textContent=entry.label;
+    button.dataset.touchKey=entry.key;
+    button.setAttribute("aria-label",entry.description);
+    button.addEventListener("click",()=>{
+      const changed=insertJuliaTouchKey(draft,entry.key);
+      if(!changed)get("r2-editor-status").textContent="No edit applied — indentation, draft size, or editor availability";
+    });
+    touchBar.append(button);
+  }
+  // Canonical file actions live in the workspace toolbar: do not create copies.
+  editorActions.insertBefore(draftActions,get("r2-exports"));
+  editor.append(editorHead,editorActions,draftTitle,touchBar,editorWell,editorFoot);
   const extras=node("details","r2-compiler-extras");
-  extras.append(node("summary",null,"External compiler, comparison and other tools"));
+  extras.append(node("summary",null,"External compiler and comparison tools · unverified"));
   const runner=compiler.querySelector(".local-runner");
   const preview=get("local-plot-preview");
   for(const item of [...compiler.children]){
     if(item===runner||item===preview||item.classList?.contains("compiler-heading"))continue;
     extras.append(item);
   }
-  if(runner)compiler.append(runner);
-  // A genuine local plot preview is primary output, not a technical diagnostic.
+  if(runner){
+    const status=get("local-runner-status"),
+      output=get("local-runner-output").closest("pre"),
+      images=get("local-runner-images");
+    terminal.append(status,output,images);
+    const diagnosticStatus=get("local-runner-diagnostic-status"),
+      diagnosticOutput=get("local-runner-diagnostic-output").closest("pre");
+    const diagnosticPane=node("section","r2-runner-diagnostics",
+      '<h3 id="r2-runner-diagnostics-heading">Local Julia environment diagnostics</h3>');
+    diagnosticPane.setAttribute("aria-labelledby","r2-runner-diagnostics-heading");
+    diagnosticPane.append(diagnosticStatus,diagnosticOutput);
+    runnerSetup.append(node("summary",null,"Local Julia connection"),runner,diagnosticPane);
+    runnerSetup.open=true;
+  }
+  editor.append(terminal,testDesk,runnerSetup);
+  // Local plot files and third-party services are separate from actual Julia execution.
   if(preview)compiler.append(preview);
   compiler.append(extras);
   editor.append(compiler);
   instructions.append(node("summary","r2-task-summary",
-    '<strong>Coding task</strong><span id="r2-task-summary-text"></span>'),codePanel);
+    '<strong id="r2-task-heading">Coding task</strong><span id="r2-task-summary-text"></span>'),codePanel);
+  instructions.setAttribute("aria-labelledby","r2-task-heading");
   const wideLayout=doc.defaultView.matchMedia("(min-width:768px)");
   const adjustTask=()=>{instructions.open=wideLayout.matches;};
   adjustTask();
   wideLayout.addEventListener?.("change",adjustTask);
-  layout.append(instructions,editor);code.append(layout);
-  explore.append(node("header","r2-inner-head",'<span class="r2-kicker">NUMERICAL STUDIO</span>'+
-    '<h2>Explore & experiment</h2><p>Manipulate the original numerical models and inspect their output.</p>'),
-    node("div","r2-lab-picker",'<label for="r2-lab-choice">Experiment</label>'+
-      '<select id="r2-lab-choice"></select>'));
+  layout.append(editor,instructions);code.append(layout);
+  // Phase 07: a navigation layer over the existing, independently owned tasks.
+  // It does not create a second editor, grade, runner or persistence mechanism.
+  const practicePath=node("section","r2-practice-path");
+  practicePath.setAttribute("aria-label","Choose a coding practice approach");
+  practicePath.innerHTML='<header><h2>Practice by doing</h2><p>Choose an approach; the original task and Julia runner remain authoritative.</p></header>'+
+    '<div class="r2-practice-choices" role="group" aria-label="Practice approach">'+
+    '<button type="button" data-r2-practice="build">01 · Build independently</button>'+
+    '<button type="button" data-r2-practice="scaffold">02 · Guided steps</button>'+
+    '<button type="button" data-r2-practice="debug">03 · Repair a bug</button>'+
+    '<button type="button" data-r2-practice="trace">04 · Trace an algorithm</button></div>'+
+    '<p id="r2-practice-guidance" role="status" aria-live="polite"></p>'+
+    '<div id="r2-scaffold" class="r2-scaffold" hidden><span id="r2-scaffold-count" role="status"></span>'+
+    '<p id="r2-scaffold-cue"></p><button type="button" id="r2-scaffold-prev">Previous cue</button>'+
+    '<button type="button" id="r2-scaffold-next">Next cue</button></div>';
+  code.prepend(practicePath);
+  const practiceButtons=[...practicePath.querySelectorAll("[data-r2-practice]")];
+  const guidance=practicePath.querySelector("#r2-practice-guidance");
+  let practiceApproach="build";
+  const scaffold=practicePath.querySelector("#r2-scaffold"),
+    scaffoldCount=practicePath.querySelector("#r2-scaffold-count"),
+    scaffoldCue=practicePath.querySelector("#r2-scaffold-cue");
+  let scaffoldStep=0,scaffoldKey="";
+  const scaffoldSteps=()=>{
+    const transfer=!get("transfer-plan").hidden;
+    const steps=[
+      {title:"Understand the task",source:"challenge-text"},
+      {title:"Identify success criteria",source:"challenge-checks"},
+      {title:"Inspect the starter",source:"starter-code"}
+    ];
+    if(transfer){
+      steps.push({title:"Plan the approach",source:"transfer-plan",detail:true});
+      steps.push({title:"Choose another test case",source:"transfer-tests",detail:true});
+    }else for(const id of ["hint-1","hint-2","hint-3"]){
+      if(!get(id).hidden)steps.push({title:"Reveal "+id.replace("-"," "),source:id,detail:true});
+    }
+    steps.push({title:"Implement and run",source:"scratch-code"});
+    steps.push({title:"Inspect real Julia test evidence",source:"r2-test-desk"});
+    return steps;
+  };
+  function renderScaffold(){
+    scaffold.hidden=practiceApproach!=="scaffold";
+    if(scaffold.hidden)return;
+    const steps=scaffoldSteps(),step=steps[Math.min(scaffoldStep,steps.length-1)];
+    scaffoldStep=steps.indexOf(step);
+    scaffoldCount.textContent="Cue "+(scaffoldStep+1)+" of "+steps.length+" · "+step.title;
+    const target=get(step.source);
+    scaffoldCue.textContent=step.source==="scratch-code"?
+      "Write your solution in the saved editor. Run Julia using the original runner; no pass is inferred from a draft.":
+      step.source==="r2-test-desk"?
+      "Run the source-authored Julia tests. Only actual local runner output is evidence; a downloaded test file is not execution.":
+      target?.textContent.trim().slice(0,420)||"Review the original lesson source.";
+    practicePath.querySelector("#r2-scaffold-prev").disabled=scaffoldStep===0;
+    practicePath.querySelector("#r2-scaffold-next").disabled=scaffoldStep===steps.length-1;
+  }
+  function advanceScaffold(delta){
+    const steps=scaffoldSteps();
+    scaffoldStep=Math.max(0,Math.min(steps.length-1,scaffoldStep+delta));
+    const step=steps[scaffoldStep],target=get(step.source);
+    if(step.detail&&target&&!target.hidden)target.open=true;
+    renderScaffold();
+    if(step.source==="scratch-code")target?.focus({preventScroll:true});
+  }
+  practicePath.querySelector("#r2-scaffold-prev").addEventListener("click",()=>advanceScaffold(-1));
+  practicePath.querySelector("#r2-scaffold-next").addEventListener("click",()=>advanceScaffold(1));
+  codePanel.querySelector("#practice-mode").addEventListener("change",()=>doc.defaultView.queueMicrotask(()=>{
+    scaffoldStep=0;renderScaffold();
+  }));
+
+  function syncPractice(){
+    const lessonId=get("lesson-jump").value;
+    const trace=get("program-trace"),repair=get("repair-lab");
+    // These nodes are moved into Explore. Their canonical hidden state is the
+    // availability authority; never assume every lesson has a trace.
+    const debugAvailable=!!repair&&!repair.hidden;
+    const traceAvailable=!!trace&&!trace.hidden;
+    for(const button of practiceButtons){
+      const mode=button.dataset.r2Practice;
+      button.disabled=(mode==="debug"&&!debugAvailable)||(mode==="trace"&&!traceAvailable);
+      button.setAttribute("aria-pressed",String(mode===practiceApproach));
+      if(button.disabled&&mode===practiceApproach)practiceApproach="build";
+    }
+    for(const button of practiceButtons)
+      button.setAttribute("aria-pressed",String(button.dataset.r2Practice===practiceApproach));
+    guidance.textContent=practiceApproach==="build"?
+      "Start with the task and success criteria. Write your own Julia code; use the original Julia tests for evidence.":
+      practiceApproach==="scaffold"?
+      "Read the starter and success criteria first. Reveal the existing hints one at a time; then write and test your own code.":
+      practiceApproach==="debug"?
+      "The original repair workspace has its own saved repair draft and local Julia execution. Text comparison is not a passing test.":
+      "Predict each modeled iteration before revealing its result. A trace prediction is not Julia execution.";
+    practicePath.dataset.approach=practiceApproach;
+    practicePath.dataset.lesson=lessonId;
+    const key=lessonId+":"+get("practice-mode").value;
+    if(key!==scaffoldKey){scaffoldStep=0;scaffoldKey=key;}
+    renderScaffold();
+  }
+  practiceButtons.forEach(button=>button.addEventListener("click",()=>{
+    if(button.disabled)return;
+    practiceApproach=button.dataset.r2Practice;
+    syncPractice();
+    if(practiceApproach==="debug"||practiceApproach==="trace"){
+      const lab=practiceApproach==="debug"?"repair-lab":"program-trace";
+      // Select before switching stages, so no unrelated numerical lab flashes
+      // or becomes the active destination during the stage transition.
+      const picker=get("r2-lab-choice");
+      syncLabs();
+      if(![...picker.options].some(option=>option.value===lab)){
+        practiceApproach="build";syncPractice();return;
+      }
+      picker.value=lab;syncLabs();
+      showStage("explore");
+      get(lab).scrollIntoView({block:"start"});
+    }else if(practiceApproach==="scaffold"){
+      scaffoldStep=0;renderScaffold();
+      scaffold.scrollIntoView({block:"nearest"});
+    }else get("scratch-code").focus({preventScroll:true});
+  }));
+
+  const explorerBar=node("div","r2-lab-bar"),
+    explorerNav=node("nav","r2-lab-shortcuts"),
+    explorerWorkbench=node("div","r2-explore-workbench"),
+    explorerStage=node("div","r2-explore-stage"),
+    explorerSource=node("aside","r2-explore-source",
+      '<header class="r2-explore-source-head"><strong>Julia source</strong>'+
+      '<span id="r2-explore-source-state"></span></header>'+
+      '<div id="r2-explore-source-content"></div>'+
+      '<footer class="r2-explore-source-actions">'+
+      '<button id="r2-explore-open-code" type="button" hidden>Open previous workspace</button></footer>');
+  explorerNav.setAttribute("aria-label","Numerical experiment shortcuts");
+  explorerSource.setAttribute("aria-label","Julia code for selected numerical experiment");
+  explorerSource.querySelector("#r2-explore-open-code").hidden=true;
+  explorerBar.append(node("div","r2-lab-picker",
+    '<label for="r2-lab-choice">Experiment</label><select id="r2-lab-choice"></select>'),
+    explorerNav);
+  // Learning-only practice: source-authored prompts and starters, never an interpreter.
+  const studyTask=node("section","r2-study-task");
+  studyTask.setAttribute("aria-labelledby","r2-study-task-title");
+  studyTask.innerHTML='<h2 id="r2-study-task-title">Apply the concept</h2>'+
+    '<label for="r2-study-task-choice">Exercise</label>'+
+    '<select id="r2-study-task-choice"><option value="original">Lesson challenge</option>'+
+    '<option value="a">Transfer A</option><option value="b">Transfer B</option></select>'+
+    '<p id="r2-study-task-prompt"></p>'+
+    '<div class="r2-study-code-heading"><strong>Julia starter</strong><button type="button" id="r2-study-copy">Copy for VS Code</button></div>'+
+    '<pre class="code"><code id="r2-study-starter"></code></pre>'+
+    '<p id="r2-study-success"></p>'+
+    '<details id="r2-study-hints"><summary>Hints and approach</summary><ol id="r2-study-hint-list"></ol></details>'+
+    '<p id="r2-study-copy-status" role="status" aria-live="polite"></p>';
+  const refreshStudyTask=()=>{
+    const lesson=lessons.find(x=>x.id===get("lesson-jump").value)||lessons[0];
+    const transfer=transferForLesson(lesson.id,get("r2-study-task-choice").value);
+    const task=transfer||lesson;
+    get("r2-study-task-prompt").textContent=transfer?task.task:lesson.challenge;
+    get("r2-study-starter").textContent=task.starter;
+    get("r2-study-success").textContent="Success criteria: "+task.checks;
+    const hints=transfer?[task.plan,task.verify]:lesson.hints;
+    const list=get("r2-study-hint-list");list.replaceChildren();
+    for(const hint of hints){const li=doc.createElement("li");li.textContent=hint;list.append(li);}
+    get("r2-study-hints").open=false;get("r2-study-copy-status").textContent="";
+  };
+  studyTask.querySelector("#r2-study-task-choice").addEventListener("change",refreshStudyTask);
+  studyTask.querySelector("#r2-study-copy").addEventListener("click",async()=>{
+    try{
+      await doc.defaultView.navigator.clipboard.writeText(get("r2-study-starter").textContent);
+      get("r2-study-copy-status").textContent="Starter copied for VS Code. No code was executed.";
+    }catch{
+      get("r2-study-copy-status").textContent="Clipboard unavailable. Select the starter to copy.";
+    }
+  });
+  explore.append(studyTask,node("header","r2-inner-head",
+    '<h2>Interactive concept exercises</h2>'),explorerBar);
+  explorerWorkbench.append(explorerStage,explorerSource);
+  explore.append(explorerWorkbench);
   const labIds=["numerical-explorer","elimination-lab","precision-lab",
     "fitting-lab","program-trace","factor-lab","sensitivity-lab",
     "ue02-lab","amp-root-workshop","amp-condition-workshop",
@@ -114,8 +514,64 @@ export function initR2Studio({doc=document,lessons,navigate}){
     "plotting-workshop","repair-lab"];
   get("lab-directory")?.remove();
   for(const id of labIds){const part=get(id);if(part){
-    part.classList.add("r2-lab");explore.append(part);
+    part.classList.add("r2-lab");explorerStage.append(part);
   }}
+  // Numerical controllers bind to their original DOM early during app bootstrap.
+  // Mirror only the generated source text; do not move controls or code nodes.
+  const sourceSpecs={
+    "elimination-lab":["elim-julia","elim-copy","elim-copy-status"],
+    "precision-lab":["precision-julia","precision-copy","precision-copy-status"],
+    "fitting-lab":["fit-julia","fit-copy","fit-copy-status"],
+    "factor-lab":["factor-julia","factor-copy","factor-copy-status"],
+    "sensitivity-lab":["sensitivity-julia","sensitivity-copy","sensitivity-copy-result"],
+    "plotting-workshop":["plotting-recipe-code","plotting-recipe-copy","plotting-recipe-feedback"],
+    "ue02-lab":["ue02-code","ue02-copy","ue02-feedback"]
+  };
+  // Explore is not connected to document until the R2 shell mounts below.
+  const sourceSlot=explorerSource.querySelector("#r2-explore-source-content"),
+    sourceState=explorerSource.querySelector("#r2-explore-source-state");
+  const sourceView=node("pre","r2-explore-live-source");
+  const sourceCopy=node("button","r2-explore-copy","Copy original Julia example");
+  sourceCopy.type="button";
+  const copyFeedback=node("span","r2-explore-copy-state");
+  copyFeedback.setAttribute("role","status");
+  const refreshSource=()=>{
+    const id=get("r2-lab-choice").value,
+      spec=sourceSpecs[id],
+      source=spec?get(spec[0]):null;
+    sourceSlot.replaceChildren();
+    explorerWorkbench.dataset.hasSource=source?"true":"false";
+    sourceState.textContent=source?"Original Julia example · not executed":
+      "Browser calculation · not Julia execution";
+    if(source){
+      sourceView.textContent=source.textContent;
+      sourceSlot.append(sourceView,sourceCopy,copyFeedback);
+    }else{
+      sourceSlot.append(node("p","r2-no-source",
+        "This illustration uses browser calculations. It does not execute Julia."));
+    }
+    copyFeedback.textContent="";
+  };
+  sourceCopy.addEventListener("click",()=>{
+    const spec=sourceSpecs[get("r2-lab-choice").value],button=spec?get(spec[1]):null;
+    if(!button){copyFeedback.textContent="No original Julia source is available.";return;}
+    copyFeedback.textContent="";
+    button.click();
+  });
+  for(const [codeId] of Object.values(sourceSpecs)){
+    const source=explorerStage.querySelector("#"+codeId);
+    if(source)new MutationObserver(()=>{
+      if(sourceSpecs[get("r2-lab-choice").value]?.[0]===codeId)
+        sourceView.textContent=source.textContent;
+    }).observe(source,{childList:true,characterData:true,subtree:true});
+  }
+  for(const [codeId,,feedbackId] of Object.values(sourceSpecs)){
+    const feedback=explorerStage.querySelector("#"+feedbackId);
+    if(feedback)new MutationObserver(()=>{
+      if(sourceSpecs[get("r2-lab-choice").value]?.[0]===codeId)
+        copyFeedback.textContent=feedback.textContent;
+    }).observe(feedback,{childList:true,characterData:true,subtree:true});
+  }
   const oldFooter=main.querySelector(".lesson-footer"),
     stages=node("div","r2-stage-content");
   stages.append(learn,check,code,explore);
@@ -134,8 +590,78 @@ export function initR2Studio({doc=document,lessons,navigate}){
   let currentView="lesson",currentStage="learn",question=0,mixedIndex=0,
     currentLesson="",nextStage=null;
   const validStages=["learn","check","code","explore"];
+  const lessonFor=id=>lessons.find(lesson=>lesson.id===id);
+  const suggestedBefore=lesson=>String(lesson.prereq||"").split(",")
+    .map(id=>id.trim()).filter(id=>lessonFor(id));
+  // Presentation reads existing .nav-score counts supplied by canonical renderSidebar.
+  // No new progress, grades, gating, or browser storage.
+  const checkpointCount=id=>{
+    const link=[...get("nav-items").querySelectorAll(".lesson-link")]
+      .find(item=>item.getAttribute("href")==="#lesson/"+id);
+    const text=link?.querySelector(".nav-score")?.getAttribute("aria-label")||"";
+    const match=text.match(/^(\d+) out of 3 answered correctly$/);
+    return match?Number(match[1]):0;
+  };
+  const checkpointLabel=id=>{
+    const count=checkpointCount(id);
+    return count>=2?"Concept reviewed ("+count+"/3 correct)":count+"/3 correct · concept not yet reviewed";
+  };
+  const linkedPrerequisites=(target,lesson)=>{
+    const ids=suggestedBefore(lesson);
+    target.replaceChildren();
+    target.hidden=ids.length===0;
+    if(!ids.length)return;
+    const label=doc.createElement("span");label.textContent="Suggested before:";
+    target.append(label);
+    for(const id of ids){
+      const source=lessonFor(id),anchor=doc.createElement("a");
+      anchor.href="#lesson/"+id;anchor.textContent=id+" · "+source.title;
+      anchor.setAttribute("aria-label","Open suggested lesson "+id+": "+source.title);
+      target.append(anchor);
+    }
+  };
+  function decorateCourseRows(){
+    const nav=get("nav-items"),groups=[...nav.querySelectorAll(".nav-group")];
+    if(groups.length===0)return;
+     for(const group of groups){
+      let stageReviewed=0;
+      const links=[...group.querySelectorAll(".lesson-link")];
+      for(const link of links){
+        const id=link.getAttribute("href")?.match(/^#lesson\/(\d{2})$/)?.[1];
+        const lesson=lessonFor(id);if(!lesson)continue;
+        const score=checkpointCount(id),done=score>=2;
+        if(done)stageReviewed++;
+        let details=link.querySelector(".r2-syllabus-details");
+        if(!details){details=doc.createElement("span");details.className="r2-syllabus-details";
+          link.querySelector(".lesson-link-name")?.append(details);}
+        const prereqs=suggestedBefore(lesson);
+        details.textContent=lesson.minutes+" min"+(prereqs.length?
+          " · Suggested before: "+prereqs.join(", "):"");
+        link.dataset.checkpoint=done?"reviewed":score?"started":"unreviewed";
+        const badge=link.querySelector(".nav-score");
+        if(badge){badge.textContent=done?"Reviewed":score+"/3 correct";}
+      }
+      let status=group.querySelector(".r2-group-progress");
+      if(!status){status=doc.createElement("span");status.className="r2-group-progress";
+        group.querySelector("h3")?.append(status);}
+      status.textContent=stageReviewed+" / "+links.length+" concept reviewed";
+    }
+    if(lessonFor(currentLesson))
+      get("r2-lesson-checkpoint").textContent=checkpointLabel(currentLesson);
+  }
+  // renderSidebar replaces the stage children after each canonical answer.
+  new MutationObserver(decorateCourseRows).observe(get("nav-items"),{childList:true});
+  const resumeButton=get("r2-resume-current");
+
   function showView(view){
     currentView=view;doc.body.dataset.r2View=view;
+    // Reuse the canonical Continue choice whenever the syllabus is reopened.
+    if(view==="course"){
+      decorateCourseRows();
+      get("r2-course-progress").textContent=get("progress-label").textContent;
+      get("r2-hero-continue").textContent=get("continue-lesson").textContent+" →";
+      updateCoursePreview();
+    }
     // Settings are a first-class Tools destination, not a hidden compiler toggle.
     if(view==="utilities")get("settings-panel").hidden=false;
     for(const [name,item] of [["course",course],["lesson",main],["mixed",mixed],["utilities",utils]])
@@ -156,9 +682,10 @@ export function initR2Studio({doc=document,lessons,navigate}){
     });
     if(stage==="check")syncQuestions();
     if(stage==="explore")syncLabs();
+    if(stage==="code")syncPractice();
     get("r2-mobile-next").textContent=stage==="learn"?"Try a question →":
-      stage==="check"?(question===2?"Start coding →":"Next question →"):
-      stage==="code"?"Run Julia":"Back to coding";
+      stage==="check"?(question===2?"Try practice →":"Next question →"):
+      stage==="code"?"Run Julia":"Review lesson →";
     doc.defaultView.scrollTo(0,0);
   }
   function show(view){if(validStages.includes(view))showStage(view);
@@ -168,18 +695,37 @@ export function initR2Studio({doc=document,lessons,navigate}){
     }}
   function syncQuestions(){
     const qs=[...get("questions").querySelectorAll(".question")];
-    question=Math.max(0,Math.min(question,qs.length-1));
-    qs.forEach((q,i)=>q.classList.toggle("r2-question-inactive",i!==question));
+    question=Math.max(0,Math.min(question,Math.max(0,qs.length-1)));
+    qs.forEach((q,i)=>{
+      q.classList.toggle("r2-question-inactive",i!==question);
+      const title=q.querySelector("h3");if(title)title.tabIndex=-1;
+    });
     get("r2-question-index").textContent="Question "+(question+1)+" of "+qs.length;
+    const steps=get("r2-question-steps");
+    steps.replaceChildren(...qs.map((item,i)=>{
+      const state=item.querySelector(".question-head .correct")?"Correct":
+        item.querySelector(".question-head .retry")?"Try again":
+        item.querySelector(".choice.selected")?"Answered":"Unanswered";
+      const button=doc.createElement("button");
+      button.type="button";button.textContent=String(i+1).padStart(2,"0");
+      button.dataset.r2Question=String(i);button.dataset.state=state;
+      button.setAttribute("aria-label","Question "+(i+1)+" · "+state);
+      button.setAttribute("aria-current",i===question?"step":"false");
+      button.addEventListener("click",()=>{
+        question=i;syncQuestions();
+        get("questions").querySelector(".question:not(.r2-question-inactive) h3")?.focus?.({preventScroll:true});
+      });
+      return button;
+    }));
     get("r2-question-prev").disabled=question===0;
     get("r2-question-next").textContent=question===qs.length-1?
-      "Start coding →":"Next question →";
+      "Try practice →":"Next question →";
     if(currentStage==="check")get("r2-mobile-next").textContent=
-      question===qs.length-1?"Start coding →":"Next question →";
+      question===qs.length-1?"Try practice →":"Next question →";
   }
   new MutationObserver(syncQuestions).observe(get("questions"),{childList:true});
   function advanceQuestion(by){
-    if(by>0&&question>=get("questions").children.length-1)showStage("code");
+    if(by>0&&question>=get("questions").children.length-1)showStage("explore");
     else{question=Math.max(0,Math.min(2,question+by));syncQuestions();}
   }
   get("r2-question-prev").addEventListener("click",()=>advanceQuestion(-1));
@@ -196,6 +742,25 @@ export function initR2Studio({doc=document,lessons,navigate}){
     get("semester-rehearsal-items"),{childList:true});
   get("r2-mixed-prev").addEventListener("click",()=>{mixedIndex--;syncMixed();});
   get("r2-mixed-next").addEventListener("click",()=>{mixedIndex++;syncMixed();});
+  // Each area has an original proof and coding task. Switch within that pair
+  // without regenerating the source-authored set or discarding either note.
+  get("semester-rehearsal-items").addEventListener("click",event=>{
+    const button=event.target.closest("[data-rehearsal-pair]");
+    if(!button)return;
+    const item=button.closest(".rehearsal-item");
+    const peers=[...get("semester-rehearsal-items").children];
+    const target=peers.findIndex(candidate=>candidate.dataset.area===item.dataset.area&&
+      candidate.dataset.kind!==item.dataset.kind);
+    if(target<0)return;
+    mixedIndex=target;syncMixed();
+    peers[target].querySelector(".rehearsal-working")?.focus({preventScroll:true});
+  });
+  const quickLabs=[
+    ["numerical-explorer","Norms & matrices"],["elimination-lab","Elimination"],
+    ["factor-lab","QR & Cholesky"],["sensitivity-lab","Conditioning"],
+    ["fitting-lab","Least squares"],["precision-lab","Floating point"],
+    ["plotting-workshop","Plots.jl"]
+  ];
   function syncLabs(){
     const choice=get("r2-lab-choice"),prior=choice.value;
     const available=labIds.map(get).filter(n=>n&&!n.hidden);
@@ -205,23 +770,105 @@ export function initR2Studio({doc=document,lessons,navigate}){
     }));
     choice.value=available.some(x=>x.id===prior)?prior:available[0]?.id||"";
     choice.parentElement.hidden=available.length<2;
-    labIds.map(get).filter(Boolean).forEach(n=>n.classList.toggle(
-      "r2-lab-inactive",n.id!==choice.value));
+    for(const n of labIds.map(get).filter(Boolean))
+      n.classList.toggle("r2-lab-inactive",n.id!==choice.value);
+    const shortcuts=quickLabs.filter(([id])=>available.some(x=>x.id===id));
+    explorerNav.hidden=shortcuts.length<2;
+    explorerNav.replaceChildren(...shortcuts.map(([id,label])=>{
+        const button=doc.createElement("button");
+        button.type="button";button.textContent=label;
+        button.dataset.lab=id;
+        if(id===choice.value)button.setAttribute("aria-current","true");
+        button.addEventListener("click",()=>{
+          choice.value=id;syncLabs();
+          explorerWorkbench.scrollIntoView({block:"start"});
+        });
+        return button;
+      }));
+    explorerBar.dataset.lab=choice.value;
+    refreshSource();
   }
   get("r2-lab-choice").addEventListener("change",syncLabs);
+  get("r2-explore-open-code").addEventListener("click",()=>showStage("code"));
+  function updateCoursePreview(){
+    // Follow the existing course Continue policy; do not calculate another progress state.
+    const index=Number(get("continue-lesson").dataset.index);
+    const lesson=lessons[Number.isInteger(index)&&index>=0&&index<lessons.length?index:0];
+    get("r2-next-lesson-title").textContent=lesson.id+" · "+lesson.title;
+    get("r2-next-lesson-goal").textContent=lesson.goal;
+    get("r2-preview-mode").textContent=
+      get("continue-lesson").textContent.startsWith("Review lesson ")?
+        "REVIEW · LESSON SOURCE":"UP NEXT · LESSON SOURCE";
+    get("r2-next-lesson-code").textContent=lesson.example;
+    get("r2-next-lesson-source").textContent=lesson.source;
+    get("r2-preview-checkpoint").textContent=checkpointLabel(lesson.id);
+    linkedPrerequisites(get("r2-preview-prereqs"),lesson);
+    nextPreview.dataset.lessonId=lesson.id;
+    const selected=get("lesson-jump").value;
+    resumeButton.hidden=!lessonFor(selected)||(selected===lesson.id&&currentStage==="learn");
+    resumeButton.textContent="Return to "+selected+" · "+currentStage[0].toUpperCase()+currentStage.slice(1);
+  }
   function update(id){
     const lesson=lessons.find(l=>l.id===id)||lessons[0];
     get("r2-lesson-unit").textContent=lesson.stage+" / "+lesson.id;
+    linkedPrerequisites(get("r2-lesson-prereqs"),lesson);
+    get("r2-lesson-checkpoint").textContent=checkpointLabel(lesson.id);
+    const index=lessons.indexOf(lesson);
+    const previous=get("r2-lesson-previous"),next=get("r2-lesson-next");
+    previous.disabled=index===0;next.disabled=index===lessons.length-1;
+    if(index>0)previous.setAttribute("aria-label","Previous: "+lessons[index-1].title);
+    if(index<lessons.length-1)next.setAttribute("aria-label","Next: "+lessons[index+1].title);
     get("r2-course-progress").textContent=get("progress-label").textContent;
     get("r2-hero-continue").textContent=get("continue-lesson").textContent+" →";
+    updateCoursePreview();
+    get("r2-reading-source").textContent=lesson.source;
+    get("r2-example-source").textContent=lesson.source;
+    get("r2-check-source").textContent=lesson.source;
+    get("r2-check-code").textContent=lesson.example;
+    // Resolve the selected lesson before rendering its read-only practice prompt.
+    get("lesson-jump").value=lesson.id;
+    renderWorkedExamples(lesson.id);
+    fundamentals.showLesson(lesson.id);
+    algorithms.showLesson(lesson.id);
+    learningPaths.refresh();
+    assessments.showLesson(lesson.id);
+    transfer.showLesson(lesson.id);
+    variants.showLesson(lesson.id);
+    appliedQuiz.showLesson(lesson.id);
+    refreshStudyTask();
+    get("r2-example-feedback").textContent="";
     get("r2-task-summary-text").textContent=get("challenge-text").textContent;
+    doc.defaultView.queueMicrotask(()=>{updateCursor();syncTestAccess();});
     const lessonChanged=currentLesson!==id;
     if(lessonChanged){question=0;currentLesson=id;}
-    get("lesson-jump").value=id;syncLabs();syncQuestions();
+    syncLabs();syncQuestions();syncPractice();
     const target=nextStage||"learn";nextStage=null;showStage(target);
     if(lessonChanged)get("lesson-title").focus({preventScroll:true});
   }
   get("r2-hero-continue").addEventListener("click",()=>get("continue-lesson").click());
+  resumeButton.addEventListener("click",()=>{
+    const id=get("lesson-jump").value;
+    if(!lessonFor(id))return;
+    nextStage=currentStage;
+    const route="#lesson/"+id;
+    if(location.hash===route){showStage(nextStage);nextStage=null;}
+    else location.hash=route;
+  });
+  get("r2-lesson-previous").addEventListener("click",()=>{
+    const index=lessons.findIndex(l=>l.id===get("lesson-jump").value);
+    if(index>0)navigate(index-1);
+  });
+  get("r2-lesson-next").addEventListener("click",()=>{
+    const index=lessons.findIndex(l=>l.id===get("lesson-jump").value);
+    if(index>=0&&index<lessons.length-1)navigate(index+1);
+  });
+  get("r2-next-code").addEventListener("click",()=>{
+    const id=nextPreview.dataset.lessonId;
+    if(!lessons.some(l=>l.id===id))return;
+    const target="#lesson/"+id;
+    if(location.hash===target)showStage("learn");
+    else{nextStage="learn";location.hash=target;}
+  });
   function openAux(name){
     const id=get("lesson-jump").value;
     location.hash=(name==="course"?"#course":"#"+name+"/"+id);
@@ -230,6 +877,10 @@ export function initR2Studio({doc=document,lessons,navigate}){
   for(const name of ["course","mixed","utilities"]){
     get("r2-"+name+"-open").addEventListener("click",()=>openAux(name));
   }
+  legacyOpen.addEventListener("click",()=>{
+    showStage("code");
+    doc.defaultView.dispatchEvent(new Event("julia-legacy-workspace"));
+  });
   get("r2-back-course").addEventListener("click",()=>{
     location.hash="#course";show("course");
   });
@@ -238,14 +889,77 @@ export function initR2Studio({doc=document,lessons,navigate}){
     if(currentStage==="learn")showStage("check");
     else if(currentStage==="check")advanceQuestion(1);
     else if(currentStage==="code")get("local-runner-run").click();
-    else showStage("code");
+    else showStage("learn");
   });
   learn.querySelector("[data-r2-forward]").addEventListener("click",()=>showStage("check"));
-  get("r2-run").addEventListener("click",()=>get("local-runner-run").click());
-  get("r2-export").addEventListener("click",()=>get("download-draft").click());
+  get("r2-example-code").addEventListener("click",()=>showStage("explore"));
+  get("r2-review-concept").addEventListener("click",()=>showStage("learn"));
+  get("r2-check-code-button").addEventListener("click",()=>showStage("explore"));
+  get("r2-copy-example").addEventListener("click",async()=>{
+    const feedback=get("r2-example-feedback"),source=get("example-code").textContent;
+    try{
+      await doc.defaultView.navigator.clipboard.writeText(source);
+      feedback.textContent="Example copied.";
+    }catch{
+      feedback.textContent="Clipboard unavailable. Select the example text to copy.";
+    }
+  });
+  const runOriginal=()=>get("local-runner-run").click();
+  get("r2-run").addEventListener("click",runOriginal);
+  get("r2-terminal-clear").addEventListener("click",()=>get("local-runner-clear").click());
   get("r2-exports").addEventListener("click",()=>{
     openAux("utilities");get("submission-workflow").open=true;
   });
+  const testsJump=get("r2-tests-jump"),testCases=get("external-test-cases"),
+    actualTestStatus=get("external-test-local-status");
+  // Presentation is observational: never parse terminal text as a grade or infer
+  // success from presence of generated cases. Verdicts belong to the local runner.
+  const syncTestAccess=()=>{
+    const available=!externalTests.hidden;
+    testDesk.hidden=!available;testsJump.hidden=!available;
+    get("r2-test-case-count").textContent=testCases.children.length+" source test cases";
+    const verdict=actualTestStatus.textContent.trim();
+    get("r2-test-verification").textContent=verdict||"Not run";
+  };
+  new MutationObserver(syncTestAccess).observe(externalTests,{attributes:true,attributeFilter:["hidden"]});
+  new MutationObserver(syncTestAccess).observe(testCases,{childList:true});
+  new MutationObserver(syncTestAccess).observe(actualTestStatus,{childList:true,characterData:true,subtree:true});
+  testsJump.addEventListener("click",()=>{
+    if(externalTests.hidden)return;
+    testDesk.open=true;testDesk.scrollIntoView({block:"start"});
+    const heading=get("external-test-heading");
+    heading.setAttribute("tabindex","-1");heading.focus({preventScroll:true});
+  });
+  syncTestAccess();
+  const updateCursor=()=>{
+    const before=draft.value.slice(0,draft.selectionStart),row=before.split("\n");
+    get("r2-cursor-location").textContent="Ln "+row.length+", Col "+(row.at(-1).length+1);
+    const bytes=new TextEncoder().encode(draft.value).length;
+    get("r2-draft-size").textContent=bytes+" / 50000 bytes";
+    lineNumbers.textContent=Array.from({length:draft.value.split("\n").length},(_,i)=>i+1).join("\n");
+    lineNumbers.scrollTop=draft.scrollTop;
+    get("r2-editor-status").textContent=
+      get("draft-feedback")?.textContent?.toLowerCase().includes("unsaved")?
+        "Unsaved — copy source":"Saved locally";
+  };
+  draft.addEventListener("input",()=>doc.defaultView.queueMicrotask(updateCursor));
+  draft.addEventListener("click",updateCursor);
+  draft.addEventListener("keyup",updateCursor);
+  draft.addEventListener("scroll",()=>{lineNumbers.scrollTop=draft.scrollTop;});
+  draft.addEventListener("keydown",event=>{
+    if((event.ctrlKey||event.metaKey)&&event.key==="Enter"&&!event.isComposing){
+      event.preventDefault();runOriginal();
+    }
+  });
+  const runButton=get("local-runner-run");
+  const syncRunState=()=>{
+    const busy=runButton.disabled;
+    get("r2-run").disabled=busy;
+    get("r2-run").textContent=busy?"Running Julia…":"Run Julia";
+    get("r2-mobile-next").disabled=busy&&currentStage==="code";
+  };
+  new MutationObserver(syncRunState).observe(runButton,{attributes:true,attributeFilter:["disabled"]});
+  syncRunState();
   get("semester-rehearsal-open").addEventListener("click",()=>{
     openAux("mixed");
   });
@@ -257,14 +971,18 @@ export function initR2Studio({doc=document,lessons,navigate}){
     const i=lessons.findIndex(x=>x.id===get("lesson-jump").value);
     if(i>=0)navigate(i);
   });
-  get("scratch-code").addEventListener("input",()=>{
-    doc.defaultView.queueMicrotask(()=>{
-      get("r2-editor-status").textContent=
-        get("draft-feedback")?.textContent?.toLowerCase().includes("unsaved")?
-          "Unsaved — copy source":"Saved locally";
-    });
-  });
-  return {show,showStage,update,selectLab:id=>{
+  updateCursor();
+  return {show,showStage,update,focusMixedTask:id=>{
+    const index=[...get("semester-rehearsal-items").children].findIndex(item=>item.dataset.sourceId===id);
+    if(index<0)return false;
+    mixedIndex=index;syncMixed();
+    // Returning from a canonical lesson must focus the task after it becomes
+    // visible; focusing a still-hidden card breaks keyboard recovery.
+    const target=get("semester-rehearsal-items").children[index];
+    target.querySelector(".rehearsal-working")?.focus({preventScroll:true});
+    target.scrollIntoView({behavior:"auto",block:"start"});
+    return true;
+  },selectLab:id=>{
     const choice=get("r2-lab-choice");
     if([...choice.options].some(opt=>opt.value===id)){
       choice.value=id;syncLabs();

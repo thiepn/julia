@@ -93,9 +93,10 @@ const semesterRehearsal=initSemesterRehearsal({
 });
 $("#semester-rehearsal-return").addEventListener("click",()=>{
   r2.show("mixed");
-  if(!semesterRehearsal.returnToActive()){
+  const active=semesterRehearsal.returnToActive();
+  if(!active){
     $("#semester-rehearsal-return").hidden=true;
-  }
+  }else r2.focusMixedTask(active);
 });
 const courseBackup=initCourseBackup({download:downloadLocalJulia,isEmbedActive:()=>Boolean(readEmbedUrl()),
   disableEmbed:()=>$("#local-runner-disable-embed").click()});
@@ -156,8 +157,12 @@ function lessonIndexFromHash() {
 }
 function navigate(index) {
   const chosen = Math.max(0, Math.min(lessons.length-1, index));
-  location.hash = "#lesson/" + lessons[chosen].id;
-  if (currentIndex === chosen) render();
+  const destination = "#lesson/" + lessons[chosen].id;
+  // A hash change renders asynchronously. Rendering here as well when the
+  // lesson index happens to match consumes the requested Explore stage twice,
+  // breaking the exact mixed-task return and canonical source focus.
+  if (location.hash === destination) render();
+  else location.hash = destination;
 }
 function renderSidebar() {
   const mastered = lessons.filter(l => readyForChallenge(l, progress)).length;
@@ -276,6 +281,7 @@ function renderFocusedCase(){
   const valid=!!name&&!!suite?.cases.some(c=>c.name===name);
   $("#external-focus-download").disabled=!valid;
   $("#external-focus-copy").disabled=!valid;
+  $("#external-focus-local-run").disabled=!valid;
   $("#external-focus-preview").textContent=valid?
     buildExternalTestFile(current().id,practiceVariant,$("#scratch-code").value,name).content:"";
 }
@@ -423,6 +429,8 @@ function renderPractice(){
   $("#property-feedback").textContent="";
   $("#external-focus-details").open=false;
   $("#external-focus-feedback").textContent="";
+  $("#external-focus-local-status").textContent="";
+  $("#external-focus-local-output").textContent="";
   $("#external-report-input").value="";
   $("#external-report-results").replaceChildren();
   $("#external-report-details").open=false;
@@ -475,7 +483,7 @@ function render() {
     r2.selectLab("completion-depth");
     depthPractice.focusItem(selected.kind,selected.id);
   }
-  document.title = l.title + " — Julia Lab";
+  document.title = l.title + " — Julia Learn";
 }
 function setupEmbed() {
   const url = readEmbedUrl();
@@ -615,6 +623,8 @@ $("#scratch-code").addEventListener("input", () => {
   $("#completion-test-local-status").textContent="";
   $("#completion-test-local-output").textContent="";
   $("#external-focus-feedback").textContent="";
+  $("#external-focus-local-status").textContent="";
+  $("#external-focus-local-output").textContent="";
   $("#property-feedback").textContent="";
   renderExternalTestHandoff();
   renderIntegrationTask();
@@ -711,6 +721,8 @@ $("#property-all-download").addEventListener("click",()=>{
 });
 $("#external-focus-case").addEventListener("change",()=>{
   $("#external-focus-feedback").textContent="";
+  $("#external-focus-local-status").textContent="";
+  $("#external-focus-local-output").textContent="";
   renderFocusedCase();
 });
 $("#external-focus-download").addEventListener("click",()=>{
@@ -733,6 +745,22 @@ $("#external-focus-copy").addEventListener("click",async()=>{
     $("#external-focus-feedback").textContent="Focused Julia test copied. Run it externally, then rerun the full suite after repair.";
   }catch{
     $("#external-focus-feedback").textContent="Clipboard or selected case unavailable. Use the file preview.";
+  }
+});
+$("#external-focus-local-run").addEventListener("click",async()=>{
+  const caseName=$("#external-focus-case").value;
+  if(!caseName)return;
+  const lessonId=current().id,variant=practiceVariant,source=$("#scratch-code").value;
+  try{
+    // Same source-authored Julia Test file and authenticated local runner as the full suite.
+    const script=buildExternalTestFile(lessonId,variant,source,caseName);
+    await localRunner.runTestScript({script,
+      validFor:()=>current().id===lessonId&&practiceVariant===variant&&
+        $("#external-focus-case").value===caseName,
+      statusElement:$("#external-focus-local-status"),
+      outputElement:$("#external-focus-local-output")});
+  }catch(error){
+    $("#external-focus-local-status").textContent=String(error.message||error);
   }
 });
 $("#external-test-local-run").addEventListener("click",async()=>{
@@ -936,5 +964,10 @@ render();
 if(location.hash==="#course")r2.show("course");
 else if(/^#mixed(?:\/\d{2})?$/.test(location.hash))r2.show("mixed");
 else if(/^#utilities(?:\/\d{2})?$/.test(location.hash))r2.show("utilities");
-setupEmbed();
+// L1: defer third-party compiler loading unless the legacy workspace is explicitly opened.
+let legacyEmbedLoaded=false;
+window.addEventListener("julia-legacy-workspace",()=>{
+  if(legacyEmbedLoaded)return;
+  legacyEmbedLoaded=true;setupEmbed();
+});
 initOfflineStudy();
