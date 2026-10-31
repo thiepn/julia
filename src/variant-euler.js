@@ -38,7 +38,7 @@ export default {
         "0.25"
       ],
       "correct": 1,
-      "reason": "The local absolute error bound is 2×0.25²/2=0.0625.",
+      "reason": "The bound |y″|≤2 implies a one-step local truncation error at most Mh²/2=2×(0.25)²/2=0.0625, before accumulating across steps.",
       "hint": "Use M h²/2 for a single step, not for the whole interval.",
       "feedback": [
         "This drops a factor in the expression.",

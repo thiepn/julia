@@ -17,7 +17,7 @@ export default {
         "0.75"
       ],
       "correct": 2,
-      "reason": "The first iterate is 0.5 and the second is (0.5+2)/4=0.625.",
+      "reason": "Starting with x₀=0, the first update yields x₁=(0+2)/4=0.5; applying the same contraction again gives x₂=(0.5+2)/4=0.625.",
       "hint": "Apply the same function twice, not once.",
       "feedback": [
         "0.5 is the first iterate.",
