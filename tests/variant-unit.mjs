@@ -21,8 +21,8 @@ for(const c of VARIANT_CASES){
   assert.ok(!prior.has(q.code),q.id+" must be new vs L7/L8");
   assert.ok(q.code.includes("println("));
   assert.ok(q.reason.length>=70&&q.hint.length>=30);
-  assert.equal(q.choices.length,4);assert.equal(new Set(q.choices).size,4);
-  assert.equal(q.feedback.length,4);assert.equal(q.choices[q.correct],q.output);
+  assert.equal(q.options.length,4);assert.equal(new Set(q.options).size,4);
+  assert.equal(q.feedback.length,4);assert.equal(q.options[q.correct],q.output);
   for(let i=0;i<4;i++){
    assert.ok(q.feedback[i].length>=18);
    const result=gradeVariantAnswer(q,String(i));

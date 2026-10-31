@@ -11,7 +11,7 @@ for(const c of VARIANT_CASES){
   assert.equal(result.status,0,q.id+" Julia execution error: "+result.stderr);
   assert.equal(result.stderr.trim(),"",q.id+" unexpected stderr");
   assert.equal(result.stdout.replace(/\r\n/g,"\n").trimEnd(),q.output,q.id+" stdout mismatch");
-  assert.equal(q.choices[q.correct],q.output,q.id+" correct key mismatch");
+  assert.equal(q.options[q.correct],q.output,q.id+" correct key mismatch");
   checked++;
  }
 }
