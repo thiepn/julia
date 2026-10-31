@@ -52,7 +52,10 @@ try{
        await r2Locator(page,"#completion-track-choice").selectOption("repair_dimensions");
        assert.match(await r2Locator(page,"#completion-track-starter").innerText(),/zeros\(size\(A,1\)\)/);
        await page.goto(origin+"/#lesson/07");
-       await r2Role(page,"heading",{name:"Loops"}).waitFor();
+       // Match the canonical lesson title, not every learning-path or unit
+       // heading that contains "Loops" in the expanded L4–L9 curriculum.
+       await r2Role(page,"heading",{name:"Conditions & loops",exact:true}).waitFor();
+       assert.equal(await page.locator("#lesson-jump").inputValue(),"07");
        await r2Locator(page,"#completion-track-choice").selectOption("repair_scope");
        assert.match(await r2Locator(page,"#completion-track-starter").innerText(),/total \+= 1/);
        await page.goto(origin+"/#lesson/08");
