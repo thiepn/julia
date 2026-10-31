@@ -1,3 +1,4 @@
+// L11 release candidate: revalidate the service worker and install the revised offline study cache.
 import {OFFLINE_CACHE_NAME,OFFLINE_ASSETS,offlineAssetKey} from "./src/offline-assets.js";
 const PREFIX="amp-julia-offline-";
 const scope=self.registration.scope;
