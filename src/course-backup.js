@@ -4,10 +4,36 @@ import {missionForLesson} from "./numerical-missions.js";
 import {integrationForLesson} from "./integration-task.js";
 import {TRACE_CASES} from "./program-trace-model.js";
 import {MAX_DRAFT_LENGTH} from "./workspace.js";
+import {LEARNING_QUIZ_STORAGE_KEY,readQuizAnswers} from "./learning-quiz.js";
+import {FUNDAMENTALS_STORAGE_KEY,readFundamentalsAnswers} from "./fundamentals.js";
+import {ALGORITHM_ANSWERS_KEY,readAlgorithmAnswers} from "./algorithmic-learning.js";
+import {ASSESSMENT_STORAGE_KEY,readAssessmentAnswers} from "./assessments.js";
+import {TRANSFER_STORAGE_KEY,readTransferAnswers} from "./transfer-assessments.js";
+import {VARIANT_STORAGE_KEY,readVariantAnswers} from "./variant-assessments.js";
 const COURSE_PREFIX="amp-julia-lab:";
 const MAX_BACKUP=2_000_000;
-const LESSON=/^(0[1-9]|1[0-6])$/;
+// Existing v1 backups remain readable. Extra L3–L9 records preserve
+// their original storage keys and use the original assessment validators.
+const STUDY_READERS=new Map([
+ [LEARNING_QUIZ_STORAGE_KEY,readQuizAnswers],
+ [FUNDAMENTALS_STORAGE_KEY,readFundamentalsAnswers],
+ [ALGORITHM_ANSWERS_KEY,readAlgorithmAnswers],
+ [ASSESSMENT_STORAGE_KEY,readAssessmentAnswers],
+ [TRANSFER_STORAGE_KEY,readTransferAnswers],
+ [VARIANT_STORAGE_KEY,readVariantAnswers]
+]);
+function validStudyAnswers(key,value){
+ try{
+  const parsed=JSON.parse(value);
+  if(!parsed||typeof parsed!=="object"||Array.isArray(parsed))return false;
+  const cleaned=STUDY_READERS.get(key)({getItem:k=>k===key?value:null});
+  const entries=Object.entries(parsed);
+  return entries.length===Object.keys(cleaned).length&&entries.every(([id,answer])=>
+    typeof answer==="string"&&Object.hasOwn(cleaned,id)&&cleaned[id]===answer);
+ }catch{return false;}
+}
 function allowedKey(key){
+ if(STUDY_READERS.has(key))return true;
  if(key===COURSE_PREFIX+"v1")return true;
  let m=/^amp-julia-lab:(?:draft|repair):v1:(0[1-9]|1[0-6])$/.exec(key);
  if(m)return true;
@@ -21,6 +47,7 @@ function allowedKey(key){
 }
 function validValue(key,value){
  if(typeof value!=="string"||value.length>MAX_DRAFT_LENGTH)return false;
+ if(STUDY_READERS.has(key))return validStudyAnswers(key,value);
  if(key===COURSE_PREFIX+"v1"){
    try{
      const p=JSON.parse(value);
