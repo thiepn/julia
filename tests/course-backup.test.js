@@ -107,7 +107,11 @@ test("L11: new answer records reject unknown or invalid values",()=>{
  for(const entries of cases){
   const data={schema:"amp-julia-course-backup",version:1,entries};
   assert.throws(()=>parseCourseBackup(JSON.stringify(data)));
-  assert.throws(()=>captureCourse(new Store(entries)));
+  if(Object.hasOwn(entries,"amp-julia-learn:other-v1")){
+   assert.deepEqual(captureCourse(new Store(entries)).entries,{},"unknown local keys are ignored during export");
+  }else{
+   assert.throws(()=>captureCourse(new Store(entries)),"invalid recognized records must fail closed");
+  }
  }
 });
 test("L11: new answers respect keep/replace and atomic rollback",()=>{
