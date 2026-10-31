@@ -7,6 +7,7 @@ import {initAlgorithmView} from "./algorithmic-view.js";
 import {initLearningPathsView} from "./learning-paths-view.js";
 import {initAssessmentsView} from "./assessments-view.js";
 import {initTransferAssessmentView} from "./transfer-assessments-view.js";
+import {initVariantReviewView} from "./variant-review-view.js";
 // R2 UI-only controller. Reparents existing canonical elements without copying
 // exercises, drafts, model state, local Julia execution, progress or results.
 export function initR2Studio({doc=document,lessons,navigate}){
@@ -207,7 +208,9 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const assessments=initAssessmentsView({doc,mount:assessmentMount});
   const transferMount=node("section","r2-transfer-host");
   const transfer=initTransferAssessmentView({doc,mount:transferMount});
-  learn.append(learnPanel,pathsMount,fundamentalsMount,algorithmMount,assessmentMount,transferMount,node("footer","r2-stage-footer",
+  const variantMount=node("section","r2-variant-host");
+  const variants=initVariantReviewView({doc,mount:variantMount});
+  learn.append(learnPanel,pathsMount,fundamentalsMount,algorithmMount,assessmentMount,transferMount,variantMount,node("footer","r2-stage-footer",
     '<span id="r2-reading-source"></span>'+
     '<button type="button" data-r2-forward="check" class="r2-button r2-primary">Start quiz →</button>'));
 
@@ -830,6 +833,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     learningPaths.refresh();
     assessments.showLesson(lesson.id);
     transfer.showLesson(lesson.id);
+    variants.showLesson(lesson.id);
     appliedQuiz.showLesson(lesson.id);
     refreshStudyTask();
     get("r2-example-feedback").textContent="";

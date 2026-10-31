@@ -1669,3 +1669,30 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
  .r2-transfer-question{padding:14px 10px}
  .r2-transfer-options{grid-template-columns:minmax(0,1fr)}
 }
+
+
+/* L9 independent mathematical checks and learner evidence export */
+#r2-variants{max-width:1260px;margin:28px auto;padding:clamp(18px,2.5vw,34px);border:1px solid var(--line);border-radius:8px;background:var(--surface);min-width:0}
+#r2-variants h2{font-size:clamp(23px,2.4vw,29px);margin:0 0 14px}
+#r2-variants h3{font-size:21px;margin:24px 0 15px}
+#r2-variants h4{font-size:16px;line-height:1.5;margin:0 0 13px}
+.r2-variants-intro,.r2-variants-context,.r2-variants-assumption,.r2-variants-progress,.r2-variants-review-explain{font-size:15px;line-height:1.75;max-width:83ch;overflow-wrap:anywhere}
+.r2-variants-assumption{border-left:3px solid var(--accent);background:var(--surface-muted);padding:12px 16px}
+.r2-variants-controls{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:18px 0}
+.r2-variants-controls label{font-size:15px;font-weight:700}
+#r2-variants-select{font-size:15px;min-height:44px;max-width:100%;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:5px;padding:8px 12px}
+.r2-variants-questions{display:grid;grid-template-columns:minmax(0,1fr);gap:15px}
+.r2-variant-question{border:1px solid var(--line);border-radius:6px;min-width:0;padding:18px}
+.r2-variant-code{font:14px/1.75 "Cascadia Code",Consolas,monospace;color:#ecf0ff;background:#111923;border:1px solid #364359;border-radius:5px;padding:16px;white-space:pre;max-width:100%;overflow-x:auto}
+.r2-variant-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 0}
+.r2-variant-option,#r2-variants-export{min-height:44px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:5px;padding:11px 14px;font-size:15px;text-align:left;line-height:1.55;overflow-wrap:anywhere}
+.r2-variant-option[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.r2-variant-hint{font-size:15px;line-height:1.65}
+.r2-variant-hint summary{cursor:pointer;min-height:44px;padding:10px 0;font-weight:700}
+.r2-variant-feedback{font-size:15px;line-height:1.7;background:var(--surface-muted);border-left:3px solid var(--line);padding:12px 15px;white-space:pre-wrap;overflow-wrap:anywhere}
+.r2-variant-feedback:empty{display:none}
+.r2-variant-feedback[data-result="correct"]{border-color:var(--success)}
+.r2-variant-feedback[data-result="review"]{border-color:var(--error)}
+#r2-variants-export{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+#r2-variants-export-status{font-size:15px;line-height:1.6}
+@media(max-width:650px){#r2-variants{padding:18px 15px;margin:20px 0}.r2-variant-question{padding:14px 10px}.r2-variant-options{grid-template-columns:minmax(0,1fr)}}
