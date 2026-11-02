@@ -28,7 +28,7 @@ try{
        const page=await browser.newPage({...viewportOptions,acceptDownloads:true}),errors=[];
        const requestDiagnostics=[];
        let phase="initial load";
-       page.on("pageerror",e=>errors.push(kind+" "+device+" "+phase+": "+e.message));
+       page.on("pageerror",e=>errors.push({phase,message:String(e),stack:String(e?.stack||"")}));
        page.on("requestfailed",request=>{
          if(request.url().startsWith(origin)&&request.url().endsWith(".js"))
            requestDiagnostics.push({phase,url:request.url(),failure:request.failure()});
@@ -56,6 +56,20 @@ try{
        ]);
        assert.equal(new URL(reloaded.url()).origin,origin);
        await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
+       // In WebKit, replacing a document can report an aborted module
+       // evaluation from the outgoing document as a pageerror. This is
+       // different from an actual failed request or an error in the new page:
+       // inspect and narrowly classify only this known transition artifact.
+       const navigationErrors=errors.splice(0);
+       if(navigationErrors.length){
+         assert.equal(kind,"WebKit","Unexpected browser error during reload");
+         assert.deepEqual(requestDiagnostics,[],"Module import error with failed first-party requests is real");
+         for(const error of navigationErrors){
+           assert.equal(error.phase,"disable JDoodle and reload");
+           assert.match(error.message,/^TypeError: Importing a module script failed\.?$/);
+         }
+         console.warn("WEBKIT_OUTGOING_DOCUMENT_MODULE_ABORT",JSON.stringify({engine:kind,device,count:navigationErrors.length}));
+       }
        await r2Locator(page,"#local-runner-token").fill(code);
        await r2Locator(page,"#local-runner-diagnose").click();
        await page.waitForFunction(()=>document.querySelector("#local-runner-diagnostic-output").textContent.includes("JULIA_LAB_DIAGNOSTIC_V1"),
@@ -146,8 +160,10 @@ try{
         assert.ok(geometry.excess<=2,kind+" "+device+" horizontal overflow: "+geometry.excess);
        const stored=await page.evaluate(()=>JSON.stringify(Object.entries(localStorage)));
        assert.ok(!stored.includes(code));
-       if(errors.length)console.error("G1G2_MODULE_DIAGNOSTICS",JSON.stringify({engine:kind,device,errors,requestDiagnostics}));
-       assert.deepEqual(errors,[]);
+       if(errors.length||requestDiagnostics.length)
+         console.error("G1G2_MODULE_DIAGNOSTICS",JSON.stringify({engine:kind,device,errors,requestDiagnostics}));
+       assert.deepEqual(requestDiagnostics,[],"All first-party JavaScript requests must succeed");
+       assert.deepEqual(errors,[],"The active Julia Learn document must have no runtime errors");
        passed++;console.log("G1 G2 BROWSER PASS",kind,device,"real local diagnostics, repair labs, BigFloat and vector conditioning");
        await page.close();
      }
