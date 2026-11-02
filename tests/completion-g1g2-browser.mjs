@@ -66,7 +66,10 @@ try{
          assert.deepEqual(requestDiagnostics,[],"Module import error with failed first-party requests is real");
          for(const error of navigationErrors){
            assert.equal(error.phase,"disable JDoodle and reload");
-           assert.match(error.message,/^TypeError: Importing a module script failed\.?$/);
+           // WebKit may also report this interrupted module job as a
+           // rejected promise without a reason. Only the intentional outgoing
+           // document is exempt; new-document errors still fail below.
+           assert.match(error.message,/^(?:TypeError: Importing a module script failed\\.?|Unhandled Promise Rejection: undefined)$/);
          }
          console.warn("WEBKIT_OUTGOING_DOCUMENT_MODULE_ABORT",JSON.stringify({engine:kind,device,count:navigationErrors.length}));
        }
