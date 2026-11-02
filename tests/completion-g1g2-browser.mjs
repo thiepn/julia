@@ -26,15 +26,35 @@ try{
        ["mobile",{viewport:{width:390,height:844},isMobile:true,hasTouch:true}]]){
        const viewportOptions=kind==="Firefox"&&device==="mobile"?{viewport:options.viewport,hasTouch:true}:options;
        const page=await browser.newPage({...viewportOptions,acceptDownloads:true}),errors=[];
-       page.on("pageerror",e=>errors.push(e.message));
+       const requestDiagnostics=[];
+       let phase="initial load";
+       page.on("pageerror",e=>errors.push(kind+" "+device+" "+phase+": "+e.message));
+       page.on("requestfailed",request=>{
+         if(request.url().startsWith(origin)&&request.url().endsWith(".js"))
+           requestDiagnostics.push({phase,url:request.url(),failure:request.failure()});
+       });
+       page.on("response",response=>{
+         if(response.url().startsWith(origin)&&response.url().endsWith(".js")&&response.status()>=400)
+           requestDiagnostics.push({phase,url:response.url(),status:response.status()});
+       });
        await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>
           route.fulfill({status:200,contentType:"text/javascript",body:"window.__jdoodleTest=true;"}));
+       phase="lesson 02 initial load";
        await page.goto(origin+"/#lesson/02");
        await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
        await r2Locator(page,"#local-runner-token").fill(code);
        await r2Locator(page,"#local-runner-diagnose").click();
        assert.match(await r2Locator(page,"#local-runner-diagnostic-status").innerText(),/Disable the JDoodle/);
-       await r2Locator(page,"#local-runner-disable-embed").click();
+       // Disabling the configured third-party compiler reloads the document.
+       // A heading locator alone may resolve against the OLD document before
+       // WebKit completes navigation, leaving its first-party module requests
+       // interrupted by the subsequent navigation. Await the real reload.
+       phase="disable JDoodle and reload";
+       const [reloaded]=await Promise.all([
+         page.waitForNavigation({waitUntil:"load"}),
+         r2Locator(page,"#local-runner-disable-embed").click()
+       ]);
+       assert.equal(new URL(reloaded.url()).origin,origin);
        await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
        await r2Locator(page,"#local-runner-token").fill(code);
        await r2Locator(page,"#local-runner-diagnose").click();
@@ -51,6 +71,7 @@ try{
        await page.waitForFunction(()=>document.querySelector("#local-runner-diagnostic-output").textContent.includes("JULIA_LAB_DIAGNOSTIC_V1"),null,{timeout:45000});
        await r2Locator(page,"#completion-track-choice").selectOption("repair_dimensions");
        assert.match(await r2Locator(page,"#completion-track-starter").innerText(),/zeros\(size\(A,1\)\)/);
+       phase="lesson 07 navigation";
        await page.goto(origin+"/#lesson/07");
        // Match the canonical lesson title, not every learning-path or unit
        // heading that contains "Loops" in the expanded L4–L9 curriculum.
@@ -58,14 +79,17 @@ try{
        assert.equal(await page.locator("#lesson-jump").inputValue(),"07");
        await r2Locator(page,"#completion-track-choice").selectOption("repair_scope");
        assert.match(await r2Locator(page,"#completion-track-starter").innerText(),/total \+= 1/);
+       phase="lesson 08 navigation";
        await page.goto(origin+"/#lesson/08");
        await r2Role(page,"heading",{name:"Functions & algorithms",exact:true}).waitFor();
        await r2Locator(page,"#completion-track-choice").selectOption("repair_types");
        assert.match(await r2Locator(page,"#completion-track-starter").innerText(),/zeros\(Int/);
+       phase="lesson 09 navigation";
        await page.goto(origin+"/#lesson/09");
        await r2Role(page,"heading",{name:"Floating-point numbers"}).waitFor();
        await r2Locator(page,"#completion-experiment-choice").selectOption("bigfloat_oracle");
        assert.match(await r2Locator(page,"#completion-experiment-code").innerText(),/parse\(BigFloat/);
+       phase="lesson 16 navigation";
        await page.goto(origin+"/#lesson/16");
        await r2Role(page,"heading",{name:"Conditioning capstone"}).waitFor();
        await r2Locator(page,"#completion-track-choice").selectOption("vector_amplification");
@@ -122,6 +146,7 @@ try{
         assert.ok(geometry.excess<=2,kind+" "+device+" horizontal overflow: "+geometry.excess);
        const stored=await page.evaluate(()=>JSON.stringify(Object.entries(localStorage)));
        assert.ok(!stored.includes(code));
+       if(errors.length)console.error("G1G2_MODULE_DIAGNOSTICS",JSON.stringify({engine:kind,device,errors,requestDiagnostics}));
        assert.deepEqual(errors,[]);
        passed++;console.log("G1 G2 BROWSER PASS",kind,device,"real local diagnostics, repair labs, BigFloat and vector conditioning");
        await page.close();
