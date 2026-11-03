@@ -45,16 +45,39 @@ try{
        await r2Locator(page,"#local-runner-token").fill(code);
        await r2Locator(page,"#local-runner-diagnose").click();
        assert.match(await r2Locator(page,"#local-runner-diagnostic-status").innerText(),/Disable the JDoodle/);
-       // Disabling the configured third-party compiler reloads the document.
-       // A heading locator alone may resolve against the OLD document before
-       // WebKit completes navigation, leaving its first-party module requests
-       // interrupted by the subsequent navigation. Await the real reload.
+       // The compiler switch intentionally persists the privacy boundary and
+       // reloads the *same URL*. Waiting only for a navigation event is brittle
+       // in mobile WebKit when the R2 wrapper also changes the visible route.
+       // Prove a replacement DOCUMENT and the persisted disabled state, rather
+       // than accepting a stale heading or weakening the browser assertion.
        phase="disable JDoodle and reload";
-       const [reloaded]=await Promise.all([
-         page.waitForNavigation({waitUntil:"load"}),
-         r2Locator(page,"#local-runner-disable-embed").click()
-       ]);
-       assert.equal(new URL(reloaded.url()).origin,origin);
+       const initial=await page.evaluate(()=>{
+         Object.defineProperty(window,"__g1g2OldDocument",{value:true,configurable:false});
+         return {origin:location.origin,
+           embedWasDisabled:localStorage.getItem("amp-julia-lab:jdoodle-embed-v1")===""};
+       });
+       assert.equal(initial.origin,origin);
+       assert.equal(initial.embedWasDisabled,false,"The privacy switch must start enabled");
+       try{
+         await Promise.all([
+           page.waitForFunction(()=>document.readyState==="complete"&&
+             !Object.hasOwn(window,"__g1g2OldDocument")&&
+             localStorage.getItem("amp-julia-lab:jdoodle-embed-v1")==="",
+             null,{timeout:30000}),
+           r2Locator(page,"#local-runner-disable-embed").click()
+         ]);
+       }catch(error){
+         const observed=await page.evaluate(()=>({
+           origin:location.origin,route:location.hash,
+           ready:document.readyState,
+           oldDocument:Object.hasOwn(window,"__g1g2OldDocument"),
+           embedDisabled:localStorage.getItem("amp-julia-lab:jdoodle-embed-v1")===""
+         })).catch(e=>({inspectionError:String(e)}));
+         console.error("G1G2_RELOAD_STATE",JSON.stringify({engine:kind,device,observed,
+           errors,requestDiagnostics}));
+         throw error;
+       }
+       assert.equal(new URL(page.url()).origin,origin);
        await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
        // In WebKit, replacing a document can report an aborted module
        // evaluation from the outgoing document as a pageerror. This is
