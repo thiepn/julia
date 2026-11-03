@@ -92,7 +92,11 @@ try{
            // WebKit may also report this interrupted module job as a
            // rejected promise without a reason. Only the intentional outgoing
            // document is exempt; new-document errors still fail below.
-           assert.match(error.message,/^(?:TypeError: Importing a module script failed[.]?|Unhandled Promise Rejection: undefined)$/);
+           // WebKit also wraps the exact aborted-import TypeError inside a
+           // rejected promise (reproduced in workflow 41734814301 attempt 2).
+           // The required real document replacement, empty failed-request
+           // diagnostics, and active-document checks remain mandatory.
+           assert.match(error.message,/^(?:TypeError: Importing a module script failed[.]?|Unhandled Promise Rejection: (?:undefined|TypeError: Importing a module script failed[.]?))$/);
          }
          console.warn("WEBKIT_OUTGOING_DOCUMENT_MODULE_ABORT",JSON.stringify({engine:kind,device,count:navigationErrors.length}));
        }
