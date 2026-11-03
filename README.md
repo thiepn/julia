@@ -1,3 +1,39 @@
+# Julia Learn — AMP
+
+A browser-based Julia learning companion for **Algorithmische Mathematik und Programmieren** (Universität zu Köln, WS 2026/27). It is independent study material, not an official university submission or grading service.
+
+## Start here
+
+No account, database, hosted backend, paid API, or compilation step is needed to study.
+
+1. Serve the repository locally in a terminal:
+   - **Windows:** `py -m http.server 5173`
+   - **macOS/Linux:** `python3 -m http.server 5173`
+2. Open **http://localhost:5173/** in a browser. Use **Course** to choose one of 16 lessons.
+3. In a lesson, follow **Learn → Quiz → Practice**. Learn includes original worked Julia examples, fundamentals, algorithms, prerequisite paths, and progressively deeper L3–L9 numerical questions. Quiz records your latest choices; Practice helps you write, debug and reason about Julia code.
+4. Open **Reference** for the original course materials, saved work, the optional legacy workspace, offline installation, and portable backup/restore controls. **Practice** at the top level also offers mixed-semester questions.
+
+**What actually runs:** Read-only Julia snippets and expected outputs in Learn are reference material verified against real Julia in automated tests; they do **not** execute in your browser or grade code you type. Numerical diagrams use separate browser-side calculations. For your own Julia programs, use VS Code/Julia or the optional loopback-only local Julia runner described below. External compiler services are optional and not guaranteed.
+
+## Preserve your work
+
+- Progress, answers and drafts are stored **locally in the current browser and site origin**. Clearing site data or switching browsers/devices can remove access; there is no account sync.
+- In **Reference**, use the **course backup** JSON export to preserve supported lesson progress, code drafts, and validated L3–L9 answers. The v1 backup format supports preview, keep-existing and explicit replace-on-conflict restore. Old v1 backups remain readable. Keep backup files private.
+- **Export review JSON** in the L9 Learn section is a **read-only latest-answer summary**, *not* an importable backup, attempt history, certification or mastery grade. It deliberately excludes source drafts and other private work.
+- Offline lessons can be installed on HTTPS or localhost using the built-in offline controls. Offline study does not provide an offline Julia compiler, remote execution, or automatic synchronization.
+
+## Run your own Julia code (optional)
+
+Use Julia 1.11+ with VS Code, or run exported `.jl` files in a terminal. For the **optional local execution companion**, install Node.js 22+ and Julia 1.11+ on the same computer, start `node local-runner/server.mjs` from the repository root, and use the local runner controls in the app. The loopback endpoint is `http://127.0.0.1:8765/run`. Locally executed Julia programs have your OS user's filesystem/process permissions; run only code you trust. Browser-based practice and quizzes work without the companion.
+
+For automated regression checks, `npm test` runs the Node tests. GitHub Actions additionally runs Julia 1.11 and real browser suites (Chromium/Firefox/WebKit where configured). Latest complete exact-head workflow before this documentation update: [#41377494743](https://github.com/thiepn/julia/actions/runs/41377494743) at `dd6b8c1d141b54e05c5a07b1244a73a9041c854d`, all three jobs successful. Do not infer manual device/accessibility acceptance from CI alone.
+
+## Historical development notes
+
+The material below records the evolution from **Julia Lab** through the L1–L11 additions. Earlier headings, release statuses, old run counts and interface descriptions are **historical** and may no longer reflect current Julia Learn. The startup, data, and execution guidance above supersedes contradictory older notes.
+
+---
+
 ## L9 — new numerical variants, proof conditions, and evidence export (draft)
 
 Five separate, source-authored AMP cases include **15 new Julia snippets/graded reasoning checks**: composite trapezoidal error for quartic data (exact error vs derivative-based error theorem), contraction mapping with a posteriori fixed-point bound and invariant-domain assumption, four-step Euler IVP with accumulated local-error certificate, power iteration with geometric spectral-gap decay and initial-vector preconditions, and infinity-norm matrix conditioning with a perturbation attaining the stated normwise bound. Each check includes exact authored Julia source/stdout, four alternatives, mathematically specific feedback for each choice and a relevant hint. These are static original variants, not dynamically generated one-time unseen examinations. Real Julia 1.11 executes all 15 snippets in CI.
