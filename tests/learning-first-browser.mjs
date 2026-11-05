@@ -27,9 +27,9 @@ try{
     await page.locator("#r2-course").waitFor({state:"visible"});
     assert.equal(await page.locator(".lesson-link").count(),16);
     assert.deepEqual(await page.locator(".r2-global-nav button").allInnerTexts(),
-      ["Course","Practice","Reference"]);
+      ["Course","Exam Prep","Resources"]);
     assert.deepEqual(await page.locator(".r2-stage-tabs button[data-r2-stage]").allInnerTexts(),
-      ["01 Learn","02 Quiz","03 Practice"]);
+      ["01 Learn","02 Quiz","03 Apply"]);
     assert.equal(await page.locator("#r2-stage-code").isVisible(),false);
     assert.equal(thirdParty.length,0,"No third-party compiler during normal learning");
     await page.locator("#r2-next-code").click();
@@ -76,7 +76,8 @@ try{
     await page.evaluate(()=>localStorage.setItem("amp-julia-lab:draft:v1:01","original learner draft"));
     await page.locator("#r2-utilities-open").click();
     await page.locator("#r2-utilities").waitFor({state:"visible"});
-    assert.equal(await page.locator(".r2-reference-index a").count(),16);
+    assert.equal(await page.locator(".r2-resource-course-link").getAttribute("href"),"#course");
+    assert.equal(await page.locator(".r2-reference-index a").count(),0,"No duplicate 16-lesson directory in Resources");
     assert.equal(await page.locator("#r2-legacy-open").isVisible(),false);
     assert.equal(thirdParty.length,0);
     await page.reload();
