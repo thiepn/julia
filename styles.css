@@ -1730,3 +1730,8 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   .r2-apply-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
   .r2-apply-actions button{width:100%}
 }
+
+@media(max-width:359px){
+  /* Preserve readable three-destination navigation on a 320px screen. */
+  .r2-global-nav button{padding:8px 6px}
+}
