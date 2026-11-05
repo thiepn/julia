@@ -9,16 +9,16 @@ No account, database, hosted backend, paid API, or compilation step is needed to
 1. Serve the repository locally in a terminal:
    - **Windows:** `py -m http.server 5173`
    - **macOS/Linux:** `python3 -m http.server 5173`
-2. Open **http://localhost:5173/** in a browser. Use **Course** to choose one of 16 lessons.
-3. In a lesson, follow **Learn → Quiz → Practice**. Learn includes original worked Julia examples, fundamentals, algorithms, prerequisite paths, and progressively deeper L3–L9 numerical questions. Quiz records your latest choices; Practice helps you write, debug and reason about Julia code.
-4. Open **Reference** for the original course materials, saved work, the optional legacy workspace, offline installation, and portable backup/restore controls. **Practice** at the top level also offers mixed-semester questions.
+2. Open **http://localhost:5173/** in a browser. Use **Course** to continue or choose one of the 16 lessons.
+3. In a lesson, follow **Learn → Quiz → Apply**. Learn includes original worked Julia examples, fundamentals, algorithms, prerequisite paths, and progressively deeper L3–L9 numerical questions. Quiz records your latest choices; Apply opens source-backed exercises and numerical experiments, with the original Julia editor available on demand.
+4. Open **Exam Prep** for independent mixed-semester practice, not official assessment. **Resources** contains offline access, portable course backup/restore, Julia setup, original editor access and submission utilities. The complete 16-lesson directory lives in Course.
 
 **What actually runs:** Read-only Julia snippets and expected outputs in Learn are reference material verified against real Julia in automated tests; they do **not** execute in your browser or grade code you type. Numerical diagrams use separate browser-side calculations. For your own Julia programs, use VS Code/Julia or the optional loopback-only local Julia runner described below. External compiler services are optional and not guaranteed.
 
 ## Preserve your work
 
 - Progress, answers and drafts are stored **locally in the current browser and site origin**. Clearing site data or switching browsers/devices can remove access; there is no account sync.
-- In **Reference**, use the **course backup** JSON export to preserve supported lesson progress, code drafts, and validated L3–L9 answers. The v1 backup format supports preview, keep-existing and explicit replace-on-conflict restore. Old v1 backups remain readable. Keep backup files private.
+- In **Resources**, use the **course backup** JSON export to preserve supported lesson progress, code drafts, and validated L3–L9 answers. The v1 backup format supports preview, keep-existing and explicit replace-on-conflict restore. Old v1 backups remain readable. Keep backup files private.
 - **Export review JSON** in the L9 Learn section is a **read-only latest-answer summary**, *not* an importable backup, attempt history, certification or mastery grade. It deliberately excludes source drafts and other private work.
 - Offline lessons can be installed on HTTPS or localhost using the built-in offline controls. Offline study does not provide an offline Julia compiler, remote execution, or automatic synchronization.
 
