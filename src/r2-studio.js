@@ -29,7 +29,8 @@ export function initR2Studio({doc=document,lessons,navigate}){
     '<div class="r2-course-hero-main"><div><h1>Algorithmische Mathematik<br>und Programmieren</h1>'+
     '<p>16 lessons · Julia programming and numerical methods</p></div>'+
     '<div class="r2-course-hero-actions"><span id="r2-course-progress" role="status"></span>'+
-    '<button type="button" id="r2-hero-continue" class="r2-button r2-primary">Continue learning →</button></div></div>');
+    '<button type="button" id="r2-hero-continue" class="r2-button r2-primary">Continue learning →</button>'+ 
+    '<p class="r2-progress-note">Progress reflects concept checks only, not Julia coding or exam readiness.</p></div></div>');
   const coursePath=node("section","r2-course-path");
   coursePath.append(node("header","r2-course-heading",
     '<h2>Course curriculum</h2>'),sidebar);
@@ -47,50 +48,47 @@ export function initR2Studio({doc=document,lessons,navigate}){
     '<div class="r2-preview-actions"><button type="button" id="r2-resume-current" class="r2-button r2-secondary" hidden></button>'+
     '<button type="button" id="r2-next-code" class="r2-button r2-primary">Study this lesson →</button></div></div>';
   const courseLayout=node("div","r2-course-layout");
-  courseLayout.append(nextPreview,coursePath);
+  courseLayout.append(coursePath,nextPreview);
   course.append(courseHero,courseLayout);
-  mixed.append(node("header","r2-page-heading",'<span class="r2-kicker">CUMULATIVE PRACTICE</span>'+
-    '<h1>Mixed semester practice</h1><p>Six original source-linked reasoning and Julia coding exercises.</p>'),
+  mixed.append(node("header","r2-page-heading",'<span class="r2-kicker">INDEPENDENT REVISION</span>'+
+    '<h1>Exam Prep</h1><p>Source-linked practice, not an official examination or certified score.</p><h2>Mixed semester practice</h2><p>Six original reasoning and Julia coding exercises.</p>'),
     get("semester-rehearsal"),
     node("footer","r2-mixed-navigation",'<button id="r2-mixed-prev" class="r2-button r2-secondary">← Previous</button>'+
     '<span id="r2-mixed-progress" role="status">1 of 6</span>'+
     '<button id="r2-mixed-next" class="r2-button r2-primary">Next →</button>'));
-  utils.append(node("header","r2-page-heading",'<h1>Reference</h1>'));
-  const quickReference=node("nav","r2-reference-index");
-  quickReference.setAttribute("aria-label","Julia lesson reference");
-  quickReference.append(node("h2",null,"Julia topics"));
-  for(const lesson of lessons){
-    const link=doc.createElement("a");link.href="#lesson/"+lesson.id;
-    link.textContent=lesson.id+" · "+lesson.title;
-    quickReference.append(link);
-  }
+  utils.append(node("header","r2-page-heading",'<h1>Resources</h1>'+ 
+    '<p>Your work, offline access, Julia setup and submission utilities.</p>'));
+  const courseShortcut=node("a","r2-resource-course-link");
+  courseShortcut.href="#course";
+  courseShortcut.textContent="Browse all 16 lessons in Course →";
+  utils.append(courseShortcut);
   const archived=node("details","r2-legacy-tools");
-  archived.append(node("summary",null,"Previous coding workspace and settings"));
-  archived.append(node("p",null,"Retained for access to existing Julia drafts and submission tools. Learning and quizzes do not require this workspace."));
-  const legacyOpen=node("button","r2-button r2-secondary","Open previous coding workspace");
+  archived.append(node("summary",null,"Julia editor, setup and diagnostics"));
+  archived.append(node("p",null,"Optional Julia runner and compiler settings. Learning and quizzes work without a local Julia connection."));
+  const legacyOpen=node("button","r2-button r2-secondary","Open Julia editor");
   legacyOpen.type="button";legacyOpen.id="r2-legacy-open";archived.append(legacyOpen);
   const submissionTools=node("details","r2-reference-submission");
   const oldSubmission=get("submission-workflow");
   submissionTools.append(node("summary",null,"Submission tools"));
   if(oldSubmission)submissionTools.append(oldSubmission);
-  utils.append(quickReference);
+  utils.append(node("h2","r2-resource-heading","Your files and offline access"));
   for(const id of ["course-backup","offline-access"]){
     const item=get(id);if(item)utils.append(item);
   }
-  utils.append(submissionTools);
+  utils.append(node("h2","r2-resource-heading","Submission support"),submissionTools);
   for(const id of ["settings-panel","bridge-diagnostics"]){
     const item=get(id);if(item)archived.append(item);
   }
   const settings=get("settings-panel");if(settings)settings.hidden=false;
-  utils.append(archived);
+  utils.append(node("h2","r2-resource-heading","Julia setup and advanced tools"),archived);
   const top=doc.querySelector(".topbar");
   top.querySelector(".brand").href="#course";
   top.querySelector(".brand small").textContent="Julia programming · AMP";
   top.querySelector(".brand strong").textContent="Julia Learn";
   get("settings-toggle").hidden=true;
   const globalNav=node("nav","r2-global-nav",'<button id="r2-course-open" type="button">Course</button>'+
-    '<button id="r2-mixed-open" type="button">Practice</button>'+
-    '<button id="r2-utilities-open" type="button" aria-label="Julia reference and saved data">Reference</button>');
+    '<button id="r2-mixed-open" type="button">Exam Prep</button>'+
+    '<button id="r2-utilities-open" type="button">Resources</button>');
   globalNav.setAttribute("aria-label","Main navigation");
   top.querySelector(".top-right").prepend(globalNav);
   const lessonHead=node("header","r2-lesson-head",'<div class="r2-breadcrumb">'+
@@ -113,7 +111,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
   toolbar.remove();
   const tabs=node("nav","r2-stage-tabs",'<button type="button" data-r2-stage="learn">01 <span>Learn</span></button>'+
     '<button type="button" data-r2-stage="check">02 <span>Quiz</span></button>'+
-    '<button type="button" data-r2-stage="explore">03 <span>Practice</span></button>');
+    '<button type="button" data-r2-stage="explore">03 <span>Apply</span></button>');
   tabs.setAttribute("aria-label","Lesson activities");
   const learn=node("section","r2-activity r2-learn"),
     check=node("section","r2-activity r2-check"),
@@ -134,7 +132,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
       '<button type="button" id="r2-copy-example">Copy example</button>'),
     exampleActions=node("footer","r2-example-actions",
       '<span id="r2-example-source"></span>'+
-      '<button type="button" id="r2-example-code" class="r2-button r2-primary">Practice this topic →</button>'+
+      '<button type="button" id="r2-example-code" class="r2-button r2-primary">Apply this topic →</button>'+
       '<span id="r2-example-feedback" role="status" aria-live="polite"></span>');
   const examplePre=get("example-code").closest("pre"),
     originalHeading=learnPanel.querySelector(".section-title"),
@@ -225,7 +223,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
       '<pre class="r2-check-reference-code"><code id="r2-check-code"></code></pre>'+
       '<div class="r2-check-reference-actions"><span id="r2-check-source"></span>'+
       '<button type="button" id="r2-review-concept">Review concept</button>'+
-      '<button type="button" id="r2-check-code-button">Practice this topic</button></div>');
+      '<button type="button" id="r2-check-code-button">Apply this topic</button></div>');
   checkReference.setAttribute("aria-label","Lesson Julia source reference");
   checkPanel.classList.add("r2-check-paper");
   checkLayout.append(checkPanel,checkReference);
@@ -503,6 +501,11 @@ export function initR2Studio({doc=document,lessons,navigate}){
       get("r2-study-copy-status").textContent="Clipboard unavailable. Select the starter to copy.";
     }
   });
+  const applyActions=node("div","r2-apply-actions",
+    '<button type="button" id="r2-apply-editor" class="r2-button r2-primary">Open Julia editor</button>'+
+    '<button type="button" id="r2-apply-explore" class="r2-button r2-secondary">Explore numerical concepts</button>');
+  explore.append(node("header","r2-apply-heading",
+    '<h2>Apply what you learned</h2><p>Use an existing Julia exercise or interact with a numerical experiment. The optional editor requires a configured Julia environment for execution.</p>'),applyActions);
   explore.append(studyTask,node("header","r2-inner-head",
     '<h2>Interactive concept exercises</h2>'),explorerBar);
   explorerWorkbench.append(explorerStage,explorerSource);
@@ -684,7 +687,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     if(stage==="explore")syncLabs();
     if(stage==="code")syncPractice();
     get("r2-mobile-next").textContent=stage==="learn"?"Try a question →":
-      stage==="check"?(question===2?"Try practice →":"Next question →"):
+      stage==="check"?(question===2?"Apply this topic →":"Next question →"):
       stage==="code"?"Run Julia":"Review lesson →";
     doc.defaultView.scrollTo(0,0);
   }
@@ -719,9 +722,9 @@ export function initR2Studio({doc=document,lessons,navigate}){
     }));
     get("r2-question-prev").disabled=question===0;
     get("r2-question-next").textContent=question===qs.length-1?
-      "Try practice →":"Next question →";
+      "Apply this topic →":"Next question →";
     if(currentStage==="check")get("r2-mobile-next").textContent=
-      question===qs.length-1?"Try practice →":"Next question →";
+      question===qs.length-1?"Apply this topic →":"Next question →";
   }
   new MutationObserver(syncQuestions).observe(get("questions"),{childList:true});
   function advanceQuestion(by){
@@ -790,6 +793,11 @@ export function initR2Studio({doc=document,lessons,navigate}){
   }
   get("r2-lab-choice").addEventListener("change",syncLabs);
   get("r2-explore-open-code").addEventListener("click",()=>showStage("code"));
+  get("r2-apply-editor").addEventListener("click",()=>showStage("code"));
+  get("r2-apply-explore").addEventListener("click",()=>{
+    explorerBar.scrollIntoView({block:"start"});
+    if(!get("r2-lab-choice").parentElement.hidden)get("r2-lab-choice").focus({preventScroll:true});
+  });
   function updateCoursePreview(){
     // Follow the existing course Continue policy; do not calculate another progress state.
     const index=Number(get("continue-lesson").dataset.index);

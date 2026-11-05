@@ -1696,3 +1696,42 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 #r2-variants-export{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
 #r2-variants-export-status{font-size:15px;line-height:1.6}
 @media(max-width:650px){#r2-variants{padding:18px 15px;margin:20px 0}.r2-variant-question{padding:14px 10px}.r2-variant-options{grid-template-columns:minmax(0,1fr)}}
+
+/* Phase 01: navigation and discoverability only. Existing content and workspaces are unchanged. */
+.r2-course-hero-actions .r2-progress-note{
+  max-width:31ch;margin:0;text-align:right;font-size:12px;
+  line-height:1.5;color:var(--muted);font-weight:500
+}
+.r2-resource-course-link{
+  display:inline-flex;align-items:center;min-height:44px;padding:10px 0;
+  margin:0 0 19px;color:var(--accent);font-size:15px;
+  font-weight:700;text-underline-offset:4px
+}
+.r2-utilities .r2-resource-heading{
+  margin:26px 0 13px;font-size:19px;line-height:1.4;letter-spacing:-.025em;
+  color:var(--ink);font-weight:750
+}
+.r2-utilities .r2-resource-heading:first-of-type{margin-top:6px}
+.r2-apply-heading{max-width:1050px;margin:5px 0 14px}
+.r2-apply-heading h2{font-size:clamp(23px,2.5vw,30px);margin:0 0 8px;
+  letter-spacing:-.035em;color:var(--ink)}
+.r2-apply-heading p{margin:0;color:var(--muted);font-size:15px;line-height:1.7;max-width:76ch}
+.r2-apply-actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 26px}
+.r2-apply-actions button{min-height:44px}
+@media(max-width:900px){
+  /* Collapse the 2-column desktop grid before curriculum rows become cramped. */
+  .r2-course-layout{display:flex;flex-direction:column}
+  .r2-course-path,.r2-next-lesson{order:0;width:100%}
+}
+@media(max-width:767px){
+  .r2-course-hero-actions .r2-progress-note{
+    width:100%;max-width:65ch;text-align:left;font-size:12px
+  }
+  .r2-apply-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
+  .r2-apply-actions button{width:100%}
+}
+
+@media(max-width:359px){
+  /* Preserve readable three-destination navigation on a 320px screen. */
+  .r2-global-nav button{padding:8px 6px}
+}
