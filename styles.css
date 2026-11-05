@@ -1719,9 +1719,9 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 .r2-apply-actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 26px}
 .r2-apply-actions button{min-height:44px}
 @media(max-width:900px){
-  /* The syllabus precedes the optional code preview on tablet and mobile. */
-  .r2-course-path{order:0}
-  .r2-next-lesson{order:1}
+  /* Collapse the 2-column desktop grid before curriculum rows become cramped. */
+  .r2-course-layout{display:flex;flex-direction:column}
+  .r2-course-path,.r2-next-lesson{order:0;width:100%}
 }
 @media(max-width:767px){
   .r2-course-hero-actions .r2-progress-note{
