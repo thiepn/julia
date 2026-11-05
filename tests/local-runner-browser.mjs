@@ -3,6 +3,7 @@ import {createServer} from "node:http";
 import {readFile} from "node:fs/promises";
 import {resolve,extname,sep} from "node:path";
 import {chromium} from "playwright";
+import {openLegacyWorkspace} from "./r2-legacy-navigation.mjs";
 import {r2Locator,r2Role} from "./r2-legacy-navigation.mjs";
 import {createLocalRunner} from "../local-runner/server.mjs";
 const root=resolve(".");
@@ -27,10 +28,13 @@ try{
     await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>route.fulfill({status:200,contentType:"text/javascript",body:"window.__jdoodleStub=true;"}));
     await page.goto(origin+"/#lesson/04");
     await r2Role(page,"heading",{name:"Plot mathematical functions"}).waitFor();
-    await r2Locator(page,'button[data-r2-stage="code"]').click();
+    await openLegacyWorkspace(page);
     await r2Role(page,"button",{name:"Disable JDoodle and reload for local execution"}).click();
+    // Reference is the current route after the page reload. Explicitly return
+    // to the lesson before checking its heading; do not expose Code as a tab.
+    await page.goto(origin+"/#lesson/04");
     await r2Role(page,"heading",{name:"Plot mathematical functions"}).waitFor();
-    await r2Locator(page,'button[data-r2-stage="code"]').click();
+    await openLegacyWorkspace(page);
     const noEmbed=await page.evaluate(()=>document.querySelector("#embed-slot .jdoodle-embed")===null);
     assert.equal(noEmbed,true);
     await r2Locator(page,"#local-runner-token").fill("test-only-access-code-not-secret");

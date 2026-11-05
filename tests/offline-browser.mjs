@@ -4,7 +4,7 @@ import {createServer} from "node:http";
 import {readFile} from "node:fs/promises";
 import {resolve,extname,sep} from "node:path";
 import {chromium} from "playwright";
-import {r2Locator,r2Role} from "./r2-legacy-navigation.mjs";
+import {r2Locator,r2Role,openLegacyWorkspace} from "./r2-legacy-navigation.mjs";
 const root=resolve("."),types={".html":"text/html; charset=utf-8",".css":"text/css; charset=utf-8",".js":"text/javascript; charset=utf-8",".svg":"image/svg+xml",".png":"image/png",".webmanifest":"application/manifest+json"};
 const server=createServer(async(req,res)=>{
  const path=decodeURIComponent(new URL(req.url,"http://127.0.0.1").pathname);
@@ -28,8 +28,18 @@ try{
    await r2Locator(page,"#local-runner-disable-embed").click();
    await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
    await r2Locator(page,"#offline-access").evaluate(el=>el.open=true);
-   await r2Locator(page,"#offline-status").getByText("Lessons and browser-based practice available offline on this device.").waitFor({timeout:30000});
-   await page.waitForFunction(()=>navigator.serviceWorker.controller!==null,null,{timeout:30000});
+   await page.waitForFunction(()=>/Lessons and browser-based practice available offline|Offline files installed\. Reload/.test(
+     document.querySelector("#offline-status")?.textContent||""),null,{timeout:30000});
+   // On first mobile installation an active worker need not yet control the
+   // already-open page. Do not claim offline readiness until a controlled
+   // reload proves the first-party shell can serve navigation.
+   if(!await page.evaluate(()=>navigator.serviceWorker.controller!==null)){
+     assert.match(await page.locator("#offline-status").textContent(),/Reload this page while online/);
+     await page.reload();
+     await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
+   }
+   await page.waitForFunction(()=>navigator.serviceWorker.controller!==null,null,{timeout:10000});
+   await r2Locator(page,"#offline-status").getByText("Lessons and browser-based practice available offline on this device.").waitFor();
    const cached=await page.evaluate(async()=>{
      const worker=await navigator.serviceWorker.ready;
      const keys=await caches.keys();
@@ -41,6 +51,7 @@ try{
    assert.equal(cached.keys.filter(x=>x.startsWith("amp-julia-offline-")).length,1);
    assert.ok(cached.urls.some(x=>x.endsWith("/src/lessons.js")));
    assert.ok(cached.urls.some(x=>x.endsWith("/src/offline-study.js")));
+   assert.ok(cached.urls.some(x=>x.endsWith("/src/touch-code.js")));
    assert.ok(cached.urls.some(x=>x.endsWith("/app.webmanifest")));
    assert.ok(cached.urls.some(x=>x.endsWith("/assets/julia-lab-192.png")));
    assert.ok(cached.urls.some(x=>x.endsWith("/assets/julia-lab-512.png")));
@@ -51,6 +62,24 @@ try{
    const saved=await page.evaluate(()=>localStorage.getItem("amp-julia-lab:draft:v1:02"));
    assert.equal(saved,source);
    await context.setOffline(true);
+   // Phase 09: touch insertion works with the genuine service worker offline.
+   // A canonical input event must preserve the exact lesson-owned draft.
+   let expectedSource=source;
+   if(device.name==="mobile"){
+     const keys=page.locator(".r2-touch-keys");
+     assert.equal(await keys.isVisible(),true);
+     assert.equal(await keys.locator("button").count(),9);
+     await page.locator("#scratch-code").evaluate(el=>{
+       el.setSelectionRange(el.value.length,el.value.length);
+     });
+     await keys.locator('[data-touch-key="parens"]').click();
+     expectedSource=source+"()";
+     assert.equal(await page.locator("#scratch-code").inputValue(),expectedSource);
+     assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:draft:v1:02")),expectedSource);
+     assert.equal(await page.locator("#scratch-code").evaluate(el=>el.selectionStart),source.length+1);
+   }else{
+     assert.equal(await page.locator(".r2-touch-keys").isVisible(),false);
+   }
    await page.goto(origin+"/#lesson/09");
    await r2Role(page,"heading",{name:"Floating-point numbers"}).waitFor();
    await r2Locator(page,"#offline-access").evaluate(el=>el.open=true);
@@ -65,17 +94,27 @@ try{
    await page.locator('.lesson-link[href="#lesson/09"]').click();
    await page.reload();
    await r2Role(page,"heading",{name:"Floating-point numbers"}).waitFor();
+   // The third-party compiler is intentionally lazy: a newly reloaded page
+   // does not initialize it until the learner opens the legacy workspace.
+   assert.equal(await page.locator("#embed-slot .jdoodle-embed").count(),0);
+   await openLegacyWorkspace(page);
+   await page.locator("#r2-stage-code").waitFor({state:"visible"});
+   // Check the real offline runtime state only after the compiler is opened.
+   // This verifies deferred loading and that no third-party editor is fetched.
+   await page.waitForFunction(()=>document.querySelector("#runtime-state")?.textContent?.includes("Offline"),
+     null,{timeout:10000});
    assert.match(await r2Locator(page,"#runtime-state").innerText(),/Offline/);
    assert.equal(await r2Locator(page,"#embed-slot .jdoodle-embed").count(),0);
    assert.equal(await r2Locator(page,'script[src^="https://www.jdoodle.com/"]').count(),0);
    await page.goto(origin+"/#lesson/02");
    await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
-   assert.equal(await r2Locator(page,"#scratch-code").inputValue(),source);
-   assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:draft:v1:02")),saved);
+   assert.equal(await r2Locator(page,"#scratch-code").inputValue(),expectedSource);
+   assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:draft:v1:02")),expectedSource);
    const [download]=await Promise.all([page.waitForEvent("download"),r2Locator(page,"#download-draft").click()]);
    assert.match(download.suggestedFilename(),/\.jl$/);
    const output=await readFile(await download.path(),"utf8");
    assert.match(output,/offline-δ/);
+   if(device.name==="mobile")assert.match(output,/println\("offline-δ"\)\(\)/);
    const icon=await page.evaluate(async()=>{
      const res=await fetch("./assets/julia-lab-192.png");
      const blob=await res.blob();

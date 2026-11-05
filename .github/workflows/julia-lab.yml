@@ -30,11 +30,49 @@ jobs:
           node --check src/app.js
           node --check src/checks.js
           node --check src/lessons.js
+          node --check src/learning-examples.js
+          node --check src/learning-quiz.js
+          node --check src/learning-quiz-view.js
+          node tests/learning-examples-schema.mjs
+          node tests/learning-quiz-unit.mjs
+          node --check src/fundamentals.js
+          node --check src/fundamentals-view.js
+          node tests/fundamentals-unit.mjs
+          node --check src/algorithmic-learning.js
+          node --check src/algorithmic-view.js
+          node tests/algorithmic-unit.mjs
+          node --check src/learning-paths.js
+          node --check src/learning-paths-view.js
+          node tests/learning-paths-unit.mjs
+          node --check src/assessments.js
+          node --check src/assessments-view.js
+          node tests/assessments-unit.mjs
+          node --check src/transfer-assessments.js
+          node --check src/transfer-assessments-view.js
+          node tests/transfer-unit.mjs
+          node --check src/variant-assessments.js
+          node --check src/learner-review.js
+          node --check src/variant-review-view.js
+          node tests/variant-unit.mjs
           npm test
       - name: Install Julia 1.11 for authentic generated-test qualification
         uses: julia-actions/setup-julia@v2
         with:
           version: '1.11'
+      - name: Verify authored learning examples against real Julia 1.11
+        run: node tests/learning-examples-julia.mjs
+      - name: Verify 15 authored quiz reference outputs with genuine Julia 1.11
+        run: node tests/learning-quiz-julia.mjs
+      - name: L4 fundamentals exact stdout in real Julia 1.11
+        run: node tests/fundamentals-julia.mjs
+      - name: L5 exact code and output checks in Julia 1.11
+        run: node tests/algorithmic-julia.mjs
+      - name: L7 authentic Julia 1.11 multistep assessments and independent remediation
+        run: node tests/assessments-julia.mjs
+      - name: L8 independent transfer source and mathematical evidence with Julia 1.11
+        run: node tests/transfer-julia.mjs
+      - name: L9 source-verified variants and rigorous error-bound reasoning with Julia 1.11
+        run: node tests/variant-julia.mjs
       - name: Execute generated Julia Test suites with fixed reference code
         run: node tests/julia-qualification.mjs
       - name: Run Julia UE02 numeric and syntax qualifications
@@ -129,6 +167,22 @@ jobs:
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install chromium
+      - name: L1 learning-only navigation and preserved learner records
+        run: node tests/learning-first-browser.mjs
+      - name: L3 applied quiz mobile and desktop acceptance
+        run: node tests/learning-quiz-browser.mjs
+      - name: L4 fundamentals Chromium mobile and desktop acceptance
+        run: node tests/fundamentals-browser.mjs
+      - name: L5 algorithmic mobile and desktop Chromium acceptance
+        run: node tests/algorithmic-browser.mjs
+      - name: L6 prerequisite paths and targeted revision in desktop/mobile Chromium
+        run: node tests/learning-paths-browser.mjs
+      - name: L7 five multistep AMP assessments in desktop and mobile Chromium
+        run: node tests/assessments-browser.mjs
+      - name: L8 transfer assessment desktop/mobile Chromium acceptance
+        run: node tests/transfer-browser.mjs
+      - name: L9 independent variant and genuine review-download Chromium desktop/mobile acceptance
+        run: node tests/variant-browser.mjs
       - name: R2 responsive and real screenshot acceptance
         run: R2_SCREENSHOTS=1 node tests/r2-browser.mjs
       - name: R2 legacy original Chromium learner acceptance (no Julia install needed)

@@ -2,6 +2,16 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {stat,readFile} from "node:fs/promises";
 import {OFFLINE_ASSETS,OFFLINE_CACHE_NAME,offlineAssetKey} from "../src/offline-assets.js";
+test("installed PWA identity matches Julia Learn without changing ID or scope",async()=>{
+ const manifest=JSON.parse(await readFile("app.webmanifest","utf8"));
+ assert.equal(manifest.name,"Julia Learn — AMP");
+ assert.equal(manifest.short_name,"Julia Learn");
+ assert.equal(manifest.id,"./");
+ assert.equal(manifest.scope,"./");
+ assert.equal(manifest.start_url,"./#lesson/01");
+ assert.equal(manifest.display,"standalone");
+ assert.equal(manifest.icons.length,3);
+});
 test("offline cache is explicit, first-party only and complete",async()=>{
  assert.match(OFFLINE_CACHE_NAME,/^amp-julia-offline-/);
  assert.equal(OFFLINE_ASSETS.length,new Set(OFFLINE_ASSETS).size);

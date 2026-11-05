@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "Julia Lab — AMP",
-  "short_name": "Julia Lab",
+  "name": "Julia Learn — AMP",
+  "short_name": "Julia Learn",
   "start_url": "./#lesson/01",
   "scope": "./",
   "display": "standalone",

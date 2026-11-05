@@ -57,6 +57,19 @@ try{
   await returnToLesson();
   await r2Locator(page,"#course-backup").evaluate(el=>el.open=true);
   assert.equal(await r2Locator(page,"#course-backup-export").isEnabled(),true);
+  // Verify new answers round-trip through the actual historic v1 export UI.
+  const savedAnswers={
+   "amp-julia-learn:quiz-v1":{"01-predict":"0"},
+   "amp-julia-learn:fundamentals-v1":{"types-1":"0"},
+   "amp-julia-learn:algorithms-v1":{"contracts-1":"0"},
+   "amp-julia-learn:assessments-v1":{"quadrature-step-1":"0"},
+   "amp-julia-learn:transfer-v1":{"nonuniform-step-1":"0"},
+   "amp-julia-learn:variants-v1":{"quartic-estimate":"0"}
+  };
+  await page.evaluate(records=>{
+   for(const [k,value] of Object.entries(records))localStorage.setItem(k,JSON.stringify(value));
+   localStorage.setItem("amp-julia-learn:private-note-v1","PRIVATE NOTE CANARY");
+  },savedAnswers);
   const code='println("δ, π, α")';
   await r2Locator(page,"#scratch-code").fill(code);
   const [download]=await Promise.all([page.waitForEvent("download"),r2Locator(page,"#course-backup-export").click()]);
@@ -65,14 +78,24 @@ try{
   const data=JSON.parse(backupText);
   const key="amp-julia-lab:draft:v1:02";
   assert.equal(data.entries[key],code);
+  for(const [answerKey,value] of Object.entries(savedAnswers))
+   assert.deepEqual(JSON.parse(data.entries[answerKey]),value);
+  assert.ok(!backupText.includes("PRIVATE NOTE CANARY"));
+  assert.equal(data.version,1);
   assert.ok(!backupText.includes("jdoodle")&&!backupText.includes("runner-token"));
   await r2Locator(page,"#scratch-code").fill('println("new work")');
+  await page.evaluate(()=>localStorage.setItem("amp-julia-learn:variants-v1",'{"quartic-estimate":"1"}'));
   await r2Locator(page,"#course-backup-file").setInputFiles({name:"course.json",mimeType:"application/json",buffer:Buffer.from(backupText)});
   await page.waitForFunction(()=>document.getElementById("course-backup-preview").textContent.includes("conflict"));
-  assert.match(await r2Locator(page,"#course-backup-preview").innerText(),/1 conflict/);
+  assert.match(await r2Locator(page,"#course-backup-preview").innerText(),/2 conflict/);
   await Promise.all([page.waitForNavigation({waitUntil:"load"}),r2Locator(page,"#course-backup-restore").click()]);
   await returnToLesson();
   assert.equal(await r2Locator(page,"#scratch-code").inputValue(),'println("new work")');
+  assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-learn:variants-v1")),'{"quartic-estimate":"1"}');
+  for(const [answerKey,value] of Object.entries(savedAnswers)){
+   if(answerKey==="amp-julia-learn:variants-v1")continue;
+   assert.deepEqual(JSON.parse(await page.evaluate(k=>localStorage.getItem(k),answerKey)),value);
+  }
   await r2Locator(page,"#course-backup").evaluate(el=>el.open=true);
   await r2Locator(page,"#course-backup-file").setInputFiles({name:"course.json",mimeType:"application/json",buffer:Buffer.from(backupText)});
   await page.waitForFunction(()=>document.getElementById("course-backup-preview").textContent.includes("conflict"));
@@ -83,6 +106,9 @@ try{
   await Promise.all([page.waitForNavigation({waitUntil:"load"}),r2Locator(page,"#course-backup-restore").click()]);
   await returnToLesson();
   assert.equal(await r2Locator(page,"#scratch-code").inputValue(),code);
+  for(const [answerKey,value] of Object.entries(savedAnswers))
+   assert.deepEqual(JSON.parse(await page.evaluate(k=>localStorage.getItem(k),answerKey)),value);
+  assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-learn:private-note-v1")),"PRIVATE NOTE CANARY");
   assert.ok((await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth))<=2,device.name+" overflow");
   assert.deepEqual(errors,[]);
   count++;

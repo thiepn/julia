@@ -5,12 +5,14 @@ export function initOfflineStudy({doc=document,win=window}={}){
   const indicator=doc.getElementById("offline-indicator");
   const updateButton=doc.getElementById("offline-update");
   const installButton=doc.getElementById("offline-install");
-  let ready=false,registration=null,requestedUpdate=false,deferredInstall=null;
+  let ready=false,installed=false,registration=null,requestedUpdate=false,deferredInstall=null;
   const online=()=>win.navigator.onLine;
   function paint(){
     indicator.hidden=online();
     if(!ready){
-      status.textContent=online()?"Offline lessons not yet ready.":"Offline lessons unavailable on this device.";
+      status.textContent=installed&&online()?
+        "Offline files installed. Reload this page while online to enable offline access.":
+        online()?"Offline lessons not yet ready.":"Offline lessons unavailable on this device.";
       return;
     }
     status.textContent=online()?
@@ -55,7 +57,10 @@ export function initOfflineStudy({doc=document,win=window}={}){
   });
   win.navigator.serviceWorker.addEventListener("controllerchange",()=>{
     if(requestedUpdate){requestedUpdate=false;win.location.reload();return;}
-    if(ready)paint();
+    // An activated registration is not necessarily controlling this document.
+    // Only an installed, controlling worker makes offline navigation reliable.
+    ready=installed&&Boolean(win.navigator.serviceWorker.controller);
+    paint();
   });
   const start=async()=>{
     try{
@@ -66,7 +71,9 @@ export function initOfflineStudy({doc=document,win=window}={}){
       registration.addEventListener("updatefound",()=>{watch(registration.installing);waiting();});
       // ready resolves only for an activated, fully precached shell.
       await win.navigator.serviceWorker.ready;
-      ready=true;paint();waiting();
+      installed=true;
+      ready=Boolean(win.navigator.serviceWorker.controller);
+      paint();waiting();
     }catch(error){
       status.textContent="Offline installation unavailable. Check HTTPS, device storage and browser settings.";
     }

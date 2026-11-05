@@ -3,6 +3,7 @@ import {createServer} from "node:http";
 import {readFile} from "node:fs/promises";
 import {resolve,extname,sep} from "node:path";
 import {chromium} from "playwright";
+import {openLegacyWorkspace} from "./r2-legacy-navigation.mjs";
 const root=resolve("."),mimes={".html":"text/html;charset=utf-8",".css":"text/css;charset=utf-8",".js":"text/javascript;charset=utf-8",".json":"application/json"};
 const server=createServer(async(req,res)=>{
   const pathname=decodeURIComponent(new URL(req.url,"http://127.0.0.1").pathname);
@@ -43,7 +44,7 @@ try{
     assert.equal(await page.locator("#r2-stage-explore").isVisible(),true);
     assert.ok(await page.locator("#r2-lab-choice option").count()>0);
     const before=await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1"));
-    await page.locator('button[data-r2-stage="code"]').click();
+    await openLegacyWorkspace(page);
     assert.equal(await page.locator("#scratch-code").isVisible(),true);
     // On phones, full instructions are intentionally collapsed above the real editor.
     if(viewport.width<=767){
@@ -53,13 +54,51 @@ try{
     await page.locator("#scratch-code").fill('println("studio draft")');
     assert.equal(await page.locator("#compiler-panel").isVisible(),true);
     assert.equal(await page.locator("#scratch-code").inputValue(),'println("studio draft")');
+    // IDE shell must retain the ONE canonical editor, local runner, terminal and file tools.
+    assert.equal(await page.locator(".r2-editor-well #scratch-code").count(),1);
+    assert.equal(await page.locator(".r2-terminal #local-runner-output").count(),1);
+    assert.equal(await page.locator(".r2-runner-setup #local-runner-token").count(),1);
+    for(const id of ["copy-draft","download-draft","import-draft","reset-draft"]){
+      assert.equal(await page.locator(".r2-editor-actions #"+id).count(),1);
+    }
+    await page.locator("#scratch-code").fill("x = 1\ny = 2");
+    assert.equal(await page.locator(".r2-line-numbers").innerText(),"1\n2");
+    assert.equal(await page.locator("#r2-cursor-location").innerText(),"Ln 2, Col 6");
+    assert.ok((await page.locator("#r2-draft-size").innerText()).includes(" / 50000 bytes"));
+    await page.locator("#scratch-code").fill('println("studio draft")');
+    const taskBox=await page.locator(".r2-instructions").boundingBox(),
+      sourceBox=await page.locator(".r2-editor").boundingBox();
+    assert.ok(taskBox && sourceBox);
+    if(viewport.width>900)assert.ok(sourceBox.x<taskBox.x,"editor must precede task pane on desktop");
+    else assert.ok(taskBox.y<sourceBox.y,"compact task must precede editor on narrow screens");
+    assert.equal(await page.locator(".r2-terminal").isVisible(),true);
+    // Phase 05: the original source-authored test suite stays unique and in Code.
+    assert.equal(await page.locator(".r2-test-desk #external-tests").count(),1);
+    assert.equal(await page.locator(".r2-test-cases-pane #external-test-cases li").count(),4);
+    assert.equal(await page.locator("#r2-test-case-count").innerText(),"4 source test cases");
+    assert.equal(await page.locator(".r2-test-results-pane #external-test-local-output").count(),1);
+    assert.equal(await page.locator(".r2-runner-diagnostics #local-runner-diagnostic-output").count(),1);
+    assert.equal(await page.locator("#r2-test-verification").innerText(),"Not run");
+    await page.locator("#r2-tests-jump").click();
+    assert.equal(await page.locator("#r2-test-desk").getAttribute("open"),"");
+    assert.equal(await page.locator("#external-test-heading").isVisible(),true);
+    const originalSource=await page.locator("#scratch-code").inputValue();
+    await page.locator("#external-focus-case").selectOption("Outside tolerance");
+    assert.ok((await page.locator("#external-focus-preview").textContent()).includes("isclose(1, 1.1, 1e-3)"));
+    assert.ok(!(await page.locator("#external-focus-preview").textContent()).includes("isclose(0.1 + 0.2"));
+    assert.equal(await page.locator("#scratch-code").inputValue(),originalSource);
+    // A third-party embed never authorizes Julia Test execution or an invented PASS.
+    await page.locator("#external-test-local-run").click();
+    assert.match(await page.locator("#external-test-local-status").innerText(),/Disable JDoodle/);
+    assert.match(await page.locator("#r2-test-verification").innerText(),/Disable JDoodle/);
+    assert.equal(await page.locator("#external-test-local-output").innerText(),"");
     assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:v1")),before);
     if(viewport.width<=767){
       assert.equal(await page.locator("#nav-items").isVisible(),false);
       await page.locator("#r2-course-open").click();
       assert.equal(await page.locator("#nav-items").isVisible(),true);
       await page.locator('.lesson-link[href="#lesson/09"]').click();
-      await page.locator('button[data-r2-stage="code"]').click();
+      await openLegacyWorkspace(page);
       assert.equal(await page.locator("#scratch-code").inputValue(),'println("studio draft")');
     }
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
