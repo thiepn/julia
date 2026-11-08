@@ -189,7 +189,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     });
     select(0);
   };
-  reading.append(node("p","r2-lesson-step","Understand"),originalHeading,get("lesson-theory"));
+  reading.append(originalHeading,get("lesson-theory"));
   examplePane.append(node("p","r2-lesson-step r2-lesson-step-code","See it in Julia"),exampleHead,workedHeading,workedNav,workedTitle,examplePre,
     workedOutput,workedExplanation,exampleActions);
   learnPanel.replaceChildren(reading,examplePane);
