@@ -1,5 +1,9 @@
 name: Julia Lab checks
 on:
+  # Dependent draft PR #18 targets Phase 01, not main. Run the same exact-head
+  # certification on pushes to this scoped integration branch only.
+  push:
+    branches: [feature/julia-phase02-lesson-flow-20261108]
   pull_request:
     branches: [main, feature/julia-amp-ue02-numerical-workshops]
     paths:
