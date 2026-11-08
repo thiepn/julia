@@ -1735,3 +1735,59 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   /* Preserve readable three-destination navigation on a 320px screen. */
   .r2-global-nav button{padding:8px 6px}
 }
+
+/* Phase 02 — progressive learning without altering any canonical question or source node. */
+.r2-lesson-step{
+  margin:0 0 10px;font-size:12px;line-height:1.4;font-weight:800;
+  text-transform:uppercase;letter-spacing:.095em;color:var(--accent)
+}
+.r2-lesson-step-code{padding:17px 18px 0;margin:0;color:#c8d4e8}
+.r2-learn-continue{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  border:1px solid var(--line);border-radius:8px;background:var(--surface);
+  padding:16px 20px;margin:18px 0 0
+}
+.r2-learn-continue .r2-button{min-height:44px}
+.r2-further-shortcut{
+  display:inline-flex;align-items:center;min-height:44px;margin:6px 0 22px;
+  font-size:14px;font-weight:700;color:var(--accent);text-underline-offset:4px
+}
+.r2-further-study{margin:0 auto 38px;max-width:1260px;scroll-margin-top:120px;min-width:0}
+.r2-further-study h2{font-size:clamp(23px,2.8vw,30px);line-height:1.3;margin:0 0 6px}
+.r2-further-intro{color:var(--muted);font-size:15px;line-height:1.65;max-width:72ch;margin:0 0 17px}
+.r2-study-disclosure{
+  border:1px solid var(--line);border-radius:8px;background:var(--surface);
+  margin:0 0 10px;min-width:0;overflow:visible
+}
+.r2-study-disclosure[open]{border-color:var(--accent);padding-bottom:2px}
+.r2-study-summary{
+  display:flex;align-items:center;justify-content:space-between;gap:8px 22px;
+  flex-wrap:wrap;list-style:none;cursor:pointer;min-height:66px;
+  padding:15px 22px;color:var(--ink)
+}
+.r2-study-summary::-webkit-details-marker{display:none}
+.r2-study-summary:after{
+  content:"+";font-size:23px;line-height:1;font-weight:400;
+  color:var(--accent);margin-left:auto;order:1
+}
+.r2-study-disclosure[open]>.r2-study-summary:after{content:"−"}
+.r2-study-summary strong{font-size:17px;font-weight:750}
+.r2-study-description{font-size:13px;line-height:1.5;color:var(--muted);flex:1 1 230px}
+.r2-study-summary:focus-visible,.r2-further-shortcut:focus-visible{
+  outline:3px solid var(--accent);outline-offset:3px
+}
+.r2-study-disclosure>section{margin:0 auto 12px;max-width:100%}
+.r2-study-disclosure .r2-fundamentals,.r2-study-disclosure #r2-learning-paths,
+.r2-study-disclosure #r2-assessments,.r2-study-disclosure #r2-transfer,
+.r2-study-disclosure #r2-variants{border-left:0;border-right:0;border-bottom:0;border-radius:0}
+@media(max-width:767px){
+  .r2-learn-continue{align-items:stretch;padding:14px 15px;gap:10px;flex-wrap:wrap}
+  .r2-learn-continue .r2-button{width:100%}
+  .r2-study-summary{align-items:flex-start;padding:13px 14px;gap:3px 10px}
+  .r2-study-summary strong{font-size:16px}
+  .r2-study-description{flex-basis:100%;font-size:13px;order:2}
+  .r2-study-summary:after{order:1}
+}
+@media print{
+  .r2-study-disclosure{break-inside:avoid}
+}
