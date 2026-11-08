@@ -5,7 +5,7 @@ on:
   push:
     branches: [feature/julia-phase02-lesson-flow-20261108]
   pull_request:
-    branches: [main, feature/julia-amp-ue02-numerical-workshops]
+    branches: [main, feature/julia-amp-ue02-numerical-workshops, feature/julia-phase01-navigation-20261105]
     paths:
       - "index.html"
       - "styles.css"
