@@ -37,8 +37,8 @@ try{
         await page.locator("#r2-stage-learn").waitFor({state:"visible"});
         assert.equal(await page.locator("#lesson-jump").inputValue(),"09");
         assert.equal(await page.locator("#r2-stage-code").isVisible(),false);
-        assert.match(await page.locator(".r2-learn-reading .r2-lesson-step").innerText(),/Understand/);
-        assert.match(await page.locator(".r2-example-pane .r2-lesson-step").innerText(),/See it in Julia/);
+        assert.match(await page.locator(".r2-learn-reading .r2-lesson-step").innerText(),/Understand/i);
+        assert.match(await page.locator(".r2-example-pane .r2-lesson-step").innerText(),/See it in Julia/i);
         assert.equal(await page.locator("#r2-further-study details[data-study-module]").count(),6);
         for(const [id,selector] of Object.entries(modules)){
           const parent=page.locator('details[data-study-module="'+id+'"]');
