@@ -33,6 +33,7 @@ try{
    localStorage.setItem("amp-julia-learn:algorithms-v1",'{"contracts-1":"1"}');
   });
   await page.reload();
+  await page.locator('[data-study-module="assessments"] > summary').click();
   await page.locator("#r2-assessments").waitFor({state:"visible"});
   assert.equal(await page.locator("#r2-assessment-select option").count(),5);
   for(const item of ASSESSMENTS){
@@ -66,7 +67,8 @@ try{
    assert.equal(saved[item.remediation[0].id],String(item.remediation[0].correct));
   }
   assert.match(await page.locator("#r2-assessment-progress").innerText(),/15 of 15 answered across cases/);
-  await page.reload();await page.locator("#r2-assessments").waitFor({state:"visible"});
+  await page.reload();
+  await page.locator('[data-study-module="assessments"] > summary').click();await page.locator("#r2-assessments").waitFor({state:"visible"});
   await page.locator("#r2-assessment-select").selectOption("elimination");
   assert.match(await page.locator("#r2-assessment-progress").innerText(),/3 of 3 case steps answered/);
   assert.deepEqual(await page.evaluate(()=>[

@@ -35,6 +35,7 @@ try{
    localStorage.setItem("amp-julia-learn:transfer-v1",'{"nonuniform-step-1":"2"}');
   });
   await page.reload();
+  await page.locator('[data-study-module="variants"] > summary').click();
   await page.locator("#r2-variants").waitFor({state:"visible"});
   assert.equal(await page.locator("#r2-variants-select option").count(),5);
   for(const c of VARIANT_CASES){
@@ -72,7 +73,8 @@ try{
   assert.equal(bytes.includes("PRIVATE DRAFT CANARY"),false);
   assert.equal(bytes.includes("amp-julia-lab:draft"),false);
   assert.match(await page.locator("#r2-variants-export-status").innerText(),/validated latest answers/);
-  await page.reload();await page.locator("#r2-variants").waitFor({state:"visible"});
+  await page.reload();
+  await page.locator('[data-study-module="variants"] > summary').click();await page.locator("#r2-variants").waitFor({state:"visible"});
   await page.locator("#r2-variants-select").selectOption("euler");
   assert.match(await page.locator("#r2-variants-progress").innerText(),/3 of 3 answers saved/);
   assert.deepEqual(await page.evaluate(()=>[

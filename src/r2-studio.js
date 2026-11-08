@@ -190,7 +190,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     select(0);
   };
   reading.append(originalHeading,get("lesson-theory"));
-  examplePane.append(exampleHead,workedHeading,workedNav,workedTitle,examplePre,
+  examplePane.append(node("p","r2-lesson-step r2-lesson-step-code","See it in Julia"),exampleHead,workedHeading,workedNav,workedTitle,examplePre,
     workedOutput,workedExplanation,exampleActions);
   learnPanel.replaceChildren(reading,examplePane);
   learnPanel.classList.add("r2-learn-paper");
@@ -208,9 +208,57 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const transfer=initTransferAssessmentView({doc,mount:transferMount});
   const variantMount=node("section","r2-variant-host");
   const variants=initVariantReviewView({doc,mount:variantMount});
-  learn.append(learnPanel,pathsMount,fundamentalsMount,algorithmMount,assessmentMount,transferMount,variantMount,node("footer","r2-stage-footer",
+  // Keep the canonical authored L1–L9 modules mounted exactly once. Native
+  // disclosures shorten the first reading without hiding or changing source data.
+  // Their open state is presentation-only and is never written to learner storage.
+  const studyModules=[
+    {id:"paths",title:"Targeted revision",description:"Suggestions from your saved L4/L5 answers",mount:pathsMount},
+    {id:"fundamentals",title:"Julia fundamentals",description:"Topic suggested for this lesson",mount:fundamentalsMount},
+    {id:"algorithms",title:"Algorithmic thinking",description:"Topic suggested for this lesson",mount:algorithmMount},
+    {id:"assessments",title:"Multistep AMP assessments",description:"Independent cases across the course",mount:assessmentMount},
+    {id:"transfer",title:"Mathematical transfer problems",description:"Independent cases across the course",mount:transferMount},
+    {id:"variants",title:"Numerical variants",description:"Independent cases and saved-answer review",mount:variantMount}
+  ];
+  const furtherStudy=node("section","r2-further-study");
+  furtherStudy.id="r2-further-study";
+  furtherStudy.setAttribute("aria-labelledby","r2-further-study-title");
+  furtherStudy.append(node("h2",null,"Go deeper"),
+    node("p","r2-further-intro","Optional learning paths and original AMP exercises. Open only what you need; all source material, responses and drafts remain available."));
+  furtherStudy.querySelector("h2").id="r2-further-study-title";
+  const disclosureMap=new Map();
+  for(const module of studyModules){
+    const disclosure=node("details","r2-study-disclosure");
+    disclosure.dataset.studyModule=module.id;
+    const summary=node("summary","r2-study-summary");
+    const title=node("strong",null,module.title);
+    const description=node("span","r2-study-description",module.description);
+    summary.append(title,description);
+    disclosure.append(summary,module.mount);
+    furtherStudy.append(disclosure);
+    disclosureMap.set(module.id,{disclosure,description});
+  }
+  const learnFooter=node("footer","r2-stage-footer r2-learn-continue",
     '<span id="r2-reading-source"></span>'+
-    '<button type="button" data-r2-forward="check" class="r2-button r2-primary">Start quiz →</button>'));
+    '<button type="button" data-r2-forward="check" class="r2-button r2-primary">Start quiz →</button>');
+  const furtherShortcut=node("a","r2-further-shortcut","Explore optional study material ↓");
+  furtherShortcut.href="#r2-further-study";
+  // This anchor scrolls within the lesson; it does not create a new application route.
+  furtherShortcut.addEventListener("click",event=>{
+    event.preventDefault();
+    furtherStudy.scrollIntoView({block:"start",behavior:"auto"});
+    furtherStudy.querySelector("h2").focus({preventScroll:true});
+  });
+  furtherStudy.querySelector("h2").tabIndex=-1;
+  learn.append(learnPanel,learnFooter,furtherShortcut,furtherStudy);
+  const syncStudyModules=(lessonChanged)=>{
+    for(const {disclosure} of disclosureMap.values())if(lessonChanged)disclosure.open=false;
+    for(const [id,selector] of [["fundamentals","#r2-fundamentals-topic"],["algorithms","#r2-algorithms-topic"]]){
+      const picker=doc.querySelector(selector);
+      const selected=picker?.selectedOptions?.[0]?.textContent?.trim();
+      disclosureMap.get(id).description.textContent=selected?
+        "Suggested for this lesson: "+selected:"Topics and worked examples";
+    }
+  };
 
   // The original question nodes, evaluator and feedback stay inside checkPanel.
   // The question index only reflects that DOM's selected/correct/retry state.
@@ -842,6 +890,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     assessments.showLesson(lesson.id);
     transfer.showLesson(lesson.id);
     variants.showLesson(lesson.id);
+    syncStudyModules(currentLesson!==id);
     appliedQuiz.showLesson(lesson.id);
     refreshStudyTask();
     get("r2-example-feedback").textContent="";

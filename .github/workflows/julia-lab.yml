@@ -1,7 +1,11 @@
 name: Julia Lab checks
 on:
+  # Dependent draft PR #18 targets Phase 01, not main. Run the same exact-head
+  # certification on pushes to this scoped integration branch only.
+  push:
+    branches: [feature/julia-phase02-lesson-flow-20261108]
   pull_request:
-    branches: [main, feature/julia-amp-ue02-numerical-workshops]
+    branches: [main, feature/julia-amp-ue02-numerical-workshops, feature/julia-phase01-navigation-20261105]
     paths:
       - "index.html"
       - "styles.css"
@@ -167,6 +171,8 @@ jobs:
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install chromium
+      - name: Phase 02 concise lessons, keyboard disclosures and learning continuity
+        run: PHASE02_SCREENSHOTS=1 node tests/phase02-learning-flow-browser.mjs
       - name: L1 learning-only navigation and preserved learner records
         run: node tests/learning-first-browser.mjs
       - name: L3 applied quiz mobile and desktop acceptance
@@ -196,6 +202,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: r2-visual-qa
-          path: r2-screenshots/
+          path: |
+            r2-screenshots/
+            phase02-screenshots/
           if-no-files-found: ignore
           retention-days: 7

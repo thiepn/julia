@@ -34,6 +34,7 @@ try{
    localStorage.setItem("amp-julia-learn:assessments-v1",'{"quadrature-step-1":"2"}');
   });
   await page.reload();
+  await page.locator('[data-study-module="transfer"] > summary').click();
   await page.locator("#r2-transfer").waitFor({state:"visible"});
   assert.equal(await page.locator("#r2-transfer-select option").count(),5);
   for(const c of TRANSFER_CASES){
@@ -66,7 +67,8 @@ try{
    assert.equal(saved[c.justify.id],String(c.justify.key));
   }
   assert.match(await page.locator("#r2-transfer-status").innerText(),/20 of 20 answered across all transfer cases/);
-  await page.reload();await page.locator("#r2-transfer").waitFor({state:"visible"});
+  await page.reload();
+  await page.locator('[data-study-module="transfer"] > summary').click();await page.locator("#r2-transfer").waitFor({state:"visible"});
   await page.locator("#r2-transfer-select").selectOption("regression");
   assert.match(await page.locator("#r2-transfer-status").innerText(),/4 of 4 answered in this case/);
   assert.deepEqual(await page.evaluate(()=>[
