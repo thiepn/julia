@@ -40,6 +40,7 @@ try{
    localStorage.setItem("amp-julia-learn:algorithms-v1",JSON.stringify({"invariants-2":wrongInv}));
   },{wrongVar,wrongInv});
   await page.reload();
+  await page.locator('[data-study-module="paths"] > summary').click();
   await page.locator("#r2-learning-paths").waitFor({state:"visible"});
   assert.equal(await page.locator("#r2-paths-paths .r2-paths-sequence").count(),2);
   assert.equal(await page.locator("#r2-paths-paths .r2-paths-unit").count(),14);
@@ -67,10 +68,12 @@ try{
    Object.keys(localStorage).filter(k=>k.includes("paths"))
   ]);
   assert.deepEqual(stored,['{"01:0":2}',"personal draft",'{"01-predict":"1"}',[]]);
-  await page.reload();await page.locator("#r2-learning-paths").waitFor({state:"visible"});
+  await page.reload();
+  await page.locator('[data-study-module="paths"] > summary').click();await page.locator("#r2-learning-paths").waitFor({state:"visible"});
   assert.match(await page.locator("#r2-paths-summary").innerText(),/0 topics with incorrect answers/);
   await page.locator("#r2-lesson-next").click();
   await page.waitForFunction(()=>document.querySelector("#lesson-jump")?.value==="02");
+  await page.locator('[data-study-module="paths"] > summary').click();
   assert.equal(await page.locator("#r2-learning-paths").isVisible(),true);
   await page.locator("[data-r2-stage=check]").click();
   assert.equal(await page.locator("#r2-learning-paths").isVisible(),false);
