@@ -10,10 +10,16 @@ No account, database, hosted backend, paid API, or compilation step is needed to
    - **Windows:** `py -m http.server 5173`
    - **macOS/Linux:** `python3 -m http.server 5173`
 2. Open **http://localhost:5173/** in a browser. Use **Course** to continue or choose one of the 16 lessons.
-3. In a lesson, follow **Learn → Quiz → Apply**. Learn includes original worked Julia examples, fundamentals, algorithms, prerequisite paths, and progressively deeper L3–L9 numerical questions. Quiz records your latest choices; Apply opens source-backed exercises and numerical experiments, with the original Julia editor available on demand.
+3. In a lesson, follow **Learn → Quiz → Apply**. Learn starts with the canonical concept explanation and worked Julia example, followed immediately by the Quiz action. Six native expandable sections underneath keep all original fundamentals, algorithms, prerequisite paths and deeper L4–L9 numerical work available on demand; the suggested fundamentals and algorithm topics follow the existing lesson mappings. Quiz records your latest choices; Apply opens source-backed exercises and numerical experiments, with the original Julia editor available on demand.
 4. Open **Exam Prep** for independent mixed-semester practice, not official assessment. **Resources** contains offline access, portable course backup/restore, Julia setup, original editor access and submission utilities. The complete 16-lesson directory lives in Course.
 
 **What actually runs:** Read-only Julia snippets and expected outputs in Learn are reference material verified against real Julia in automated tests; they do **not** execute in your browser or grade code you type. Numerical diagrams use separate browser-side calculations. For your own Julia programs, use VS Code/Julia or the optional loopback-only local Julia runner described below. External compiler services are optional and not guaranteed.
+
+## Lesson reading layout (Phase 02 draft)
+
+The initial Learn view now prioritizes **Understand → See it in Julia → Start quiz**, with optional **Go deeper** disclosures for the six existing modules: targeted revision, fundamentals, algorithms, multistep assessments, transfer and variants. These contain the **same source-authored materials and saved answers** as before; opening and closing disclosures does not create, remove or modify browser storage records. Suggested fundamentals and algorithm topics are derived from the original lesson-to-topic selectors, not newly inferred recommendations.
+
+On lesson changes, all optional disclosures close to keep the next lesson concise. Targeted revision links open the correct disclosure before moving focus to the original question. Quiz and Apply, the canonical Julia editor, runner, original URL hashes, offline lessons and portable backup/restore behavior are unchanged. The full original learning modules remain accessible; no assessment grades or mastery scores are inferred from these presentation changes.
 
 ## Preserve your work
 
