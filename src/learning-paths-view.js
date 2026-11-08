@@ -34,6 +34,10 @@ export function initLearningPathsView({doc,mount}){
   select.value=unit.id;
   select.dispatchEvent(new doc.defaultView.Event("change",{bubbles:true}));
   const mount=doc.getElementById(prefix);
+  // The new lesson view progressively discloses advanced modules. A targeted
+  // revision action must reveal its original destination before scrolling/focus.
+  const disclosure=mount?.closest(".r2-study-disclosure");
+  if(disclosure)disclosure.open=true;
   const question=mount?.querySelectorAll(".r2-fundamentals-question")[index];
   const target=question||mount;
   if(!target)return;
