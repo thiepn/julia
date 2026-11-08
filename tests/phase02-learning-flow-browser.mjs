@@ -37,7 +37,7 @@ try{
         await page.locator("#r2-stage-learn").waitFor({state:"visible"});
         assert.equal(await page.locator("#lesson-jump").inputValue(),"09");
         assert.equal(await page.locator("#r2-stage-code").isVisible(),false);
-        assert.match(await page.locator(".r2-learn-reading .r2-lesson-step").innerText(),/Understand/i);
+        assert.match(await page.locator(".r2-learn-reading .section-title h2").innerText(),/Understand/i);
         assert.match(await page.locator(".r2-example-pane .r2-lesson-step").innerText(),/See it in Julia/i);
         assert.equal(await page.locator("#r2-further-study details[data-study-module]").count(),6);
         for(const [id,selector] of Object.entries(modules)){
@@ -112,7 +112,7 @@ try{
         await page.reload();
         await page.locator("#r2-stage-learn").waitFor({state:"visible"});
         assert.equal(await page.evaluate(()=>localStorage.getItem("amp-julia-lab:draft:v1:09")),savedDraft);
-        assert.equal(await page.locator("#r2-further-study details").count(),6);
+        assert.equal(await page.locator("#r2-further-study > details[data-study-module]").count(),6);
         const excess=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
         assert.ok(excess<=2,theme+" "+width+" overflow "+excess);
         assert.deepEqual(errors,[]);
