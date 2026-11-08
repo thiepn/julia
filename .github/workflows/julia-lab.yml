@@ -187,6 +187,8 @@ jobs:
         run: R2_SCREENSHOTS=1 node tests/r2-browser.mjs
       - name: Phase 01 navigation, routes, history and saved-data acceptance
         run: node tests/navigation-phase01-browser.mjs
+      - name: Phase 02 concise lessons, keyboard disclosures and learning continuity
+        run: PHASE02_SCREENSHOTS=1 node tests/phase02-learning-flow-browser.mjs
       - name: R2 legacy original Chromium learner acceptance (no Julia install needed)
         run: node tests/browser.mjs
       - name: R2 backup and restore navigation acceptance
@@ -196,6 +198,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: r2-visual-qa
-          path: r2-screenshots/
+          path: |
+            r2-screenshots/
+            phase02-screenshots/
           if-no-files-found: ignore
           retention-days: 7
