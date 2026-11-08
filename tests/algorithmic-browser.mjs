@@ -31,6 +31,7 @@ try{
    localStorage.setItem("amp-julia-learn:quiz-v1",'{"01-predict":"1"}');
   });
   await page.reload();
+  await page.locator('[data-study-module="algorithms"] > summary').click();
   await page.locator("#r2-stage-learn").waitFor({state:"visible"});
   assert.equal(await page.locator("#r2-algorithms-topic option").count(),6);
   for(const chapter of FUNDAMENTALS){
@@ -58,6 +59,7 @@ try{
    assert.equal(data[chapter.checks[0].id],String(correct));
   }
   await page.reload();
+  await page.locator('[data-study-module="algorithms"] > summary').click();
   await page.locator("#r2-stage-learn").waitFor({state:"visible"});
   await page.locator("#r2-algorithms-topic").selectOption("invariants");
   assert.match(await page.locator("#r2-algorithms-progress").innerText(),/1 of 2 correct/);
@@ -68,6 +70,7 @@ try{
   ]),['{"01:0":2}',"saved learner source",'{"01-predict":"1"}']);
   await page.locator("#r2-lesson-next").click();
   await page.waitForFunction(()=>document.querySelector("#lesson-jump")?.value==="02");
+  await page.locator('[data-study-module="algorithms"] > summary').click();
   assert.equal(await page.locator("#r2-algorithms-topic").inputValue(),"vector-scans");
   await page.locator("[data-r2-stage=check]").click();
   assert.equal(await page.locator("#r2-algorithms").isVisible(),false);
