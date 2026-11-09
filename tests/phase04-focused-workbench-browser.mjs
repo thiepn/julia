@@ -80,7 +80,7 @@ try{
             // Verify original runner invocation without inventing a successful
             // execution when the JDoodle embed must first be disabled.
             await page.locator("#r2-run").click();
-            assert.match(await page.locator("#local-runner-status").innerText(),/Disable JDoodle/i);
+            assert.match(await page.locator("#local-runner-status").innerText(),/Disable (the )?JDoodle/i);
             assert.equal(await page.locator("#local-runner-output").innerText(),outputBefore);
             assert.equal(await page.locator("#r2-test-head-status").innerText(),"Not run",
               "Running a draft is never a Julia Test PASS");
@@ -95,7 +95,7 @@ try{
             assert.equal(await page.locator("#r2-test-desk").evaluate(el=>el.open),true);
             assert.equal(await page.locator("#external-test-cases li").count(),4);
             await page.locator("#external-test-local-run").click();
-            await page.waitForFunction(()=>document.querySelector("#r2-test-head-status")?.textContent?.includes("Disable JDoodle"));
+            await page.waitForFunction(()=>/Disable (the )?JDoodle/i.test(document.querySelector("#r2-test-head-status")?.textContent||""));
             assert.equal(await page.locator("#r2-test-head-status").innerText(),
               await page.locator("#external-test-local-status").innerText(),
               "Compact test status mirrors only canonical local Julia Test evidence");
