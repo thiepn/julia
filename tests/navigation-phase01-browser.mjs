@@ -33,11 +33,13 @@ try{
         assert.equal(await page.evaluate(()=>document.activeElement?.id),"r2-mixed-open","Keyboard Tab reaches Exam Prep");
         assert.equal(await page.locator("#r2-mixed-open").evaluate(el=>el.matches(":focus-visible")),true,"Keyboard focus is visible");
         const navBounds=await page.evaluate(()=>({
-          brand:document.querySelector(".brand").getBoundingClientRect().right,
+          brand:document.querySelector(".brand").getBoundingClientRect(),
           nav:document.querySelector(".r2-global-nav").getBoundingClientRect(),
           width:innerWidth
         }));
-        assert.ok(navBounds.nav.left>=navBounds.brand-1,"Brand and navigation must not overlap");
+        const separated=(navBounds.nav.left>=navBounds.brand.right-1)||
+          (navBounds.nav.top>=navBounds.brand.bottom-1);
+        assert.ok(separated,"Brand and navigation must not overlap, whether side-by-side or stacked");
         assert.ok(navBounds.nav.right<=navBounds.width+1,"Navigation must fit viewport");
         assert.deepEqual(await page.locator(".r2-stage-tabs button").allInnerTexts(),["01 Learn","02 Quiz","03 Apply"]);
         assert.equal(await page.locator(".lesson-link").count(),16);
