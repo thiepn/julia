@@ -417,3 +417,26 @@ No new accounts, analytics, tracking or external design dependencies.
 The R2 interface reorganizes the **existing** 16 lesson IDs and original question and coding data into Course / Mixed practice and four in-lesson stages: Learn, Check, Code and Explore. The original lesson HTML IDs are retained and their nodes are moved (not copied) by `src/r2-studio.js`. Canonical drafts/progress/backup and the local Julia execution engine are unchanged. The executable code editor and genuine local-runner status/output now share the Code workspace; numerical labs are selected in Explore. ILIAS PDF/ZIP, offline, JDoodle privacy and backup are available from Tools & settings. The legacy styles are consolidated into the one active `styles.css` file; `studio.css` is no longer loaded or precached.
 
 R2 has no simulated execution, mastery or university grade. Lesson deep links remain `#lesson/01` through `#lesson/16`; default navigation is `#course`.
+
+## Visual language — Numerical Field Notes (Phase 03 draft)
+
+The user interface uses warm-paper light and charcoal dark semantic colors in `styles.css`:
+`--canvas`, `--surface`, `--surface-muted`, `--ink`, `--muted`, `--line`,
+`--accent`, `--accent-soft`, `--focus`, `--success`, `--warning`, `--error`,
+and code-specific `--code-bg`, `--code-ink`, `--code-muted`, `--workbench`,
+`--workbench-head`, `--code-border`. These are UI semantics only: existing
+mathematical SVG series colors and authentic Julia result states are independent.
+
+Headings use a locally available editorial serif stack, control text uses a
+system sans stack, and code uses an existing monospaced fallback stack. No new
+font assets or CDNs are required, so the existing offline service worker needs
+no new cache keys. Source Serif 4 / Source Sans 3 / JuliaMono remain optional
+future typography candidates, not silently downloaded dependencies.
+
+Mobile ≤450 px uses a two-row 108px sticky header, keeping Course / Exam Prep /
+Resources at legible font sizes. All original learning logic, saved answer and
+draft formats, three primary destinations, source material, Julia runner, offline
+behavior and backups remain unchanged. Native `<details>` sections and mathematical
+charts retain their original DOM and authored content. Visual certification is in
+`tests/phase03-visual-a11y-browser.mjs` and the existing regression suites.
+
