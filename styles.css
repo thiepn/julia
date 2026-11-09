@@ -2009,6 +2009,12 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 @media(max-width:359px){
   .r2-global-nav button{font-size:13px;padding:7px 3px}
 }
+@media(prefers-color-scheme:dark){
+  /* The light accent button has dark foreground in the dark theme. */
+  .r2-primary,.primary{color:#1A1F28;background:var(--accent);border-color:var(--accent)}
+  .r2-primary:hover,.primary:hover{color:#1A1F28;background:var(--accent)}
+  .r2-global-nav button[aria-current="page"]{color:#F5F2EB;background:#332847}
+}
 @media(prefers-reduced-motion:reduce){
   .r2-study-summary,.r2-course-list .lesson-link{transition:none}
 }
