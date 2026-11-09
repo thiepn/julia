@@ -2077,3 +2077,77 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
      remains unchanged for Learn, Quiz and Apply. */
   body[data-r2-stage="code"] .r2-mobile-action{display:none!important}
 }
+
+
+/* Phase 05 — execution readiness is strictly explanatory.
+   Original local-runner status nodes remain the only live execution output. */
+.r2-run-readiness{
+  background:var(--workbench-head);color:var(--code-ink);
+  border-bottom:1px solid var(--code-border);padding:14px 17px 16px;
+  display:grid;grid-template-columns:minmax(0,1fr) auto;
+  gap:14px;align-items:center;min-width:0
+}
+.r2-readiness-summary{min-width:0}
+.r2-readiness-summary h3{font-family:var(--type-ui);font-size:15px;
+  line-height:1.45;letter-spacing:0;margin:0 0 4px;color:var(--code-ink)}
+#r2-readiness-text{color:var(--code-ink);line-height:1.55;font-size:14px;
+  margin:0;overflow-wrap:anywhere}
+.r2-readiness-evidence{font-size:12px;line-height:1.5;
+  color:var(--code-muted);margin:7px 0 0}
+.r2-readiness-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;
+  min-width:0}
+.r2-readiness-actions .r2-button{font-size:13px;min-height:44px;
+  padding:9px 11px;border-radius:4px}
+.r2-readiness-actions #r2-review-task{color:#E7D9FF;border:1px solid var(--code-border)}
+.r2-editor .r2-first-run-steps{
+  border-top:1px solid var(--code-border);border-bottom:1px solid var(--code-border);
+  background:var(--workbench)
+}
+.r2-first-run-steps>summary,.r2-external-guide>summary{
+  padding:12px 15px;min-height:44px;cursor:pointer;
+  font-size:14px;font-weight:650;line-height:1.55
+}
+.r2-first-run-steps>summary{color:var(--code-ink)}
+.r2-first-run-content{padding:2px 18px 20px;color:var(--code-ink);
+  line-height:1.68;font-size:14px}
+.r2-first-run-content ol{margin:8px 0 13px;padding-left:22px}
+.r2-first-run-content li{margin:9px 0}
+.r2-first-run-content p{margin:10px 0 0;color:var(--code-muted)}
+.r2-first-run-content strong{color:var(--code-ink)}
+.r2-first-run-content code,.r2-external-content code{
+  white-space:normal;overflow-wrap:anywhere;font-family:var(--type-code)
+}
+.r2-external-guide{border-top:1px solid var(--code-border);
+  background:var(--workbench);color:var(--code-ink);min-width:0}
+.r2-external-guide>summary{color:var(--code-ink)}
+.r2-external-guide[open]>summary{border-bottom:1px solid var(--code-border)}
+.r2-external-content{padding:7px 17px 20px;line-height:1.65;
+  font-size:14px;max-width:78ch;overflow-wrap:anywhere}
+.r2-external-content p{margin:9px 0;color:var(--code-ink)}
+.r2-first-run-steps>summary:focus-visible,
+.r2-external-guide>summary:focus-visible{
+  outline:3px solid #F6C15D;outline-offset:-3px
+}
+@media(max-width:1080px){
+  .r2-run-readiness{grid-template-columns:minmax(0,1fr)}
+  .r2-readiness-actions{justify-content:flex-start}
+}
+@media(max-width:767px){
+  .r2-editor .r2-run-readiness{order:0;padding:13px 12px}
+  .r2-readiness-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .r2-readiness-actions .r2-button{white-space:normal;overflow-wrap:break-word}
+  .r2-readiness-actions #r2-review-task{grid-column:1/-1}
+  .r2-editor .r2-external-guide{order:6}
+  .r2-editor .r2-runner-setup{order:8}
+  .r2-editor>.compiler{order:9}
+  .r2-first-run-content{padding:4px 13px 17px}
+}
+@media(max-width:280px){
+  /* A 390 px device at 200% text zoom may expose a very narrow CSS viewport. */
+  :root{--r2-header:154px}
+  .topbar{grid-template-rows:42px 97px;padding:6px 8px 9px}
+  .r2-global-nav{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .r2-global-nav button:last-child{grid-column:1/-1}
+  .r2-global-nav button{font-size:12px;white-space:normal;min-height:42px}
+  .r2-readiness-actions{grid-template-columns:minmax(0,1fr)}
+}
