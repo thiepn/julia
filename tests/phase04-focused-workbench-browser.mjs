@@ -105,9 +105,13 @@ try{
             const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
             assert.ok(overflow<=2,engine+" "+theme+" "+width+" horizontal overflow "+overflow);
             assert.deepEqual(errors,[],engine+" "+theme+" "+width+" browser errors");
-            await page.reload();
-            await page.locator("#r2-stage-learn").waitFor({state:"visible"});
-            await openLegacyWorkspace(page);
+            // A fresh document on the canonical lesson route is the actual
+            // persistence check; the prior legacy workspace may leave a Code
+            // hash and must not be assumed to reset into the Learn stage.
+            await page.goto(origin+"/#lesson/09");
+            await page.locator("#lesson-main").waitFor({state:"visible"});
+            if(!await page.locator("#r2-stage-code").isVisible())
+              await openLegacyWorkspace(page);
             assert.equal(await page.locator("#scratch-code").inputValue(),
               'println("phase04 retained source")',"Draft persists across browser reload");
             console.log("PHASE04 WORKBENCH PASS",engine,theme,width,
