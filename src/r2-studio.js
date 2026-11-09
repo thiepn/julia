@@ -1,4 +1,5 @@
 import {JULIA_TOUCH_KEYS,insertJuliaTouchKey} from "./touch-code.js";
+import {readEmbedUrl} from "./checks.js";
 import {transferForLesson} from "./transfer-cases.js";
 import {examplesForLesson} from "./learning-examples.js";
 import {initLearningQuizView} from "./learning-quiz-view.js";
@@ -291,6 +292,16 @@ export function initR2Studio({doc=document,lessons,navigate}){
       '<button id="r2-run" type="button" class="r2-button r2-primary">Run Julia</button>'+
       '<button id="r2-tests-jump" type="button" class="r2-button r2-secondary" hidden>Julia tests</button>'+
       '<button id="r2-exports" type="button" class="r2-button r2-text">Export & backup</button>'),
+    readiness=node("section","r2-run-readiness",
+      '<div class="r2-readiness-summary"><h3 id="r2-readiness-heading">Execution readiness</h3>'+
+      '<p id="r2-readiness-text">Checking local execution requirements…</p>'+
+      '<p class="r2-readiness-evidence">A saved draft is not a Julia run. A Julia run is not a passing Julia Test.</p></div>'+
+      '<div class="r2-readiness-actions">'+
+      '<button type="button" id="r2-first-run" class="r2-button r2-secondary">Set up local Julia</button>'+
+      '<button type="button" id="r2-run-elsewhere" class="r2-button r2-secondary">Run elsewhere</button>'+
+      '<button type="button" id="r2-review-task" class="r2-button r2-text">Review task criteria</button></div>'),
+    externalGuide=node("details","r2-external-guide"),
+    setupSteps=node("details","r2-first-run-steps"),
     editorWell=node("div","r2-editor-well"),
     lineNumbers=node("div","r2-line-numbers"),
     editorFoot=node("div","r2-editor-foot",
@@ -372,9 +383,24 @@ export function initR2Studio({doc=document,lessons,navigate}){
       '<h3 id="r2-runner-diagnostics-heading">Local Julia environment diagnostics</h3>');
     diagnosticPane.setAttribute("aria-labelledby","r2-runner-diagnostics-heading");
     diagnosticPane.append(diagnosticStatus,diagnosticOutput);
-    runnerSetup.append(node("summary",null,"Local Julia connection"),runner,diagnosticPane);
+    setupSteps.append(node("summary",null,"First-time setup steps"),
+      node("div","r2-first-run-content",
+        '<ol><li>On the computer running this browser, install Julia 1.11+ and Node.js 22+.</li>'+
+        '<li>From the Julia Learn repository root, run <code>node local-runner/server.mjs</code> in a terminal. It binds only to <code>127.0.0.1:8765</code>.</li>'+
+        '<li>Choose <strong>Disable JDoodle and reload for local execution</strong> below before entering the private session code printed by that terminal.</li>'+
+        '<li>Enter the session code here and select <strong>Check local Julia environment</strong>. This does not install packages or run your draft.</li>'+
+        '<li>Review and trust your source before pressing Run Julia. It executes with your computer account permissions, not inside a sandbox.</li></ol>'+
+        '<p>Windows/VS Code: If Julia is not found, check <code>julia --version</code> and <code>node --version</code> in the same terminal. The runner can use the trusted <code>JULIA_LAB_JULIA</code> environment variable as documented in the README.</p>'+
+        '<p><strong>Phone limitation:</strong> localhost refers to the device running the browser. A runner started on your laptop is not reachable from a phone through <code>127.0.0.1</code>. Use the existing source download for later execution instead.</p>'));
+    runnerSetup.append(node("summary",null,"Local Julia connection"),setupSteps,runner,diagnosticPane);
   }
   editor.append(terminal,testDesk,runnerSetup);
+  externalGuide.append(node("summary",null,"Execution on another device or in another Julia environment"),
+    node("div","r2-external-content",
+      '<p>Use the existing <strong>Download .jl</strong> file action in the editor toolbar, then run the saved file in Julia or VS Code on your computer. Copy/paste into an external provider is optional and <strong>not verified</strong> by Julia Learn.</p>'+
+      '<p>On a phone, the loopback address <code>127.0.0.1</code> always refers to the phone, not a laptop. Julia Learn does not remotely run code on another device, synchronize drafts or grade external output.</p>'));
+  editor.insertBefore(readiness,editorHead);
+  editor.insertBefore(externalGuide,touchBar);
   // Local plot files and third-party services are separate from actual Julia execution.
   if(preview)compiler.append(preview);
   compiler.append(extras);
@@ -977,12 +1003,60 @@ export function initR2Studio({doc=document,lessons,navigate}){
   });
   const runOriginal=()=>get("local-runner-run").click();
   get("r2-run").addEventListener("click",runOriginal);
+  const focusDisclosure=details=>{
+    details.open=true;
+    details.scrollIntoView({block:"start",behavior:"auto"});
+    details.querySelector(":scope > summary")?.focus({preventScroll:true});
+  };
+  get("r2-first-run").addEventListener("click",()=>{
+    runnerSetup.open=true;focusDisclosure(setupSteps);
+  });
+  get("r2-run-elsewhere").addEventListener("click",()=>focusDisclosure(externalGuide));
+  get("r2-review-task").addEventListener("click",()=>focusDisclosure(instructions));
   get("r2-connection-open").addEventListener("click",()=>{
     runnerSetup.open=true;
     runnerSetup.scrollIntoView({block:"start",behavior:"auto"});
     runnerSetup.querySelector(":scope > summary")?.focus({preventScroll:true});
   });
   get("r2-terminal-clear").addEventListener("click",()=>get("local-runner-clear").click());
+  // Informational readiness is not a new execution authority or a parallel
+  // aria-live announcement. The original runner nodes alone announce results.
+  // A session code is never evidence of connection; a successful diagnostic
+  // applies only to the access code used when that response was observed.
+  const sessionCode=get("local-runner-token"),
+    diagnosticStatus=get("local-runner-diagnostic-status"),
+    terminalStatus=get("local-runner-status");
+  let verifiedSession=null,lastDiagnostic="";
+  const updateReadiness=()=>{
+    const diagnostic=diagnosticStatus.textContent.trim();
+    if(diagnostic!==lastDiagnostic){
+      lastDiagnostic=diagnostic;
+      verifiedSession=diagnostic.startsWith("Local Julia responded.")?sessionCode.value:null;
+    }
+    let label;
+    if(Boolean(readEmbedUrl())){
+      label="Local execution blocked for privacy: disable JDoodle and reload before entering a session code.";
+    }else if(!sessionCode.value||sessionCode.value.length<16){
+      label="Local Julia not configured: enter the temporary session code printed by the runner on this computer.";
+    }else if(terminalStatus.textContent.includes("Running on your computer")){
+      label="Julia is executing on this computer. Inspect the original terminal for its real result.";
+    }else if(diagnostic.startsWith("Checking local Julia")){
+      label="Checking the local Julia environment. No learner code has run.";
+    }else if(verifiedSession===sessionCode.value){
+      label="Local Julia responded to diagnostics for this session. Your current source has not been verified.";
+    }else if(diagnostic.startsWith("Local diagnostics unavailable")||diagnostic.startsWith("Julia environment check failed")){
+      label="Local connection is not verified. Check the diagnostic message and runner terminal.";
+    }else{
+      label="Session code entered, but the Julia companion has not been verified. Run the local environment check.";
+    }
+    get("r2-readiness-text").textContent=label;
+  };
+  sessionCode.addEventListener("input",()=>{verifiedSession=null;updateReadiness();});
+  new MutationObserver(updateReadiness).observe(diagnosticStatus,
+    {childList:true,characterData:true,subtree:true});
+  new MutationObserver(updateReadiness).observe(terminalStatus,
+    {childList:true,characterData:true,subtree:true});
+  updateReadiness();
   get("r2-exports").addEventListener("click",()=>{
     openAux("utilities");get("submission-workflow").open=true;
   });
