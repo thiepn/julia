@@ -1098,9 +1098,9 @@ try {
     await r2Locator(mobile,"#practice-mode").selectOption("b");
     await r2Locator(mobile,"#external-report-details summary").click();
     await r2Locator(mobile,"#external-report-input").fill("MethodError: no method matching near_relative(::Int64)");
-    // A fixed footer previously intercepted mobile clicks through its empty
-    // padding. Verify the original button receives a genuine Playwright click,
-    // produces source-owned feedback and leaves the footer CTA interactive.
+    // The Code dock no longer covers mobile controls in Phase 04. Keep the
+    // original report click and feedback assertions, then verify the visible
+    // editor Run control remains reachable and invokes the canonical runner.
     await mobile.evaluate(()=>{
       window.__juliaReportClickObserved=0;
       document.getElementById("external-report-inspect").addEventListener("click",()=>{
@@ -1114,11 +1114,14 @@ try {
     assert.equal(await reportResults.isVisible(),true);
     assert.equal(await reportResults.locator(":scope > strong").isVisible(),true);
     assert.equal(await reportResults.locator(":scope > p").first().isVisible(),true);
-    const footerHit=await mobile.evaluate(()=>{
-      const button=document.getElementById("r2-mobile-next"),rect=button.getBoundingClientRect();
-      return button.contains(document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2));
-    });
-    assert.equal(footerHit,true,"Mobile primary footer action must remain interactive");
+    assert.equal(await mobile.locator(".r2-mobile-action").isVisible(),false,
+      "Code has no duplicate fixed Run footer on mobile");
+    // Use a real pointer action with Playwright's stability and hit-target
+    // checks. A synchronous elementFromPoint immediately after CSS smooth
+    // scroll can examine an intermediate position, not the settled button.
+    await mobile.locator("#r2-run").click();
+    assert.match(await mobile.locator("#local-runner-status").innerText(),/Disable the JDoodle/i,
+      "The visible Run action must preserve the original privacy refusal");
     const reportOverflow=await mobile.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
     assert.ok(reportOverflow<=2,"J19 report triage caused mobile overflow: "+reportOverflow);
     await mobile.goto("http://127.0.0.1:"+port+"/#lesson/13");

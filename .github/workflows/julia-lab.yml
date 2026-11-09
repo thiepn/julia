@@ -1,10 +1,10 @@
 name: Julia Lab checks
 on:
-  # Phase 03 targets the Phase 02 draft branch; no edits to its parent PR.
+  # Phase 04 targets the Phase 03 draft branch; keep parent PRs untouched.
   push:
-    branches: [feature/julia-phase03-field-notes-20261109]
+    branches: [feature/julia-phase04-focused-workbench-20261109]
   pull_request:
-    branches: [main, feature/julia-amp-ue02-numerical-workshops, feature/julia-phase01-navigation-20261105, feature/julia-phase02-lesson-flow-20261108]
+    branches: [main, feature/julia-amp-ue02-numerical-workshops, feature/julia-phase01-navigation-20261105, feature/julia-phase02-lesson-flow-20261108, feature/julia-phase03-field-notes-20261109]
     paths:
       - "index.html"
       - "styles.css"
@@ -95,6 +95,8 @@ jobs:
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install --with-deps chromium firefox webkit
           sudo apt-get install -y poppler-utils
+      - name: Phase 04 Code workbench, runner evidence and draft preservation in Chromium Firefox WebKit
+        run: PHASE04_ENGINES=chromium,firefox,webkit node tests/phase04-focused-workbench-browser.mjs
       - name: Phase 03 computed style, keyboard and route tests in Chromium Firefox WebKit
         run: PHASE03_ENGINES=chromium,firefox,webkit node tests/phase03-visual-a11y-browser.mjs
       - name: Chromium desktop/mobile acceptance
@@ -172,6 +174,8 @@ jobs:
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install chromium
+      - name: Phase 04 focused Code and responsive screenshot acceptance
+        run: PHASE04_SCREENSHOTS=1 node tests/phase04-focused-workbench-browser.mjs
       - name: Phase 03 semantic colors, responsive layouts and visual review screenshots
         run: PHASE03_SCREENSHOTS=1 node tests/phase03-visual-a11y-browser.mjs
       - name: Phase 02 concise lessons, keyboard disclosures and learning continuity
@@ -209,5 +213,6 @@ jobs:
             r2-screenshots/
             phase02-screenshots/
             phase03-screenshots/
+            phase04-screenshots/
           if-no-files-found: ignore
           retention-days: 7

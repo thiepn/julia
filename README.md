@@ -440,3 +440,29 @@ behavior and backups remain unchanged. Native `<details>` sections and mathemati
 charts retain their original DOM and authored content. Visual certification is in
 `tests/phase03-visual-a11y-browser.mjs` and the existing regression suites.
 
+
+## Focused Code workbench (Phase 04 dependent draft)
+
+On narrow screens (<768px), Code retains its one original `#scratch-code` editor,
+source-authored task summary, touch keys, and visible real local Julia output.
+The original source-test desk and local Julia connection diagnostics now start
+collapsed as native `<details>` sections: the underlying authored tests, actual
+results, token input and diagnostics are **not** duplicated, removed, cleared or
+saved under a new key. They start expanded on wider screens as before.
+
+The editor toolbar's **Run Julia** is the sole visible mobile Run action;
+the former fixed Code Run dock is hidden **only in Code**, not in Learn/Quiz/Apply.
+The toolbar still delegates to the original `#local-runner-run` button, so
+privacy refusals, disabled states and real Julia execution continue to come
+from the canonical runner. `Ctrl/⌘+Enter` remains its keyboard shortcut.
+The terminal visibly distinguishes a saved draft from execution evidence. A
+Connection settings shortcut opens the original local connection disclosure,
+and the compact Julia tests summary mirrors the **actual** source-test status;
+it never infers a PASS from a draft, download or execution request.
+
+`tests/phase04-focused-workbench-browser.mjs` checks this flow, viewport
+height reduction, source uniqueness, keyboard-accessible connection, real runner
+refusals, source-test reporting, local draft persistence and no duplicate Run
+CTA in Chromium, Firefox and WebKit. Existing offline, backup, lesson, plotting,
+submissions and authentic Julia qualifications remain unchanged. This is a
+**dependent draft only**, not an authorization to merge or deploy.

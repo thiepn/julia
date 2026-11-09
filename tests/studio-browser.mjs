@@ -78,9 +78,12 @@ try{
     assert.equal(await page.locator("#r2-test-case-count").innerText(),"4 source test cases");
     assert.equal(await page.locator(".r2-test-results-pane #external-test-local-output").count(),1);
     assert.equal(await page.locator(".r2-runner-diagnostics #local-runner-diagnostic-output").count(),1);
-    assert.equal(await page.locator("#r2-test-verification").innerText(),"Not run");
+    assert.equal(await page.locator("#r2-test-head-status").innerText(),"Not run",
+      "Compact test summary must report the canonical Not run state");
     await page.locator("#r2-tests-jump").click();
     assert.equal(await page.locator("#r2-test-desk").getAttribute("open"),"");
+    assert.equal(await page.locator("#r2-test-verification").innerText(),"Not run",
+      "Expanded original Julia Test pane must agree with the visible summary");
     assert.equal(await page.locator("#external-test-heading").isVisible(),true);
     const originalSource=await page.locator("#scratch-code").inputValue();
     await page.locator("#external-focus-case").selectOption("Outside tolerance");

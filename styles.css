@@ -2022,3 +2022,58 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 @media(prefers-reduced-motion:reduce){
   .r2-study-summary,.r2-course-list .lesson-link{transition:none}
 }
+
+
+/* Phase 04 — focused, source-preserving Julia workbench.
+   The original textarea, terminal status, local runner and source-test nodes
+   are unchanged; only initial disclosure state and presentation differ. */
+.r2-terminal-head{gap:12px;flex-wrap:wrap}
+.r2-terminal-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.r2-terminal-controls button{min-height:44px;border-radius:4px}
+.r2-execution-explainer{
+  margin:0;padding:13px 16px 0;color:var(--code-muted);font-size:13px;
+  line-height:1.55;max-width:80ch
+}
+.r2-test-desk-summary{gap:8px 14px;flex-wrap:wrap}
+#r2-test-case-count{color:var(--code-muted);font-size:13px}
+#r2-test-head-status{
+  flex:1 1 100%;min-width:0;overflow-wrap:anywhere;color:var(--code-muted);
+  font-size:13px;line-height:1.55;font-weight:550
+}
+.r2-runner-setup>summary{
+  display:flex;align-items:center;min-height:48px;padding:13px 17px;
+  color:var(--code-ink);font-weight:700;cursor:pointer
+}
+.r2-runner-setup>summary:after{
+  content:"+";font-size:22px;margin-left:auto;color:var(--code-muted)
+}
+.r2-runner-setup[open]>summary:after{content:"−"}
+.r2-runner-setup>summary:focus-visible,.r2-test-desk>summary:focus-visible{
+  outline:3px solid #F6C15D;outline-offset:-3px
+}
+@media(max-width:767px){
+  .r2-practice-path{margin-bottom:12px;padding:12px 14px;border-radius:4px}
+  .r2-practice-path header h2{font-size:16px;margin-bottom:2px}
+  .r2-practice-path header p{font-size:13px;line-height:1.45;margin-bottom:9px}
+  .r2-practice-choices{gap:6px}
+  .r2-practice-choices button{min-height:44px;padding:8px;font-size:13px}
+  #r2-practice-guidance{font-size:13px;line-height:1.45;margin-top:8px}
+  .r2-editor-actions{margin:0;padding:12px 9px;gap:8px}
+  .r2-editor-actions #r2-run{min-height:48px;flex:1 1 100%;
+    font-size:15px;font-weight:750}
+  .r2-editor-actions .draft-actions{display:contents}
+  .r2-terminal{order:5}
+  .r2-terminal-head{padding:11px 13px}
+  .r2-terminal-head>span{font-size:15px;font-weight:700}
+  .r2-terminal-controls{width:100%}
+  .r2-terminal-controls button{flex:1 1 120px;font-size:13px}
+  .r2-execution-explainer{padding:12px 13px 0}
+  .r2-terminal #local-runner-status{margin:10px 13px}
+  .r2-terminal .local-runner-console{padding:12px 13px 16px}
+  .r2-test-desk>summary{min-height:58px;padding:11px 13px}
+  .r2-runner-setup>summary{padding:12px 13px}
+  .r2-code-layout{border-color:var(--line)}
+  /* Code has a single Run button in the editor toolbar; the navigation dock
+     remains unchanged for Learn, Quiz and Apply. */
+  body[data-r2-stage="code"] .r2-mobile-action{display:none!important}
+}

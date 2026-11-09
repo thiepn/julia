@@ -298,7 +298,9 @@ export function initR2Studio({doc=document,lessons,navigate}){
       '<span id="r2-draft-size">0 / 50000 bytes</span>'),
     terminal=node("section","r2-terminal",
       '<header class="r2-terminal-head"><span>Julia terminal</span>'+
-      '<button type="button" id="r2-terminal-clear" class="r2-terminal-clear">Clear output</button></header>'),
+      '<div class="r2-terminal-controls">'+
+      '<button type="button" id="r2-connection-open" class="r2-terminal-clear">Connection settings</button>'+
+      '<button type="button" id="r2-terminal-clear" class="r2-terminal-clear">Clear output</button></div></header>'),
     testDesk=node("details","r2-test-desk"),
     testPane=node("div","r2-test-panes"),
     casePane=node("section","r2-test-cases-pane"),
@@ -323,8 +325,8 @@ export function initR2Studio({doc=document,lessons,navigate}){
   externalTests.prepend(testPane);
   testDesk.id="r2-test-desk";
   testDesk.append(node("summary","r2-test-desk-summary",
-    '<strong>Julia tests</strong><span id="r2-test-case-count">0 cases</span>'),externalTests);
-  testDesk.open=true;
+    '<strong>Julia tests</strong><span id="r2-test-case-count">0 cases</span>'+
+    '<span id="r2-test-head-status" role="status">Not run</span>'),externalTests);
   editorWell.append(lineNumbers,draft);
   // One editor only: touch keys insert at the native textarea selection.
   // The existing bubbled input listener is the only draft persistence path.
@@ -358,7 +360,12 @@ export function initR2Studio({doc=document,lessons,navigate}){
     const status=get("local-runner-status"),
       output=get("local-runner-output").closest("pre"),
       images=get("local-runner-images");
-    terminal.append(status,output,images);
+    // Preserve the original runner status/output nodes as the only execution
+    // evidence. Saving source is not running Julia or passing source tests.
+    status.setAttribute("role","status");
+    terminal.append(node("p","r2-execution-explainer",
+      "A saved draft is not an executed result. Run Julia to see actual local output or errors."),
+      status,output,images);
     const diagnosticStatus=get("local-runner-diagnostic-status"),
       diagnosticOutput=get("local-runner-diagnostic-output").closest("pre");
     const diagnosticPane=node("section","r2-runner-diagnostics",
@@ -366,7 +373,6 @@ export function initR2Studio({doc=document,lessons,navigate}){
     diagnosticPane.setAttribute("aria-labelledby","r2-runner-diagnostics-heading");
     diagnosticPane.append(diagnosticStatus,diagnosticOutput);
     runnerSetup.append(node("summary",null,"Local Julia connection"),runner,diagnosticPane);
-    runnerSetup.open=true;
   }
   editor.append(terminal,testDesk,runnerSetup);
   // Local plot files and third-party services are separate from actual Julia execution.
@@ -377,6 +383,11 @@ export function initR2Studio({doc=document,lessons,navigate}){
     '<strong id="r2-task-heading">Coding task</strong><span id="r2-task-summary-text"></span>'),codePanel);
   instructions.setAttribute("aria-labelledby","r2-task-heading");
   const wideLayout=doc.defaultView.matchMedia("(min-width:768px)");
+  // Initial presentation only: all original local connection diagnostics and
+  // source-authored test panes remain in their canonical DOM with their state.
+  // Mobile keeps task, editor, real output and source-test summary in view.
+  testDesk.open=wideLayout.matches;
+  runnerSetup.open=wideLayout.matches;
   const adjustTask=()=>{instructions.open=wideLayout.matches;};
   adjustTask();
   wideLayout.addEventListener?.("change",adjustTask);
@@ -724,6 +735,9 @@ export function initR2Studio({doc=document,lessons,navigate}){
   function showStage(stage){
     if(!validStages.includes(stage))return;
     currentStage=stage;showView("lesson");doc.body.dataset.r2Stage=stage;
+    // Code has its own canonical toolbar Run button. Never place a second
+    // fixed prominent Run CTA over it on mobile or while typing.
+    action.hidden=stage==="code";
     for(const [name,item] of [["learn",learn],["check",check],["code",code],["explore",explore]])
       item.hidden=name!==stage;
     tabs.querySelectorAll("button").forEach(b=>{
@@ -963,6 +977,11 @@ export function initR2Studio({doc=document,lessons,navigate}){
   });
   const runOriginal=()=>get("local-runner-run").click();
   get("r2-run").addEventListener("click",runOriginal);
+  get("r2-connection-open").addEventListener("click",()=>{
+    runnerSetup.open=true;
+    runnerSetup.scrollIntoView({block:"start",behavior:"auto"});
+    runnerSetup.querySelector(":scope > summary")?.focus({preventScroll:true});
+  });
   get("r2-terminal-clear").addEventListener("click",()=>get("local-runner-clear").click());
   get("r2-exports").addEventListener("click",()=>{
     openAux("utilities");get("submission-workflow").open=true;
@@ -977,6 +996,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
     get("r2-test-case-count").textContent=testCases.children.length+" source test cases";
     const verdict=actualTestStatus.textContent.trim();
     get("r2-test-verification").textContent=verdict||"Not run";
+    get("r2-test-head-status").textContent=verdict||"Not run";
   };
   new MutationObserver(syncTestAccess).observe(externalTests,{attributes:true,attributeFilter:["hidden"]});
   new MutationObserver(syncTestAccess).observe(testCases,{childList:true});

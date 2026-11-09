@@ -17,7 +17,7 @@ function roleName(opts){
 function roleTarget(page,role,opts){
   const name=roleName(opts);
   if(role==="button"&&name==="run current julia draft"&&page.viewportSize()?.width<768)
-    return page.locator("#r2-mobile-next");
+    return page.locator("#r2-run");
   if(role==="button"&&(name?.startsWith("continue lesson")||
      (opts?.name instanceof RegExp&&opts.name.source.startsWith("Continue lesson"))))
     return page.locator("#r2-hero-continue");
@@ -127,10 +127,11 @@ function wrap(page,target,sourceSelector=""){
     };
     if(browserActions.has(name))return async(...args)=>{
       await showCanonical(page,locator);
-      // R2 hides the redundant embedded runner button on phones and exposes
-      // the same canonical run action through the fixed Code footer.
+      // Phase 04 keeps the canonical local-runner-run hidden on narrow
+      // screens, but exposes one actual Run action in the editor toolbar.
+      // Follow the real visible control rather than invoking a hidden button.
       if(name==="click"&&sourceSelector==="#local-runner-run"&&page.viewportSize()?.width<768)
-        return page.locator("#r2-mobile-next").click(...args);
+        return page.locator("#r2-run").click(...args);
       return member.apply(locator,args);
     };
     if(name==="getByRole")return (role,options={})=>
