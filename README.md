@@ -466,3 +466,46 @@ refusals, source-test reporting, local draft persistence and no duplicate Run
 CTA in Chromium, Firefox and WebKit. Existing offline, backup, lesson, plotting,
 submissions and authentic Julia qualifications remain unchanged. This is a
 **dependent draft only**, not an authorization to merge or deploy.
+
+
+## Phase 05 dependent draft — Execution Readiness and First-Run Guidance
+
+**Parent:** Phase 04 draft PR #20 exact HEAD `ca8bdcce2acc165404f1087782331ce88f375c2a`.
+This is a dependent draft only; do **not** merge, deploy or change PRs #17–#20.
+
+Code now shows an informational **Execution readiness** explanation above the
+original editor toolbar. It is computed from the existing JDoodle preference,
+current input of the temporary runner session code, canonical diagnostic status
+and canonical runner status. It does **not** probe the network, store a session
+code, grade Julia, create a second runner or add persistence keys. A supplied
+code is never treated as proof of connection. A successful existing local
+environment diagnostic proves only that the companion responded for that code,
+not that learner source executed or any tests passed. A previous successful
+run is identified as a *previous submitted draft*, not a verification of new
+edits. The existing terminal and Julia Test outputs remain authoritative.
+
+**Set up local Julia** expands the original connection panel and a nested
+five-step guide (Julia 1.11+, Node 22+, loopback-only companion, disabling
+JDoodle before entering the temporary code, explicit diagnostics and trusted
+execution). The service runs with the user's OS permissions and is **not
+sandboxed**; no packages are installed. **Run elsewhere** opens a disclosure
+pointing to the existing **Download .jl** button for Julia/VS Code on another
+computer. No hosted code runner or external provider is claimed as verified.
+**Review task criteria** expands the existing original exercise disclosure.
+
+`127.0.0.1:8765` always addresses the current browser device, so a phone
+cannot connect to the companion running on a laptop through that address.
+The mobile fallback is saving/exporting the source and executing it later on
+a computer or voluntarily using an unverified external provider; this is
+not cross-device synchronization. All existing Julia tests, 16 lessons,
+L1–L9 resources, offline, backups, editor drafts, routes and privacy refusal
+remain unchanged.
+
+`tests/phase05-readiness-browser.mjs` checks privacy blocking, authoritative
+status interpretation, diagnostics invalidation on token changes, genuine
+first-run disclosure focus, access to original download and exercise, no
+duplicate execution controls, readable 200% text zoom, and screenshot states.
+The main workflow runs it in Chromium, Firefox and WebKit; the visual workflow
+captures mobile/tablet/desktop light/dark states. Physical Android, native
+Windows/VS Code, true browser 200% zoom and screen-reader testing remain manual
+release gates beyond this automated coverage.
