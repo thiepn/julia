@@ -1818,6 +1818,10 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   font-size:clamp(25px,2.5vw,31px);line-height:1.25
 }
 .r2-learn #lesson-theory{max-width:72ch;font-size:18px;line-height:1.7}
+/* Non-button focus targets are navigational headings, not decorative borders. */
+#lesson-title:focus-visible,#r2-further-study-title:focus-visible{
+  outline:3px solid var(--focus);outline-offset:4px;border-radius:2px
+}
 .r2-learn-reading{padding:clamp(24px,3.2vw,44px)}
 .r2-learn .r2-learn-paper{
   grid-template-columns:minmax(0,1.15fr) minmax(330px,.85fr);
