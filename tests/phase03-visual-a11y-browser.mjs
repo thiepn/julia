@@ -107,8 +107,8 @@ for(const engine of enabled){
           assert.equal(await page.locator('[data-study-module="fundamentals"]').evaluate(el=>el.open),false);
           await page.locator('[data-r2-stage="check"]').click();
           await page.locator("#r2-stage-check").waitFor({state:"visible"});
-          await checkContrast(page.locator(".r2-check .question h3"),"Quiz question");
-          await checkContrast(page.locator(".r2-check .choice").first(),"Quiz option");
+          await checkContrast(page.locator(".r2-check .question h3").first(),"Quiz question");
+          await checkContrast(page.locator(".r2-check .choice").first().first(),"Quiz option");
           await screenshot(page,engine,theme,width,"quiz");
           await page.locator('[data-r2-stage="explore"]').click();
           await page.locator("#r2-stage-explore").waitFor({state:"visible"});
