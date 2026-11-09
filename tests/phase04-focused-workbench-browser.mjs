@@ -74,6 +74,14 @@ try{
               'println("phase04 retained source")');
             if(screenshots&&engine==="chromium"&&[390,768,1280].includes(width)){
               const dir=resolve("phase04-screenshots",theme);await mkdir(dir,{recursive:true});
+              // Playwright fills the source textarea below the fold. Return to
+              // the actual initial top before capturing the sticky navigation;
+              // otherwise a full-page screenshot places it at a scrolled offset.
+              await page.evaluate(()=>{
+                document.documentElement.style.scrollBehavior="auto";
+                window.scrollTo(0,0);
+              });
+              await page.waitForFunction(()=>Math.abs(window.scrollY)<1);
               await page.screenshot({path:resolve(dir,width+"-code-compact.jpg"),fullPage:true,
                 type:"jpeg",quality:76,animations:"disabled"});
             }
