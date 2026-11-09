@@ -12,8 +12,15 @@ const server=createServer(async(req,res)=>{
   const pathname=decodeURIComponent(new URL(req.url,"http://127.0.0.1").pathname);
   const filepath=resolve(root,"."+(pathname==="/"?"/index.html":pathname));
   if(!(filepath===root||filepath.startsWith(root+sep))){res.writeHead(403);res.end();return;}
-  try{res.writeHead(200,{"Content-Type":mime[extname(filepath)]||"application/octet-stream"});res.end(await readFile(filepath));}
-  catch{res.writeHead(404);res.end();}
+  try{
+    const bytes=await readFile(filepath);
+    if(res.destroyed||res.writableEnded)return;
+    res.writeHead(200,{"Content-Type":mime[extname(filepath)]||"application/octet-stream"});
+    res.end(bytes);
+  }catch(error){
+    if(res.headersSent||res.destroyed){if(!res.destroyed)res.destroy();return;}
+    res.writeHead(404);res.end();
+  }
 });
 await new Promise(done=>server.listen(0,"127.0.0.1",done));
 const origin="http://127.0.0.1:"+server.address().port;
