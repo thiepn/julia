@@ -127,7 +127,14 @@ for(const engine of requested){
           await page.locator("#local-runner-token").fill(secret);
           await page.waitForFunction(()=>
             document.querySelector("#r2-readiness-text")?.textContent?.includes("not been verified"));
-          // This is a simulated CANONICAL result state, not a real Julia check.
+          // Exercise canonical diagnostic status transitions without claiming
+          // to have executed Julia. The UI binds the response to the code at
+          // the start of the original check, not at result arrival.
+          await page.locator("#local-runner-diagnostic-status").evaluate(el=>{
+            el.textContent="Checking local Julia without installing packages…";
+          });
+          await page.waitForFunction(()=>
+            document.querySelector("#r2-readiness-text")?.textContent?.includes("Checking the local Julia environment"));
           await page.locator("#local-runner-diagnostic-status").evaluate(el=>{
             el.textContent="Local Julia responded. Missing packages must be installed explicitly in your chosen Julia project.";
           });
@@ -138,6 +145,20 @@ for(const engine of requested){
           await page.waitForFunction(()=>
             document.querySelector("#r2-readiness-text")?.textContent?.includes("has not been verified"));
           assert.doesNotMatch(await text.innerText(),/responded to diagnostics/);
+          // A token changed DURING a running diagnostic must also remain
+          // unverified even if the old request later reports success.
+          await page.locator("#local-runner-diagnostic-status").evaluate(el=>{
+            el.textContent="Checking local Julia without installing packages…";
+          });
+          await page.waitForFunction(()=>
+            document.querySelector("#r2-readiness-text")?.textContent?.includes("Checking the local Julia environment"));
+          await page.locator("#local-runner-token").fill("test-private-session-code-C123456789");
+          await page.locator("#local-runner-diagnostic-status").evaluate(el=>{
+            el.textContent="Local Julia responded. Missing packages must be installed explicitly in your chosen Julia project.";
+          });
+          await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));
+          assert.doesNotMatch(await text.innerText(),/responded to diagnostics/,
+            "Late result for a prior code must not verify a replacement code");
           await page.locator("#local-runner-status").evaluate(el=>{
             el.textContent="Executed with local Julia. Results are not graded.";
           });
