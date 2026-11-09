@@ -1042,6 +1042,8 @@ export function initR2Studio({doc=document,lessons,navigate}){
       label="Julia is executing on this computer. Inspect the original terminal for its real result.";
     }else if(diagnostic.startsWith("Checking local Julia")){
       label="Checking the local Julia environment. No learner code has run.";
+    }else if(terminalStatus.textContent.startsWith("Executed with local Julia.")){
+      label="The previous submitted draft executed with local Julia; results are not graded. Re-run after editing.";
     }else if(verifiedSession===sessionCode.value){
       label="Local Julia responded to diagnostics for this session. Your current source has not been verified.";
     }else if(diagnostic.startsWith("Local diagnostics unavailable")||diagnostic.startsWith("Julia environment check failed")){
