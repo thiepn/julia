@@ -573,11 +573,16 @@
 /* R2 — single active design system. Canonical numerical component geometry above
    is retained; app-level composition and tokens are owned here, not layered CSS. */
 :root{
-  --canvas:#f8f7f5;--surface:#fff;--surface-muted:#f0efed;
-  --ink:#1c222c;--muted:#596270;--line:#d9dce0;
-  --accent:#6543b2;--accent-soft:#f0ebfb;--success:#147d60;
-  --warning:#a36217;--error:#b33740;--code-bg:#111823;
-  --deep:#1c222c;--washed:#f0efed;--active:#f0ebfb;
+  --canvas:#F4F3EF;--surface:#FFFEFB;--surface-muted:#EFEEE9;
+  --ink:#1F2632;--muted:#4A5564;--line:#CBD0D5;
+  --accent:#5B3C9B;--accent-soft:#EEE9F7;--success:#146B4E;
+  --warning:#8C5414;--error:#A8283F;--code-bg:#141C27;
+  --deep:#1F2632;--washed:#EFEEE9;--active:#EEE9F7;
+  --focus:#2A4999;--code-ink:#EFF2F8;--code-muted:#B8C4D5;
+  --code-border:#455369;--workbench:#141C27;--workbench-head:#202C3B;
+  --type-editorial:"Iowan Old Style","Baskerville","Palatino Linotype",Georgia,serif;
+  --type-ui:"Segoe UI",system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  --type-code:"Cascadia Code","JetBrains Mono",Consolas,monospace;
   --r2-header:64px; color-scheme:light;
   font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif;font-size:16px;
 }
@@ -587,7 +592,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);line-height:1.6;
 button,input,select,textarea{font:inherit}
 button{cursor:pointer;touch-action:manipulation}
 button:focus-visible,a:focus-visible,select:focus-visible,
-textarea:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
 [hidden],.r2-question-inactive,.r2-mixed-inactive,.r2-lab-inactive{display:none!important}
 .topbar{height:var(--r2-header);position:sticky;top:0;z-index:60;display:flex;
   justify-content:space-between;padding:0 clamp(16px,3vw,48px);
@@ -1294,11 +1299,13 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 }
 @media(prefers-color-scheme:dark){
   :root{
-    --canvas:#111317;--surface:#1b1e23;--surface-muted:#23272d;
-    --ink:#f1f2f4;--muted:#aeb5c0;--line:#353b44;--accent:#b5a2ff;
-    --accent-soft:#2e2845;--success:#6ec9a5;--warning:#f1be72;
-    --error:#f19aa1;--deep:#f1f2f4;--washed:#23272d;--active:#2e2845;
-    --code-bg:#0d1015;color-scheme:dark;
+    --canvas:#11141A;--surface:#1A1F28;--surface-muted:#252B35;
+    --ink:#F5F2EB;--muted:#BBC2CE;--line:#4A5465;--accent:#BBAAFF;
+    --accent-soft:#322744;--success:#80D7B6;--warning:#F4BD74;
+    --error:#FFA6A9;--deep:#F5F2EB;--washed:#252B35;--active:#322744;
+    --code-bg:#0A101B;--code-ink:#E6EDF5;--code-muted:#BCC9D7;
+    --code-border:#506078;--workbench:#0A101B;--workbench-head:#1C2736;
+    --focus:#F6C15D;color-scheme:dark;
   }
   .r2-primary,.primary{color:#15121f;background:#b5a2ff;border-color:#b5a2ff}
   .r2-primary:hover,.primary:hover{background:#cabaff;border-color:#cabaff;color:#15121f}
@@ -1790,4 +1797,218 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 }
 @media print{
   .r2-study-disclosure{break-inside:avoid}
+}
+
+
+/* P03 Numerical Field Notes.
+   Presentation only: the original indexed lessons, code, forms, charts and
+   browser-local state remain owned by their existing components.
+   Keep mathematical chart series colors independent of UI tokens. */
+.r2-page, main#lesson-main{font-family:var(--type-ui);color:var(--ink)}
+.r2-course-hero h1,.r2-lesson-head h1,
+.r2-page-heading h1,.r2-learn-reading .section-title h2,
+.r2-check .section-title h2,.r2-further-study h2{
+  font-family:var(--type-editorial);letter-spacing:-.025em;font-weight:700;
+  text-wrap:balance
+}
+.r2-lesson-head h1{font-size:clamp(34px,3.4vw,48px);line-height:1.17}
+.r2-course-hero h1{font-size:clamp(37px,3.7vw,51px);line-height:1.14}
+.r2-page-heading h1{font-size:clamp(34px,3.5vw,48px)}
+.r2-learn-reading .section-title h2,.r2-check .section-title h2{
+  font-size:clamp(25px,2.5vw,31px);line-height:1.25
+}
+.r2-learn #lesson-theory{max-width:72ch;font-size:18px;line-height:1.7}
+.r2-learn-reading{padding:clamp(24px,3.2vw,44px)}
+.r2-learn .r2-learn-paper{
+  grid-template-columns:minmax(0,1.15fr) minmax(330px,.85fr);
+  border-color:var(--line);background:var(--surface)
+}
+.r2-learn .r2-learn-paper,.r2-check-layout,.r2-code-layout{
+  box-shadow:none
+}
+.r2-lesson-head .lead,.r2-page-heading p,.r2-course-hero p{
+  color:var(--muted);line-height:1.67
+}
+.r2-lesson-head .lesson-meta,.r2-breadcrumb,.r2-course-identity{
+  font-size:13px;line-height:1.5
+}
+.r2-course-hero{border-bottom:2px solid var(--ink)}
+.r2-course-identity{letter-spacing:.025em}
+.r2-course-list .nav-group h3{
+  font-family:var(--type-editorial);font-size:19px;font-weight:700;
+  border-top:1px solid var(--line);padding:24px 11px 12px
+}
+.r2-course-list .lesson-link{
+  min-height:62px;border-bottom:1px solid var(--line);border-left:0;
+  padding:13px 11px;gap:16px;position:relative
+}
+.r2-course-list .lesson-link:hover,
+.r2-course-list .lesson-link.active{
+  border-left-color:transparent;background:var(--accent-soft)
+}
+.r2-course-list .lesson-link.active::before{
+  content:"";position:absolute;left:0;top:9px;bottom:9px;width:3px;background:var(--accent)
+}
+.r2-course-list .lesson-number,.r2-course-list .nav-score,
+#r2-question-index,.r2-question-tools button,.r2-preview-header{
+  font-family:var(--type-code);font-variant-numeric:tabular-nums
+}
+.r2-course-list .nav-score{color:var(--muted)}
+.r2-course-list .lesson-link[data-checkpoint="reviewed"] .nav-score{color:var(--success)}
+.r2-global-nav button{border-radius:4px}
+.r2-global-nav button[aria-current="page"]{
+  color:#F5F2EB;background:#332847;box-shadow:inset 0 -2px #BBAAFF
+}
+.r2-button,.primary,.secondary,
+.r2-lesson-path-actions button,#r2-question-steps button,
+.r2-explore .r2-lab-shortcuts button{
+  border-radius:4px;min-height:44px
+}
+.r2-primary,.primary{color:#fff;background:var(--accent);border-color:var(--accent)}
+.r2-primary:hover,.primary:hover{color:#fff;background:var(--accent);filter:brightness(.91)}
+.r2-secondary,.secondary{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.r2-text{color:var(--accent)}
+.r2-stage-tabs{background:var(--surface);border-color:var(--line)}
+.r2-stage-tabs button{border-bottom-width:3px}
+.r2-stage-tabs button[aria-current="step"]{color:var(--accent);border-color:var(--accent)}
+.r2-example-pane,.r2-check-reference,.r2-editor,.r2-explore-source{
+  background:var(--workbench);color:var(--code-ink);border-color:var(--code-border)
+}
+.r2-example-head,.r2-check-reference-head,.r2-editor-head,
+.r2-explore-source-head{
+  background:var(--workbench-head);border-color:var(--code-border);
+  color:var(--code-ink)
+}
+.r2-example-pane pre.code,.r2-check-reference-code,
+.r2-editor .scratch-editor,.r2-preview-code,
+.r2-explore-source .r2-explore-live-source{
+  background:var(--code-bg);color:var(--code-ink);font-family:var(--type-code);
+  font-size:14px;line-height:1.65
+}
+.r2-example-mode,#r2-example-source,.r2-check-reference-actions span,
+#r2-editor-status,#r2-explore-source-state{color:var(--code-muted)}
+.r2-editor-well{background:var(--code-bg);border-color:var(--code-border)}
+.r2-editor-foot,.r2-terminal-head,.r2-runner-setup,
+.r2-test-desk>summary{background:var(--workbench-head);color:var(--code-ink);
+  border-color:var(--code-border)}
+.r2-editor .scratch-editor{background:var(--code-bg);color:var(--code-ink)}
+.r2-code-layout,.r2-explore-workbench{border-color:var(--line)}
+.r2-check .choice{border-radius:4px;border-color:var(--line)}
+.r2-check .choice.selected{
+  border-color:var(--accent);border-left-width:4px;background:var(--accent-soft)
+}
+.r2-check .answer-reason.right{border-left-color:var(--success)}
+.r2-check .answer-reason.wrong{border-left-color:var(--error)}
+/* P03 accessibility: legacy details summary{color:#52615d} is unsuitable
+   in dark Resources. These are real interactive text labels, not disabled text. */
+.r2-utilities details summary,
+.r2-utilities>details>summary,
+.r2-utilities .settings-panel label,
+.r2-study-disclosure>.r2-study-summary{
+  color:var(--ink)
+}
+.r2-utilities details summary{
+  font-size:15px;line-height:1.55;min-height:44px;padding:10px 0;
+  font-weight:650;text-underline-offset:3px
+}
+.r2-utilities>details,.r2-utilities>#settings-panel{
+  background:var(--surface);border:0;border-top:1px solid var(--line);
+  padding:21px 2px;margin:0
+}
+.r2-utilities>details:last-of-type,.r2-utilities>#settings-panel:last-child{
+  border-bottom:1px solid var(--line)
+}
+.r2-utilities label,.r2-utilities .privacy-note,.r2-utilities .feedback,
+.r2-utilities details p{color:var(--muted);font-size:14px;line-height:1.6}
+.r2-utilities a,.r2-resource-course-link{color:var(--accent)}
+.r2-utilities input:not([type="checkbox"]):not([type="radio"]),
+.r2-utilities select,.r2-utilities textarea,
+.r2-mixed textarea,.r2-explore select,.r2-lesson-picker select{
+  background:var(--surface);color:var(--ink);border:1px solid var(--line);
+  border-radius:4px;min-height:44px
+}
+.r2-utilities input:disabled,.r2-utilities button:disabled,
+.r2-explore button:disabled{
+  opacity:.62
+}
+.r2-mixed #semester-rehearsal{
+  border:0;border-top:2px solid var(--ink);border-bottom:1px solid var(--line);
+  background:var(--surface)
+}
+.r2-mixed .rehearsal-title{
+  font-family:var(--type-editorial);font-size:clamp(24px,2.6vw,32px);
+  font-weight:700;letter-spacing:-.02em
+}
+.r2-mixed .rehearsal-item{border-bottom:1px solid var(--line)}
+/* Study modules form a reference index rather than six isolated cards. */
+.r2-further-study{border-top:2px solid var(--ink);padding-top:23px}
+.r2-further-study h2{font-size:clamp(26px,2.6vw,32px)}
+.r2-study-disclosure,.r2-study-disclosure[open]{
+  border:0;border-bottom:1px solid var(--line);background:transparent;
+  border-radius:0;margin:0;padding:0;overflow:visible
+}
+.r2-study-summary{padding:15px 12px;min-height:66px}
+.r2-study-description{font-size:14px;line-height:1.55;color:var(--muted)}
+.r2-study-summary strong{font-family:var(--type-ui);font-size:17px;font-weight:700}
+.r2-study-disclosure[open]>.r2-study-summary{
+  border-bottom:1px solid var(--line);background:var(--surface-muted)
+}
+.r2-study-summary:after{color:var(--accent)}
+.r2-lesson-step-code{color:var(--code-muted);font-size:13px}
+.r2-learn-continue{
+  border-color:var(--line);border-radius:4px;background:var(--surface);
+  padding:18px 22px
+}
+.r2-learn-continue [data-r2-forward="check"]{font-weight:750}
+.r2-apply-heading h2{font-family:var(--type-editorial);letter-spacing:-.02em}
+.r2-explore .r2-lab-picker select{border-color:var(--line)}
+.r2-explore-stage>.r2-lab:not(.r2-lab-inactive){background:var(--surface)}
+/* Use focus colors against both paper and code independently. */
+.r2-editor :is(button,input,textarea,select,summary):focus-visible,
+.r2-explore-source :is(button,summary):focus-visible,
+.r2-check-reference :is(button,summary):focus-visible,
+.r2-example-pane :is(button,summary):focus-visible{
+  outline:3px solid #F6C15D;outline-offset:2px
+}
+@media(max-width:900px){
+  .r2-learn .r2-learn-paper{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:767px){
+  .r2-lesson-head h1{font-size:clamp(29px,7vw,35px);line-height:1.17}
+  .r2-lesson-head .lead{font-size:15px}
+  .r2-course-hero h1{font-size:clamp(31px,8vw,40px)}
+  .r2-learn #lesson-theory{font-size:17px;line-height:1.7}
+  .r2-learn-reading{padding:23px 18px}
+  .r2-course-list .nav-group h3{font-size:18px;padding:21px 9px 10px}
+  .r2-stage-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .r2-stage-tabs button{font-size:13px}
+  .r2-study-summary{padding:16px 8px}
+  .r2-utilities>details,.r2-utilities>#settings-panel{padding:17px 0}
+  .r2-learn-continue [data-r2-forward="check"]{
+    color:var(--accent);background:var(--surface);border:1px solid var(--accent)
+  }
+  .r2-mobile-action button{min-height:46px;font-size:15px}
+}
+@media(max-width:450px){
+  :root{--r2-header:108px}
+  .topbar{
+    height:var(--r2-header);display:grid;grid-template-columns:minmax(0,1fr);
+    grid-template-rows:45px 48px;padding:6px 16px 9px;align-content:center;gap:0
+  }
+  .brand{min-height:42px;grid-row:1;grid-column:1;align-items:center}
+  .brand-mark{width:31px;height:31px;font-size:22px}
+  .brand strong{font-size:15px}
+  .brand small{display:block;font-size:11px;line-height:1.15}
+  .top-right{grid-row:2;grid-column:1;width:100%;align-items:stretch;min-width:0}
+  .r2-global-nav{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+  .r2-global-nav button{font-size:14px;min-height:44px;padding:8px 4px;
+    text-align:center;overflow-wrap:normal;white-space:nowrap}
+  main#lesson-main{padding-top:15px}
+  .r2-lesson-picker{margin:7px 0}
+}
+@media(max-width:359px){
+  .r2-global-nav button{font-size:13px;padding:7px 3px}
+}
+@media(prefers-reduced-motion:reduce){
+  .r2-study-summary,.r2-course-list .lesson-link{transition:none}
 }
