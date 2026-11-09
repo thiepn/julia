@@ -1026,12 +1026,23 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const sessionCode=get("local-runner-token"),
     diagnosticStatus=get("local-runner-diagnostic-status"),
     terminalStatus=get("local-runner-status");
-  let verifiedSession=null,lastDiagnostic="";
+  let verifiedSession=null,pendingDiagnosticSession=null,lastDiagnostic="";
   const updateReadiness=()=>{
     const diagnostic=diagnosticStatus.textContent.trim();
     if(diagnostic!==lastDiagnostic){
       lastDiagnostic=diagnostic;
-      verifiedSession=diagnostic.startsWith("Local Julia responded.")?sessionCode.value:null;
+      if(diagnostic.startsWith("Checking local Julia")){
+        // Bind a pending result to the exact access code used when the original
+        // diagnostic started. Typing a new code must never verify that code.
+        pendingDiagnosticSession=sessionCode.value;
+        verifiedSession=null;
+      }else if(diagnostic.startsWith("Local Julia responded.")){
+        verifiedSession=pendingDiagnosticSession!==null&&
+          pendingDiagnosticSession===sessionCode.value?pendingDiagnosticSession:null;
+        pendingDiagnosticSession=null;
+      }else{
+        verifiedSession=null;pendingDiagnosticSession=null;
+      }
     }
     let label;
     if(Boolean(readEmbedUrl())){
@@ -1053,7 +1064,9 @@ export function initR2Studio({doc=document,lessons,navigate}){
     }
     get("r2-readiness-text").textContent=label;
   };
-  sessionCode.addEventListener("input",()=>{verifiedSession=null;updateReadiness();});
+  sessionCode.addEventListener("input",()=>{
+    verifiedSession=null;pendingDiagnosticSession=null;updateReadiness();
+  });
   new MutationObserver(updateReadiness).observe(diagnosticStatus,
     {childList:true,characterData:true,subtree:true});
   new MutationObserver(updateReadiness).observe(terminalStatus,
