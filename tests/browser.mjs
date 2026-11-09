@@ -1116,12 +1116,9 @@ try {
     assert.equal(await reportResults.locator(":scope > p").first().isVisible(),true);
     assert.equal(await mobile.locator(".r2-mobile-action").isVisible(),false,
       "Code has no duplicate fixed Run footer on mobile");
-    const runHit=await mobile.locator("#r2-run").evaluate(button=>{
-      button.scrollIntoView({block:"center",behavior:"auto"});
-      const rect=button.getBoundingClientRect();
-      return button.contains(document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2));
-    });
-    assert.equal(runHit,true,"The sole Code Run action must remain interactable");
+    // Use a real pointer action with Playwright's stability and hit-target
+    // checks. A synchronous elementFromPoint immediately after CSS smooth
+    // scroll can examine an intermediate position, not the settled button.
     await mobile.locator("#r2-run").click();
     assert.match(await mobile.locator("#local-runner-status").innerText(),/Disable the JDoodle/i,
       "The visible Run action must preserve the original privacy refusal");
