@@ -2153,6 +2153,12 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
 }
 
 
+/* The desktop Code pane is narrower than the viewport because the task
+   occupies an adjacent column. Four actions must not compress the actual
+   security message into a nearly vertical column. */
+.r2-run-readiness{grid-template-columns:minmax(0,1fr)}
+.r2-readiness-summary{max-width:74ch}
+.r2-readiness-actions{justify-content:flex-start;margin-top:2px}
 /* Phase 06 — privacy gate is fail-closed in HTML, then unlocked only after
    the existing JDoodle-disabled preference is confirmed by first-party JS. */
 .local-runner .local-runner-token-safety{
