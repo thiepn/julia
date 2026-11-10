@@ -59,6 +59,16 @@ try{
               "Third-party script must not observe an editable credential at load");
             assert.equal(await token.isDisabled(),true,"Entry remains blocked after provider loads");
             assert.equal(await token.inputValue(),"");
+            if(engine==="chromium"&&theme==="light"&&width===390){
+              const blocked=await token.evaluate(input=>{
+                input.focus();return document.activeElement===input;
+              });
+              assert.equal(blocked,false,"Keyboard focus cannot enter a disabled credential field");
+              let typed=false;
+              try{await token.fill("UNSAFE-CODE-NEVER-ACCEPT",{timeout:400});typed=true;}catch{}
+              assert.equal(typed,false,"Typing or programmatic fill must fail for regular users");
+              assert.equal(await token.inputValue(),"");
+            }
             await snap(page,engine,theme,width,"privacy-locked");
             // On mobile the connection disclosure is correctly collapsed until
             // requested. Verify the private-input explanation when it is opened.
@@ -78,7 +88,11 @@ try{
             assert.equal(await page.locator("#r2-test-head-status").innerText(),"Not run");
             await snap(page,engine,theme,width,"blocked-setup");
 
-            await page.locator("#r2-disable-jdoodle").click();
+            await page.locator("#r2-disable-jdoodle").focus();
+            assert.equal(await page.evaluate(()=>
+              document.activeElement?.id==="r2-disable-jdoodle"),true,
+              "The explicit privacy action must accept keyboard focus");
+            await page.keyboard.press("Enter");
             await page.waitForFunction(()=>
               localStorage.getItem("amp-julia-lab:jdoodle-embed-v1")==="");
             await page.waitForFunction(()=>
@@ -107,6 +121,15 @@ try{
             assert.equal(await page.locator("#download-draft").count(),1);
             assert.equal(await page.locator("#lesson-jump").inputValue(),"09");
             await snap(page,engine,theme,width,"local-enabled");
+            if(engine==="chromium"&&width===390){
+              await page.evaluate(()=>{document.documentElement.style.fontSize="200%";});
+              const box=await page.locator(".r2-run-readiness").evaluate(el=>({
+                w:el.clientWidth,content:el.scrollWidth
+              }));
+              assert.ok(box.content<=box.w+2,
+                "200% text-size simulation must not overflow readiness panel");
+              await page.evaluate(()=>{document.documentElement.style.fontSize="";});
+            }
 
             await page.locator("#r2-utilities-open").click();
             await page.locator(".r2-legacy-tools > summary").click();
