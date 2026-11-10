@@ -798,7 +798,9 @@
         <p>Install Julia and Node.js, then run <code>node local-runner/server.mjs</code> from the Julia Lab repository. The terminal prints a session code. Your program runs with your computer account's permissions, not in a sandbox.</p>
         <button type="button" class="secondary" id="local-runner-disable-embed">Disable JDoodle and reload for local execution</button>
         <label for="local-runner-token">Runner session code</label>
-        <input type="password" id="local-runner-token" autocomplete="off" spellcheck="false">
+        <input type="password" id="local-runner-token" autocomplete="off" spellcheck="false"
+          disabled aria-describedby="local-runner-token-safety">
+        <p id="local-runner-token-safety" class="local-runner-token-safety">Session-code entry is locked while JDoodle is enabled. Disable JDoodle and reload before entering your private code.</p>
         <div class="local-runner-actions">
           <button type="button" class="secondary" id="local-runner-diagnose">Check local Julia environment</button>
           <button type="button" class="primary" id="local-runner-run">Run current Julia draft</button>
