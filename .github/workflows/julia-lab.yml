@@ -95,6 +95,8 @@ jobs:
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install --with-deps chromium firefox webkit
           sudo apt-get install -y poppler-utils
+      - name: Phase 06 original-source preservation at exact parent Git blobs
+        run: node tests/phase06-source-integrity.mjs
       - name: Phase 06 pre-script credential privacy and explicit reload in Chromium Firefox WebKit
         run: PHASE06_ENGINES=chromium,firefox,webkit node tests/phase06-credential-guard-browser.mjs
       - name: Phase 05 execution readiness, first-run privacy and focus in Chromium Firefox WebKit
