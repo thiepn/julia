@@ -2151,3 +2151,23 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   .r2-global-nav button{font-size:12px;white-space:normal;min-height:42px}
   .r2-readiness-actions{grid-template-columns:minmax(0,1fr)}
 }
+
+
+/* Phase 06 — privacy gate is fail-closed in HTML, then unlocked only after
+   the existing JDoodle-disabled preference is confirmed by first-party JS. */
+.local-runner .local-runner-token-safety{
+  margin:6px 0 12px;padding:9px 12px;border-left:3px solid #DFA653;
+  color:var(--code-ink,#eaf0f7);background:var(--workbench,#121923);
+  font-size:13px;line-height:1.6;overflow-wrap:anywhere
+}
+#local-runner-token-safety[hidden],
+#r2-disable-jdoodle[hidden]{display:none!important}
+.r2-runner-setup #local-runner-token:disabled{
+  color:var(--code-muted,#9baabb);background:var(--workbench-head,#253347);
+  border-color:var(--code-border,#45566b);opacity:.7;cursor:not-allowed
+}
+.r2-readiness-actions #r2-disable-jdoodle{font-weight:750}
+.r2-editor-actions #r2-run:disabled{cursor:not-allowed;opacity:.62}
+@media(max-width:767px){
+  .r2-readiness-actions #r2-disable-jdoodle{grid-column:1/-1}
+}
