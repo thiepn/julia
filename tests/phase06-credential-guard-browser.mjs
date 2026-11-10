@@ -24,7 +24,7 @@ const engines={chromium,firefox,webkit};
 const requested=(process.env.PHASE06_ENGINES||"chromium").split(",");
 const screenshots=process.env.PHASE06_SCREENSHOTS==="1";
 const snap=async(page,engine,theme,width,name)=>{
-  if(!screenshots||engine!=="chromium"||![390,768,1280].includes(width))return;
+  if(!screenshots||engine!=="chromium"||![320,390,768,1280].includes(width))return;
   const dir=resolve("phase06-screenshots",theme);await mkdir(dir,{recursive:true});
   await page.evaluate(()=>{document.documentElement.style.scrollBehavior="auto";window.scrollTo(0,0);});
   await page.waitForFunction(()=>Math.abs(window.scrollY)<1);
