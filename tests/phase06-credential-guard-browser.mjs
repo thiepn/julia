@@ -132,7 +132,11 @@ try{
             }
 
             await page.locator("#r2-utilities-open").click();
-            await page.locator(".r2-legacy-tools > summary").click();
+            // A prior navigation may leave this native details disclosure
+            // open; clicking the summary would then *close* the settings.
+            await page.locator(".r2-legacy-tools").evaluate(el=>{el.open=true;});
+            assert.equal(await page.locator("#settings-panel").evaluate(el=>el.hidden),false,
+              "Original compiler settings must remain accessible in Resources");
             await page.locator("#default-embed").click();
             await page.waitForFunction(()=>
               document.querySelector("#local-runner-token")?.disabled===true);
