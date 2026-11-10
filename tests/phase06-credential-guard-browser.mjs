@@ -100,6 +100,11 @@ try{
             assert.match(await explanation.innerText(),/disable JDoodle.*reload/i);
             assert.ok((await token.getAttribute("aria-describedby")||"").includes("local-runner-token-safety"));
             assert.equal(await page.locator("#r2-run").isVisible(),true);
+            if(width===1280){
+              const messageWidth=await page.locator(".r2-readiness-summary").evaluate(el=>el.getBoundingClientRect().width);
+              assert.ok(messageWidth>=300,
+                "The desktop privacy explanation must retain a readable width, not "+messageWidth+"px");
+            }
             assert.equal(await page.locator("#r2-run").isDisabled(),true,"Blocked Run must not appear executable");
             assert.equal(await page.locator("#r2-disable-jdoodle").isVisible(),true);
             assert.equal(await page.locator(".r2-mobile-action").isVisible(),false);
