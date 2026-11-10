@@ -141,7 +141,8 @@ try{
             await page.waitForFunction(()=>
               document.querySelector("#local-runner-token")?.disabled===true);
             assert.equal(await page.locator("#local-runner-token").inputValue(),"");
-            assert.ok(!await page.evaluate(()=>Object.values(localStorage).join("").includes(privateCode)));
+            assert.ok(!await page.evaluate(code=>Object.values(localStorage).join("").includes(code),privateCode),
+              "Temporary session code must not appear in any saved browser record");
             assert.deepEqual(errors,[],engine+" "+theme+" "+width+" page exceptions");
             const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
             assert.ok(overflow<=2,"No page-level overflow at "+width+"px: "+overflow+"px");
