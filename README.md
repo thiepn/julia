@@ -509,3 +509,49 @@ The main workflow runs it in Chromium, Firefox and WebKit; the visual workflow
 captures mobile/tablet/desktop light/dark states. Physical Android, native
 Windows/VS Code, true browser 200% zoom and screen-reader testing remain manual
 release gates beyond this automated coverage.
+
+
+## Phase 06 — dependent draft release hardening (NO RELEASE)
+
+Parent: Phase 05 draft PR #21 pinned at
+`7c33d864ef85509c57df9b9855f970c7e70a435e`. This is a new
+**draft/unmerged** PR only; do not merge ancestors or deploy the site.
+
+**Local runner credential privacy:** The existing session-code field is now
+disabled **in initial HTML**, before any JDoodle third-party script can load.
+The first-party startup checks the existing embed preference before unlocking
+it, clears any browser-prefilled value, and shows an accessible reason when
+the provider is configured. Entering a code requires the **existing explicit**
+Disable JDoodle and reload action; after the browser actually reloads into
+the disabled-embed setting, the **same** original code field, real diagnostic,
+Run, Julia Test and export paths work. The blocked Code-stage Run control is
+visible but disabled; the direct privacy action delegates to the original
+setting handler. The original runner continues refusing unsafe direct and
+keyboard-triggered requests independently of disabled button presentation.
+
+This protects against ordinary user entry in a page that may run a configured
+third-party script. **It is not isolation of arbitrary malicious same-page
+JavaScript**: such a script has broader document privileges, so do not enter
+the runner code with JDoodle enabled, run untrusted Julia source, or treat
+third-party compiler loading as proof of execution. The companion remains
+loopback-only and runs trusted code with the local OS user's permissions.
+No runner authentication/origin behavior, storage key or backup format changes.
+
+Automated checks:
+- `tests/phase06-credential-guard-browser.mjs` provides the observed RED on
+  the pinned parent and GREEN on this branch, checks initial/pre-script locked
+  DOM, original direct privacy refusal, mobile keyboard shortcut, accessible
+  reason, explicit disable/reload, restored Code, safe re-lock on provider
+  restore, light/dark desktop/tablet/mobile and screenshots.
+- `tests/phase06-source-integrity.mjs` compares exact Git blob hashes of
+  the original curriculum, execution, source tests, lesson drafts, exports,
+  backup, offline manifest/service worker, plotting and submission files
+  against the pinned parent. The full Phase 05/04/03 and authentic Julia
+  browser, backup, offline and plotting checks still run.
+
+**Unverified manual release gates:** Actual Windows Julia 1.11 + Node 22 +
+VS Code first-run with trusted code, physical Android soft-keyboard/download,
+native browser 200% zoom, and NVDA/VoiceOver/TalkBack spoken status and focus.
+Screenshots and automated style/keyboard tests do **not** replace these.
+Maintain NO_GO until manual evidence and explicit sequential merge/deployment
+authorization.
