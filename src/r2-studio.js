@@ -297,6 +297,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
       '<p id="r2-readiness-text">Checking local execution requirements…</p>'+
       '<p class="r2-readiness-evidence">A saved draft is not a Julia run. A Julia run is not a passing Julia Test.</p></div>'+
       '<div class="r2-readiness-actions">'+
+      '<button type="button" id="r2-disable-jdoodle" class="r2-button r2-primary">Disable JDoodle &amp; reload</button>'+
       '<button type="button" id="r2-first-run" class="r2-button r2-secondary">Set up local Julia</button>'+
       '<button type="button" id="r2-run-elsewhere" class="r2-button r2-secondary">Run elsewhere</button>'+
       '<button type="button" id="r2-review-task" class="r2-button r2-text">Review task criteria</button></div>'),
@@ -1003,6 +1004,12 @@ export function initR2Studio({doc=document,lessons,navigate}){
   });
   const runOriginal=()=>get("local-runner-run").click();
   get("r2-run").addEventListener("click",runOriginal);
+  // Never treat a configured third-party page script as a safe environment
+  // for a private local-runner code. The original disable/reload handler owns
+  // the preference transition; this action only delegates to it.
+  const privacyAction=get("r2-disable-jdoodle");
+  privacyAction.hidden=!Boolean(readEmbedUrl());
+  privacyAction.addEventListener("click",()=>get("local-runner-disable-embed").click());
   const focusDisclosure=details=>{
     details.open=true;
     details.scrollIntoView({block:"start",behavior:"auto"});
@@ -1120,9 +1127,14 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const runButton=get("local-runner-run");
   const syncRunState=()=>{
     const busy=runButton.disabled;
-    get("r2-run").disabled=busy;
-    get("r2-run").textContent=busy?"Running Julia…":"Run Julia";
-    get("r2-mobile-next").disabled=busy&&currentStage==="code";
+    const blocked=Boolean(readEmbedUrl());
+    const runAction=get("r2-run");
+    // Keep a single actual Run control, but do not advertise a runnable
+    // action while the original local-runner privacy gate must refuse.
+    runAction.disabled=busy||blocked;
+    runAction.setAttribute("aria-describedby","r2-readiness-text");
+    runAction.textContent=busy?"Running Julia…":"Run Julia";
+    get("r2-mobile-next").disabled=(busy||blocked)&&currentStage==="code";
   };
   new MutationObserver(syncRunState).observe(runButton,{attributes:true,attributeFilter:["disabled"]});
   syncRunState();

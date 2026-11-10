@@ -1,0 +1,183 @@
+import assert from "node:assert/strict";
+import {createServer} from "node:http";
+import {readFile,mkdir} from "node:fs/promises";
+import {resolve,extname,sep} from "node:path";
+import {chromium,firefox,webkit} from "playwright";
+import {openLegacyWorkspace} from "./r2-legacy-navigation.mjs";
+
+const root=resolve(".");
+const mime={".html":"text/html;charset=utf-8",".js":"text/javascript;charset=utf-8",
+  ".css":"text/css;charset=utf-8",".svg":"image/svg+xml",".json":"application/json"};
+const server=createServer(async(req,res)=>{
+  const pathname=decodeURIComponent(new URL(req.url,"http://127.0.0.1").pathname);
+  const path=resolve(root,"."+(pathname==="/"?"/index.html":pathname));
+  if(!(path===root||path.startsWith(root+sep))){res.writeHead(403);res.end();return;}
+  try{const bytes=await readFile(path);
+    if(res.destroyed||res.writableEnded)return;
+    res.writeHead(200,{"Content-Type":mime[extname(path)]||"application/octet-stream"});res.end(bytes);
+  }catch{if(res.headersSent||res.destroyed){if(!res.destroyed)res.destroy();return;}
+    res.writeHead(404);res.end();}
+});
+await new Promise(ok=>server.listen(0,"127.0.0.1",ok));
+const origin="http://127.0.0.1:"+server.address().port;
+const engines={chromium,firefox,webkit};
+const requested=(process.env.PHASE06_ENGINES||"chromium").split(",");
+const screenshots=process.env.PHASE06_SCREENSHOTS==="1";
+const snap=async(page,engine,theme,width,name)=>{
+  if(!screenshots||engine!=="chromium"||![320,390,768,1280].includes(width))return;
+  const dir=resolve("phase06-screenshots",theme);await mkdir(dir,{recursive:true});
+  await page.evaluate(()=>{document.documentElement.style.scrollBehavior="auto";window.scrollTo(0,0);});
+  await page.waitForFunction(()=>Math.abs(window.scrollY)<1);
+  await page.screenshot({path:resolve(dir,width+"-"+name+".jpg"),
+    fullPage:true,type:"jpeg",quality:76,animations:"disabled"});
+};
+try{
+  for(const engine of requested){
+    assert.ok(engines[engine],"Invalid browser engine "+engine);
+    const browser=await engines[engine].launch({headless:true,args:engine==="chromium"?["--no-sandbox"]:[]});
+    try{
+      for(const theme of ["light","dark"]){
+        for(const width of [320,390,768,1280]){
+          const page=await browser.newPage({viewport:{width,height:850},colorScheme:theme});
+          const errors=[];
+          page.on("pageerror",e=>errors.push(e.message));
+          await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>
+            route.fulfill({status:200,contentType:"text/javascript",body:
+              'window.__phase06ProviderAtLoad={disabled:document.getElementById("local-runner-token")?.disabled, value:document.getElementById("local-runner-token")?.value};'}));
+          try{
+            await page.goto(origin+"/#lesson/09");
+            await page.locator("#r2-stage-learn").waitFor({state:"visible"});
+            const token=page.locator("#local-runner-token");
+            assert.equal(await token.isDisabled(),true,
+              "P0 RED: input must be locked in initial HTML before the provider loads");
+            assert.equal(await token.inputValue(),"","No session code may appear on first render");
+            await openLegacyWorkspace(page);
+            await page.locator("#r2-stage-code").waitFor({state:"visible"});
+            // Chromium and Firefox execute the intercepted real provider
+            // loader. WebKit may suppress that optional external script; it
+            // still must satisfy an equivalent same-document script-context
+            // inspection, never an invented external-loader success.
+            let providerObserved=true;
+            try{
+              await page.waitForFunction(()=>window.__phase06ProviderAtLoad!==undefined,
+                null,{timeout:engine==="webkit"?1800:10000});
+            }catch{
+              if(engine!=="webkit")throw Error("Expected provider loader did not run: "+engine);
+              providerObserved=false;
+            }
+            if(providerObserved){
+              const exposed=await page.evaluate(()=>window.__phase06ProviderAtLoad);
+              assert.deepEqual(exposed,{disabled:true,value:""},
+                "Loaded third-party page script must see an unavailable empty credential");
+            }else{
+              const samePage=await page.evaluate(()=>({
+                disabled:document.getElementById("local-runner-token").disabled,
+                value:document.getElementById("local-runner-token").value
+              }));
+              assert.deepEqual(samePage,{disabled:true,value:""},
+                "Same-document script context must not see an editable credential");
+              console.log("PHASE06 PROVIDER SCRIPT NOT OBSERVED",engine,theme,width,
+                "same-page script inspection and initial HTML lock PASS");
+            }
+            assert.equal(await token.isDisabled(),true,"Entry remains blocked after provider loads");
+            assert.equal(await token.inputValue(),"");
+            if(engine==="chromium"&&theme==="light"&&width===390){
+              const blocked=await token.evaluate(input=>{
+                input.focus();return document.activeElement===input;
+              });
+              assert.equal(blocked,false,"Keyboard focus cannot enter a disabled credential field");
+              let typed=false;
+              try{await token.fill("UNSAFE-CODE-NEVER-ACCEPT",{timeout:400});typed=true;}catch{}
+              assert.equal(typed,false,"Typing or programmatic fill must fail for regular users");
+              assert.equal(await token.inputValue(),"");
+            }
+            await snap(page,engine,theme,width,"privacy-locked");
+            // On mobile the connection disclosure is correctly collapsed until
+            // requested. Verify the private-input explanation when it is opened.
+            await page.locator("#r2-first-run").click();
+            const explanation=page.locator("#local-runner-token-safety");
+            assert.equal(await explanation.isVisible(),true);
+            assert.match(await explanation.innerText(),/disable JDoodle.*reload/i);
+            assert.ok((await token.getAttribute("aria-describedby")||"").includes("local-runner-token-safety"));
+            assert.equal(await page.locator("#r2-run").isVisible(),true);
+            if(width===1280){
+              const messageWidth=await page.locator(".r2-readiness-summary").evaluate(el=>el.getBoundingClientRect().width);
+              assert.ok(messageWidth>=300,
+                "The desktop privacy explanation must retain a readable width, not "+messageWidth+"px");
+            }
+            assert.equal(await page.locator("#r2-run").isDisabled(),true,"Blocked Run must not appear executable");
+            assert.equal(await page.locator("#r2-disable-jdoodle").isVisible(),true);
+            assert.equal(await page.locator(".r2-mobile-action").isVisible(),false);
+            await page.locator("#scratch-code").press("Control+Enter");
+            await page.waitForFunction(()=>
+              /Disable (the )?JDoodle/i.test(document.querySelector("#local-runner-status")?.textContent||""),
+              null,{timeout:10000});
+            assert.equal(await page.locator("#r2-test-head-status").innerText(),"Not run");
+            await snap(page,engine,theme,width,"blocked-setup");
+
+            await page.locator("#r2-disable-jdoodle").focus();
+            assert.equal(await page.evaluate(()=>
+              document.activeElement?.id==="r2-disable-jdoodle"),true,
+              "The explicit privacy action must accept keyboard focus");
+            await page.keyboard.press("Enter");
+            await page.waitForFunction(()=>
+              localStorage.getItem("amp-julia-lab:jdoodle-embed-v1")==="");
+            await page.waitForFunction(()=>
+              document.querySelector("#local-runner-token")?.disabled===false);
+            if(!await page.locator("#r2-stage-code").isVisible())await openLegacyWorkspace(page);
+            assert.equal(await token.isEnabled(),true);
+            assert.equal(await token.inputValue(),"");
+            assert.equal(await page.locator("#r2-run").isEnabled(),true);
+            assert.equal(await page.locator("#r2-disable-jdoodle").isVisible(),false);
+            assert.equal(await explanation.isVisible(),false);
+            const privateCode="PHASE06-PRIVATE-CODE-DO-NOT-LOG-123456789";
+            await page.locator("#r2-first-run").click();
+            await token.fill(privateCode);
+            assert.equal(await token.inputValue(),privateCode);
+            assert.doesNotMatch(await page.locator("#r2-readiness-text").innerText(),/connected|verified.*session/i);
+            await page.locator("#r2-run").click();
+            await page.waitForFunction(()=>
+              /Could not connect|Running on your computer/i.test(document.querySelector("#local-runner-status")?.textContent||""),
+              null,{timeout:12000});
+            assert.equal(await page.locator("#r2-test-head-status").innerText(),"Not run");
+            const actualStorage=await page.evaluate(()=>
+              Object.entries(localStorage).map(([key,value])=>key+" "+value).join("\n"));
+            assert.ok(!actualStorage.includes(privateCode),"Session code cannot be persisted");
+            assert.equal(await page.locator("#scratch-code").count(),1);
+            assert.equal(await page.locator("#local-runner-run").count(),1);
+            assert.equal(await page.locator("#download-draft").count(),1);
+            assert.equal(await page.locator("#lesson-jump").inputValue(),"09");
+            await snap(page,engine,theme,width,"local-enabled");
+            if(engine==="chromium"&&width===390){
+              await page.evaluate(()=>{document.documentElement.style.fontSize="200%";});
+              const box=await page.locator(".r2-run-readiness").evaluate(el=>({
+                w:el.clientWidth,content:el.scrollWidth
+              }));
+              assert.ok(box.content<=box.w+2,
+                "200% text-size simulation must not overflow readiness panel");
+              await page.evaluate(()=>{document.documentElement.style.fontSize="";});
+            }
+
+            await page.locator("#r2-utilities-open").click();
+            // A prior navigation may leave this native details disclosure
+            // open; clicking the summary would then *close* the settings.
+            await page.locator(".r2-legacy-tools").evaluate(el=>{el.open=true;});
+            assert.equal(await page.locator("#settings-panel").evaluate(el=>el.hidden),false,
+              "Original compiler settings must remain accessible in Resources");
+            await page.locator("#default-embed").click();
+            await page.waitForFunction(()=>
+              document.querySelector("#local-runner-token")?.disabled===true);
+            assert.equal(await page.locator("#local-runner-token").inputValue(),"");
+            assert.ok(!await page.evaluate(code=>Object.values(localStorage).join("").includes(code),privateCode),
+              "Temporary session code must not appear in any saved browser record");
+            assert.deepEqual(errors,[],engine+" "+theme+" "+width+" page exceptions");
+            const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+            assert.ok(overflow<=2,"No page-level overflow at "+width+"px: "+overflow+"px");
+            console.log("PHASE06 PRIVACY PASS",engine,theme,width,
+              "pre-script lock; original refusal; explicit disable/reload; re-lock");
+          }finally{await page.close();}
+        }
+      }
+    }finally{await browser.close();}
+  }
+}finally{await new Promise(ok=>server.close(ok));}

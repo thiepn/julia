@@ -87,7 +87,9 @@ try{
             }
             // Verify original runner invocation without inventing a successful
             // execution when the JDoodle embed must first be disabled.
-            await page.locator("#r2-run").click();
+            assert.equal(await page.locator("#r2-run").isDisabled(),true,
+              "The single Run action is now correctly unavailable until JDoodle is disabled");
+            await page.locator("#local-runner-run").evaluate(button=>button.click());
             // The original runner delivers its privacy refusal asynchronously
             // through its own status node. Especially on WebKit, Playwright's
             // click can resolve before the legitimate status notification.

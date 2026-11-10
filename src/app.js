@@ -36,6 +36,16 @@ import {missionForLesson} from "./numerical-missions.js";
 import {integrationForLesson,buildIntegrationTestFile} from "./integration-task.js";
 
 const $ = (selector) => document.querySelector(selector);
+// Fail closed in index.html first; only unlock after first-party startup has
+// confirmed the third-party editor is disabled. This runs before any optional
+// JDoodle script can be injected by the legacy-workspace event.
+const runnerSessionInput=$("#local-runner-token");
+const runnerSessionSafety=$("#local-runner-token-safety");
+const thirdPartyConfigured=Boolean(readEmbedUrl());
+runnerSessionInput.disabled=thirdPartyConfigured;
+runnerSessionInput.value="";
+runnerSessionSafety.hidden=!thirdPartyConfigured;
+if(!thirdPartyConfigured)runnerSessionInput.removeAttribute("aria-describedby");
 let currentIndex = 0;
 let practiceVariant = "original";
 let unsavedPractice = false;

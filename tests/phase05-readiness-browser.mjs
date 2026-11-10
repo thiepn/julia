@@ -105,7 +105,10 @@ for(const engine of requested){
         assert.equal(await page.locator("#lesson-jump").inputValue(),"09");
 
         // Actual existing privacy refusal. No execution/grade is invented.
-        await page.locator("#r2-run").click();
+        assert.equal(await page.locator("#r2-run").isDisabled(),true,
+          "Phase 06 advertises privacy setup instead of a runnable action");
+        // Probe the original underlying refusal independently of the disabled UI.
+        await page.locator("#local-runner-run").evaluate(button=>button.click());
         await page.waitForFunction(()=>
           /Disable (the )?JDoodle/i.test(document.querySelector("#local-runner-status")?.textContent||""),
           null,{timeout:10000});

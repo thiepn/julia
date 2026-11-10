@@ -1119,7 +1119,9 @@ try {
     // Use a real pointer action with Playwright's stability and hit-target
     // checks. A synchronous elementFromPoint immediately after CSS smooth
     // scroll can examine an intermediate position, not the settled button.
-    await mobile.locator("#r2-run").click();
+    assert.equal(await mobile.locator("#r2-run").isDisabled(),true,
+      "The sole visible Run button must not promise execution when JDoodle is enabled");
+    await mobile.locator("#local-runner-run").evaluate(button=>button.click());
     assert.match(await mobile.locator("#local-runner-status").innerText(),/Disable the JDoodle/i,
       "The visible Run action must preserve the original privacy refusal");
     const reportOverflow=await mobile.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
