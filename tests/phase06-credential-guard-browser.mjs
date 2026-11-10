@@ -59,6 +59,10 @@ try{
               "Third-party script must not observe an editable credential at load");
             assert.equal(await token.isDisabled(),true,"Entry remains blocked after provider loads");
             assert.equal(await token.inputValue(),"");
+            await snap(page,engine,theme,width,"privacy-locked");
+            // On mobile the connection disclosure is correctly collapsed until
+            // requested. Verify the private-input explanation when it is opened.
+            await page.locator("#r2-first-run").click();
             const explanation=page.locator("#local-runner-token-safety");
             assert.equal(await explanation.isVisible(),true);
             assert.match(await explanation.innerText(),/disable JDoodle.*reload/i);
@@ -72,7 +76,7 @@ try{
               /Disable (the )?JDoodle/i.test(document.querySelector("#local-runner-status")?.textContent||""),
               null,{timeout:10000});
             assert.equal(await page.locator("#r2-test-head-status").innerText(),"Not run");
-            await snap(page,engine,theme,width,"privacy-locked");
+            await snap(page,engine,theme,width,"blocked-setup");
 
             await page.locator("#r2-disable-jdoodle").click();
             await page.waitForFunction(()=>
