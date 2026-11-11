@@ -38,6 +38,12 @@ for(const engine of requested){
       await page.locator("#r2-stage-learn").waitFor({state:"visible"});
       assert.equal(await page.locator("#local-runner-token").isDisabled(),true);
       assert.equal(await page.locator("#local-runner-token").inputValue(),"");
+      const disabledPaint=await page.locator("#local-runner-token").evaluate(el=>({
+        cursor:getComputedStyle(el).cursor,background:getComputedStyle(el).backgroundColor
+      }));
+      assert.equal(disabledPaint.cursor,"not-allowed","Locked field must look non-editable");
+      assert.notEqual(disabledPaint.background,"rgb(255, 255, 255)",
+        "Locked field must not retain the active white credential-entry appearance");
       assert.equal(await page.locator("#r2-token-privacy-note").getAttribute("hidden"),null);
       assert.match(await page.locator("#r2-token-privacy-note").innerText(),/disable JDoodle and reload/i);
       await openLegacyWorkspace(page);
