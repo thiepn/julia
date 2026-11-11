@@ -176,7 +176,7 @@ jobs:
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install chromium
-      - name: Phase 05 first-run and execution-readiness screenshots
+      - name: Phase 06 credential lock and blocked-Run screenshots\n        run: PHASE06_SCREENSHOTS=1 node tests/phase06-privacy-browser.mjs\n      - name: Phase 05 first-run and execution-readiness screenshots
         run: PHASE05_SCREENSHOTS=1 node tests/phase05-readiness-browser.mjs
       - name: Phase 04 focused Code and responsive screenshot acceptance
         run: PHASE04_SCREENSHOTS=1 node tests/phase04-focused-workbench-browser.mjs
@@ -218,6 +218,6 @@ jobs:
             phase02-screenshots/
             phase03-screenshots/
             phase04-screenshots/
-            phase05-screenshots/
+            phase05-screenshots/\n            phase06-screenshots/
           if-no-files-found: ignore
           retention-days: 7
