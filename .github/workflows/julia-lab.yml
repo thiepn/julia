@@ -95,7 +95,9 @@ jobs:
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install --with-deps chromium firefox webkit
           sudo apt-get install -y poppler-utils
-      - name: Phase 06 third-party credential entry, focus and zoom in Chromium Firefox WebKit\n        run: PHASE06_ENGINES=chromium,firefox,webkit node tests/phase06-privacy-browser.mjs\n      - name: Phase 05 execution readiness, first-run privacy and focus in Chromium Firefox WebKit
+      - name: Phase 06 third-party credential entry, focus and zoom in Chromium Firefox WebKit
+        run: PHASE06_ENGINES=chromium,firefox,webkit node tests/phase06-privacy-browser.mjs
+      - name: Phase 05 execution readiness, first-run privacy and focus in Chromium Firefox WebKit
         run: PHASE05_ENGINES=chromium,firefox,webkit node tests/phase05-readiness-browser.mjs
       - name: Phase 04 Code workbench, runner evidence and draft preservation in Chromium Firefox WebKit
         run: PHASE04_ENGINES=chromium,firefox,webkit node tests/phase04-focused-workbench-browser.mjs
@@ -176,7 +178,9 @@ jobs:
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install chromium
-      - name: Phase 06 credential lock and blocked-Run screenshots\n        run: PHASE06_SCREENSHOTS=1 node tests/phase06-privacy-browser.mjs\n      - name: Phase 05 first-run and execution-readiness screenshots
+      - name: Phase 06 credential lock and blocked-Run screenshots
+        run: PHASE06_SCREENSHOTS=1 node tests/phase06-privacy-browser.mjs
+      - name: Phase 05 first-run and execution-readiness screenshots
         run: PHASE05_SCREENSHOTS=1 node tests/phase05-readiness-browser.mjs
       - name: Phase 04 focused Code and responsive screenshot acceptance
         run: PHASE04_SCREENSHOTS=1 node tests/phase04-focused-workbench-browser.mjs
