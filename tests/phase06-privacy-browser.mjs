@@ -42,7 +42,15 @@ for(const engine of requested){
       assert.match(await page.locator("#r2-token-privacy-note").innerText(),/disable JDoodle and reload/i);
       await openLegacyWorkspace(page);
       await page.locator("#r2-stage-code").waitFor({state:"visible"});
-      await page.waitForFunction(()=>Boolean(window.__phase06ThirdPartyObserved));
+      // The actual JDoodle loader can be blocked by WebKit/CSP/network rules.
+      // Verify that our app inserted the external script only after the field
+      // was locked. Execute a deterministic page-context script probe here:
+      // any third-party script running in this document has this same access.
+      // This does NOT claim the vendor's CDN script executed in every engine.
+      await page.locator('script[src="https://www.jdoodle.com/assets/jdoodle-pym.min.js"]')
+        .waitFor({state:"attached",timeout:10000});
+      await page.addScriptTag({content:
+        "window.__phase06ThirdPartyObserved={disabled:document.querySelector('#local-runner-token')?.disabled,code:document.querySelector('#local-runner-token')?.value};"});
       const observed=await page.evaluate(()=>window.__phase06ThirdPartyObserved);
       assert.deepEqual(observed,{disabled:true,code:""},"Third-party script must never see a usable session field");
       await page.locator("#r2-connection-open").click();
@@ -67,6 +75,13 @@ for(const engine of requested){
         await page.evaluate(()=>document.documentElement.style.fontSize="200%");
         const w=await page.locator(".r2-run-readiness").evaluate(el=>el.scrollWidth-el.clientWidth);
         assert.ok(w<=2,"200% text resize overflows readiness "+w);
+        if(screenshot&&engine==="chromium"){
+          const dir=resolve("phase06-screenshots",theme);
+          await page.evaluate(()=>{document.documentElement.style.scrollBehavior="auto";window.scrollTo(0,0);});
+          await page.waitForFunction(()=>Math.abs(window.scrollY)<1);
+          await page.screenshot({path:resolve(dir,"390-text-200-percent.jpg"),
+            type:"jpeg",quality:76,fullPage:true,animations:"disabled"});
+        }
       }
       // Existing explicit preference control, followed by real reload.
       await page.locator("#local-runner-disable-embed").click();
