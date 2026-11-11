@@ -1,10 +1,10 @@
 name: Julia Lab checks
 on:
-  # Phase 05 depends only on Phase 04 exact HEAD; keep ancestor PRs untouched.
+  # Phase 06 depends only on Phase 05 exact HEAD; keep ancestor PRs untouched.
   push:
-    branches: [feature/julia-phase05-execution-readiness-20261109]
+    branches: [feature/julia-phase06-release-hardening-20261111]
   pull_request:
-    branches: [main, feature/julia-amp-ue02-numerical-workshops, feature/julia-phase01-navigation-20261105, feature/julia-phase02-lesson-flow-20261108, feature/julia-phase03-field-notes-20261109, feature/julia-phase04-focused-workbench-20261109]
+    branches: [main, feature/julia-amp-ue02-numerical-workshops, feature/julia-phase01-navigation-20261105, feature/julia-phase02-lesson-flow-20261108, feature/julia-phase03-field-notes-20261109, feature/julia-phase04-focused-workbench-20261109, feature/julia-phase05-execution-readiness-20261109]
     paths:
       - "index.html"
       - "styles.css"
@@ -95,7 +95,7 @@ jobs:
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install --with-deps chromium firefox webkit
           sudo apt-get install -y poppler-utils
-      - name: Phase 05 execution readiness, first-run privacy and focus in Chromium Firefox WebKit
+      - name: Phase 06 third-party credential entry, focus and zoom in Chromium Firefox WebKit\n        run: PHASE06_ENGINES=chromium,firefox,webkit node tests/phase06-privacy-browser.mjs\n      - name: Phase 05 execution readiness, first-run privacy and focus in Chromium Firefox WebKit
         run: PHASE05_ENGINES=chromium,firefox,webkit node tests/phase05-readiness-browser.mjs
       - name: Phase 04 Code workbench, runner evidence and draft preservation in Chromium Firefox WebKit
         run: PHASE04_ENGINES=chromium,firefox,webkit node tests/phase04-focused-workbench-browser.mjs
