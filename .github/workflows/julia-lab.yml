@@ -222,6 +222,7 @@ jobs:
             phase02-screenshots/
             phase03-screenshots/
             phase04-screenshots/
-            phase05-screenshots/\n            phase06-screenshots/
+            phase05-screenshots/
+            phase06-screenshots/
           if-no-files-found: ignore
           retention-days: 7
