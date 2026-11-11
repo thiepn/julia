@@ -104,11 +104,11 @@ for(const engine of requested){
           document.activeElement===document.querySelector(".r2-instructions > summary")),true);
         assert.equal(await page.locator("#lesson-jump").inputValue(),"09");
 
-        // Actual existing privacy refusal. No execution/grade is invented.
+        // Phase 06: blocked Run navigates to the original privacy setting.
+        // The underlying local-runner refusal remains separately tested.
+        assert.equal(await page.locator("#local-runner-token").isDisabled(),true);
         await page.locator("#r2-run").click();
-        await page.waitForFunction(()=>
-          /Disable (the )?JDoodle/i.test(document.querySelector("#local-runner-status")?.textContent||""),
-          null,{timeout:10000});
+        assert.equal(await page.locator(".r2-runner-setup").evaluate(el=>el.open),true);
         assert.match(await readiness.innerText(),/blocked for privacy/);
         assert.equal(await page.locator("#r2-test-head-status").innerText(),"Not run");
 
