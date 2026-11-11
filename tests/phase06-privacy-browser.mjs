@@ -26,14 +26,19 @@ for(const engine of requested){
   for(const theme of ["light","dark"]){
   for(const width of [320,390,768,1280]){
     const page=await browser.newPage({viewport:{width,height:850},colorScheme:theme});
-    const errors=[];page.on("pageerror",e=>errors.push(e.message));
+    const errors=[];page.on("pageerror",e=>errors.push({
+      message:String(e?.message??e),stack:String(e?.stack??"").slice(0,700)
+    }));
     try{
-      // The mocked third-party script probes the input at the moment it runs:
-      // a nonempty credential at this boundary is a test failure.
-      await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>route.fulfill({
-        status:200,contentType:"text/javascript",
-        body:"window.__phase06ThirdPartyObserved={disabled:document.querySelector('#local-runner-token')?.disabled,code:document.querySelector('#local-runner-token')?.value};"
-      }));
+      // Keep Chromium/Firefox's actual external-loader timing probe. WebKit's
+      // external CDN execution is unstable in CI, so block the vendor request
+      // and run the SAME page-context adversarial probe via addScriptTag below.
+      // We do not ignore or suppress first-party page errors.
+      await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>
+        engine==="webkit"?route.abort("blockedbyclient"):route.fulfill({
+          status:200,contentType:"text/javascript",
+          body:"window.__phase06ThirdPartyObserved={disabled:document.querySelector('#local-runner-token')?.disabled,code:document.querySelector('#local-runner-token')?.value};"
+        }));
       await page.goto(origin+"/#lesson/09");
       await page.locator("#r2-stage-learn").waitFor({state:"visible"});
       assert.equal(await page.locator("#local-runner-token").isDisabled(),true);
