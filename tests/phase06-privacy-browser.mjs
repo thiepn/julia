@@ -68,7 +68,10 @@ for(const engine of requested){
       assert.ok(scroll<=2,"horizontal overflow "+engine+" "+theme+" "+width+" "+scroll);
       if(screenshot&&engine==="chromium"){
         const dir=resolve("phase06-screenshots",theme);await mkdir(dir,{recursive:true});
-        await page.evaluate(()=>window.scrollTo(0,0));
+        // The block action scrolls the page; use a settled top-of-document
+        // position before recording sticky navigation in full-page screenshots.
+        await page.evaluate(()=>{document.documentElement.style.scrollBehavior="auto";window.scrollTo(0,0);});
+        await page.waitForFunction(()=>Math.abs(window.scrollY)<1);
         await page.screenshot({path:resolve(dir,width+"-blocked.jpg"),type:"jpeg",quality:75,fullPage:true,animations:"disabled"});
       }
       if(width===390){
