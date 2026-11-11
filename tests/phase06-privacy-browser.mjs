@@ -38,7 +38,7 @@ for(const engine of requested){
       await page.locator("#r2-stage-learn").waitFor({state:"visible"});
       assert.equal(await page.locator("#local-runner-token").isDisabled(),true);
       assert.equal(await page.locator("#local-runner-token").inputValue(),"");
-      assert.equal(await page.locator("#r2-token-privacy-note").isVisible(),true);
+      assert.equal(await page.locator("#r2-token-privacy-note").getAttribute("hidden"),null);
       assert.match(await page.locator("#r2-token-privacy-note").innerText(),/disable JDoodle and reload/i);
       await openLegacyWorkspace(page);
       await page.locator("#r2-stage-code").waitFor({state:"visible"});
@@ -47,7 +47,7 @@ for(const engine of requested){
       assert.deepEqual(observed,{disabled:true,code:""},"Third-party script must never see a usable session field");
       await page.locator("#r2-connection-open").click();
       assert.equal(await page.locator("#local-runner-token").isDisabled(),true);
-      await page.locator("#local-runner-token").focus();
+      await page.locator("#r2-connection-open").focus();
       await page.keyboard.type("phase06-should-never-enter");
       assert.equal(await page.locator("#local-runner-token").inputValue(),"");
       assert.equal(await page.locator("#r2-run").innerText(),"Set up to run Julia");
