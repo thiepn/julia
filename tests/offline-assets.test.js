@@ -31,6 +31,17 @@ test("offline cache is explicit, first-party only and complete",async()=>{
  assert.ok(OFFLINE_ASSETS.includes("src/offline-study.js"));
  assert.ok(!OFFLINE_ASSETS.some(x=>x.startsWith("local-runner/")||x.includes("submission-print")));
 });
+test("Phase 06 release rotates the cache and the service worker source together",async()=>{
+ const previous="amp-julia-offline-learn-l11-20261031-a1";
+ const epoch="phase06-20261114";
+ assert.notEqual(OFFLINE_CACHE_NAME,previous,"must not reuse the previous published precache");
+ assert.ok(OFFLINE_CACHE_NAME.includes(epoch),"the new cache must identify its release epoch");
+ const worker=await readFile("sw.js","utf8");
+ assert.ok(worker.includes("release epoch "+epoch),"the service worker bytes must change with the cache");
+ assert.match(worker,/import\s*\{OFFLINE_CACHE_NAME,OFFLINE_ASSETS,offlineAssetKey\}\s*from\s*"\.\/src\/offline-assets\.js"/);
+ assert.ok(!worker.includes(previous),"a released worker must not pin the previous cache name");
+});
+
 test("offline routing never allows external, unknown, query or local Julia execution requests",()=>{
  const scope="https://example.org/julia/";
  assert.equal(offlineAssetKey(scope+"#lesson/02",scope,true),scope+"index.html");
