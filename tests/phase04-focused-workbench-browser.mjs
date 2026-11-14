@@ -85,19 +85,13 @@ try{
               await page.screenshot({path:resolve(dir,width+"-code-compact.jpg"),fullPage:true,
                 type:"jpeg",quality:76,animations:"disabled"});
             }
-            // Verify original runner invocation without inventing a successful
-            // execution when the JDoodle embed must first be disabled.
+            // Phase 06: the blocked Run CTA opens the original privacy setup,
+            // without invoking Julia or fabricating a successful execution.
             await page.locator("#r2-run").click();
-            // The original runner delivers its privacy refusal asynchronously
-            // through its own status node. Especially on WebKit, Playwright's
-            // click can resolve before the legitimate status notification.
-            await page.waitForFunction(()=>
-              /Disable (the )?JDoodle/i.test(document.querySelector("#local-runner-status")?.textContent||""),
-              null,{timeout:10000});
-            assert.match(await page.locator("#local-runner-status").innerText(),/Disable (the )?JDoodle/i);
+            assert.equal(await page.locator(".r2-runner-setup").evaluate(el=>el.open),true);
+            assert.equal(await page.locator("#local-runner-token").isDisabled(),true);
             assert.equal(await page.locator("#local-runner-output").innerText(),outputBefore);
-            assert.equal(await page.locator("#r2-test-head-status").innerText(),"Not run",
-              "Running a draft is never a Julia Test PASS");
+            assert.equal(await page.locator("#r2-test-head-status").innerText(),"Not run");
             // Shortcut opens the original connection settings and places focus
             // on the accessible summary, without replacing connection state.
             await page.locator("#r2-connection-open").click();

@@ -1098,9 +1098,9 @@ try {
     await r2Locator(mobile,"#practice-mode").selectOption("b");
     await r2Locator(mobile,"#external-report-details summary").click();
     await r2Locator(mobile,"#external-report-input").fill("MethodError: no method matching near_relative(::Int64)");
-    // The Code dock no longer covers mobile controls in Phase 04. Keep the
-    // original report click and feedback assertions, then verify the visible
-    // editor Run control remains reachable and invokes the canonical runner.
+    // The Code dock remains absent. The blocked Run action must be a genuine
+    // reachable pointer target and guide the learner to the original privacy
+    // control, not execute source or emit a false result.
     await mobile.evaluate(()=>{
       window.__juliaReportClickObserved=0;
       document.getElementById("external-report-inspect").addEventListener("click",()=>{
@@ -1120,8 +1120,15 @@ try {
     // checks. A synchronous elementFromPoint immediately after CSS smooth
     // scroll can examine an intermediate position, not the settled button.
     await mobile.locator("#r2-run").click();
-    assert.match(await mobile.locator("#local-runner-status").innerText(),/Disable the JDoodle/i,
-      "The visible Run action must preserve the original privacy refusal");
+    assert.equal(await mobile.locator(".r2-runner-setup").evaluate(el=>el.open),true,
+      "Blocked Run must open the original local Julia settings");
+    assert.equal(await mobile.locator("#local-runner-token").isDisabled(),true,
+      "The temporary session code stays locked until JDoodle is disabled");
+    assert.equal(await mobile.evaluate(()=>document.activeElement?.id),"local-runner-disable-embed",
+      "Keyboard focus must reach the explicit privacy control");
+    assert.match(await mobile.locator("#r2-readiness-text").innerText(),/blocked for privacy/i);
+    assert.equal(await mobile.locator("#local-runner-output").innerText(),"",
+      "The blocked action must not simulate Julia execution");
     const reportOverflow=await mobile.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
     assert.ok(reportOverflow<=2,"J19 report triage caused mobile overflow: "+reportOverflow);
     await mobile.goto("http://127.0.0.1:"+port+"/#lesson/13");
