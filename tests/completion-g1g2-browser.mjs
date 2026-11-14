@@ -42,7 +42,14 @@ try{
        phase="lesson 02 initial load";
        await page.goto(origin+"/#lesson/02");
        await r2Role(page,"heading",{name:"Vectors & indexing"}).waitFor();
-       await r2Locator(page,"#local-runner-token").fill(code);
+       // Phase 06: the temporary session code is not enterable while the
+       // third-party JDoodle loader is configured. Prove the privacy lock
+       // before the existing explicit disable-and-reload acceptance path.
+       assert.equal(await r2Locator(page,"#local-runner-token").isDisabled(),true,
+         "The pre-reload session-code field must reject entry");
+       assert.equal(await r2Locator(page,"#local-runner-token").inputValue(),"");
+       assert.match(await r2Locator(page,"#r2-token-privacy-note").innerText(),
+         /disable JDoodle and reload/i);
        await r2Locator(page,"#local-runner-diagnose").click();
        assert.match(await r2Locator(page,"#local-runner-diagnostic-status").innerText(),/Disable the JDoodle/);
        // The compiler switch intentionally persists the privacy boundary and

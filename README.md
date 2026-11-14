@@ -2,6 +2,10 @@
 
 A browser-based Julia learning companion for **Algorithmische Mathematik und Programmieren** (Universität zu Köln, WS 2026/27). It is independent study material, not an official university submission or grading service.
 
+## Phase 06 — local session-code privacy gate (dependent draft)
+
+When the optional JDoodle embed is configured, the local Julia runner session-code field is locked before the external script can load. Use the existing **Disable JDoodle and reload for local execution** action to unlock it. The blocked Code-stage Run button opens the original connection settings rather than pretending Julia executed. No runner, security boundary, lesson content, storage, backup, route, or offline semantics change. The local runner remains optional and runs trusted Julia source with your OS permissions. Real Windows/Android and screen-reader acceptance is still required before release.
+
 ## Start here
 
 No account, database, hosted backend, paid API, or compilation step is needed to study.

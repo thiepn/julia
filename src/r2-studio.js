@@ -1001,7 +1001,15 @@ export function initR2Studio({doc=document,lessons,navigate}){
       feedback.textContent="Clipboard unavailable. Select the example text to copy.";
     }
   });
-  const runOriginal=()=>get("local-runner-run").click();
+  const runOriginal=()=>{
+    if(Boolean(readEmbedUrl())){
+      runnerSetup.open=true;
+      focusDisclosure(runnerSetup);
+      get("local-runner-disable-embed").focus({preventScroll:true});
+      return;
+    }
+    get("local-runner-run").click();
+  };
   get("r2-run").addEventListener("click",runOriginal);
   const focusDisclosure=details=>{
     details.open=true;
@@ -1026,8 +1034,29 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const sessionCode=get("local-runner-token"),
     diagnosticStatus=get("local-runner-diagnostic-status"),
     terminalStatus=get("local-runner-status");
+  // Phase 06: protect the temporary credential before any legacy third-party
+  // page-context loader can be requested. A configured JDoodle embed is the
+  // privacy boundary, even when its iframe is not yet visible.
+  const tokenLabel=doc.querySelector('label[for="local-runner-token"]');
+  const tokenPrivacyNote=node("p","r2-token-privacy-note",
+    "Session code entry is locked while JDoodle is configured. Disable JDoodle and reload before entering a temporary local runner code.");
+  tokenPrivacyNote.id="r2-token-privacy-note";
+  sessionCode.insertAdjacentElement("afterend",tokenPrivacyNote);
+  const protectSessionCode=()=>{
+    const blocked=Boolean(readEmbedUrl());
+    if(blocked && sessionCode.value)sessionCode.value="";
+    sessionCode.disabled=blocked;
+    sessionCode.setAttribute("aria-describedby",blocked?"r2-token-privacy-note":"");
+    tokenPrivacyNote.hidden=!blocked;
+    get("r2-run").textContent=blocked?"Set up to run Julia":"Run Julia";
+    get("r2-run").setAttribute("aria-describedby",blocked?"r2-readiness-text":"");
+    if(tokenLabel)tokenLabel.textContent=blocked?"Runner session code (locked until JDoodle is disabled)":"Runner session code";
+    return blocked;
+  };
+  protectSessionCode();
   let verifiedSession=null,pendingDiagnosticSession=null,lastDiagnostic="";
   const updateReadiness=()=>{
+    protectSessionCode();
     const diagnostic=diagnosticStatus.textContent.trim();
     if(diagnostic!==lastDiagnostic){
       lastDiagnostic=diagnostic;
@@ -1121,7 +1150,7 @@ export function initR2Studio({doc=document,lessons,navigate}){
   const syncRunState=()=>{
     const busy=runButton.disabled;
     get("r2-run").disabled=busy;
-    get("r2-run").textContent=busy?"Running Julia…":"Run Julia";
+    get("r2-run").textContent=Boolean(readEmbedUrl())?"Set up to run Julia":busy?"Running Julia…":"Run Julia";
     get("r2-mobile-next").disabled=busy&&currentStage==="code";
   };
   new MutationObserver(syncRunState).observe(runButton,{attributes:true,attributeFilter:["disabled"]});
