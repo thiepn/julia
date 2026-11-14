@@ -1,4 +1,5 @@
-// L11 release candidate: revalidate the service worker and install the revised offline study cache.
+// Phase 06 release epoch phase06-20261114: changed worker bytes trigger an update
+// for previously installed PWAs; the imported cache manifest uses the matching epoch.
 import {OFFLINE_CACHE_NAME,OFFLINE_ASSETS,offlineAssetKey} from "./src/offline-assets.js";
 const PREFIX="amp-julia-offline-";
 const scope=self.registration.scope;
