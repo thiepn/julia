@@ -2151,3 +2151,12 @@ main#lesson-main{width:100%;max-width:1390px;margin:0 auto;
   .r2-global-nav button{font-size:12px;white-space:normal;min-height:42px}
   .r2-readiness-actions{grid-template-columns:minmax(0,1fr)}
 }
+
+
+/* Phase 06 — the native disabled runner credential must look locked in both
+   themes. The original active field and its input semantics are unchanged. */
+.r2-runner-setup #local-runner-token:disabled{
+  background:var(--workbench);color:var(--code-muted);
+  border:1px dashed var(--code-border);opacity:1;cursor:not-allowed
+}
+.r2-runner-setup .r2-token-privacy-note{max-width:65ch}
