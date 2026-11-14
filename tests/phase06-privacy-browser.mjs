@@ -100,9 +100,19 @@ for(const engine of requested){
             type:"jpeg",quality:76,fullPage:true,animations:"disabled"});
         }
       }
-      // Existing explicit preference control, followed by real reload.
-      await page.locator("#local-runner-disable-embed").click();
+      // The original control calls location.reload() synchronously. Wait for
+      // the main-frame navigation BEFORE clicking, otherwise WebKit can race
+      // the old page's already-completed "load" state.
+      await Promise.all([
+        page.waitForEvent("framenavigated",{
+          predicate:frame=>frame===page.mainFrame(),timeout:15000
+        }),
+        page.locator("#local-runner-disable-embed").click()
+      ]);
       await page.waitForLoadState("load");
+      await page.waitForFunction(()=>
+        document.getElementById("local-runner-token")?.disabled===false,
+        null,{timeout:10000});
       assert.equal(await page.locator("#local-runner-token").isDisabled(),false);
       assert.equal(await page.locator("#r2-token-privacy-note").isVisible(),false);
       if(!await page.locator("#r2-stage-code").isVisible())await openLegacyWorkspace(page);
