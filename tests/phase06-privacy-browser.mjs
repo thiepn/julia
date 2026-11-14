@@ -30,12 +30,11 @@ for(const engine of requested){
       message:String(e?.message??e),stack:String(e?.stack??"").slice(0,700)
     }));
     try{
-      // Keep Chromium/Firefox's actual external-loader timing probe. WebKit's
-      // external CDN execution is unstable in CI, so block the vendor request
-      // and run the SAME page-context adversarial probe via addScriptTag below.
-      // We do not ignore or suppress first-party page errors.
+      // Replace the third-party script at its actual URL in all engines.
+      // This checks what page-context JavaScript can observe at load time,
+      // without requesting vendor code or generating an artificial abort error.
       await page.route("https://www.jdoodle.com/assets/jdoodle-pym.min.js",route=>
-        engine==="webkit"?route.abort("blockedbyclient"):route.fulfill({
+        route.fulfill({
           status:200,contentType:"text/javascript",
           body:"window.__phase06ThirdPartyObserved={disabled:document.querySelector('#local-runner-token')?.disabled,code:document.querySelector('#local-runner-token')?.value};"
         }));
@@ -53,15 +52,12 @@ for(const engine of requested){
       assert.match(await page.locator("#r2-token-privacy-note").innerText(),/disable JDoodle and reload/i);
       await openLegacyWorkspace(page);
       await page.locator("#r2-stage-code").waitFor({state:"visible"});
-      // The actual JDoodle loader can be blocked by WebKit/CSP/network rules.
-      // Verify that our app inserted the external script only after the field
-      // was locked. Execute a deterministic page-context script probe here:
-      // any third-party script running in this document has this same access.
-      // This does NOT claim the vendor's CDN script executed in every engine.
+      // Wait for the intercepted external script to actually execute.
+      // DOM attachment alone is insufficient evidence of execution order.
       await page.locator('script[src="https://www.jdoodle.com/assets/jdoodle-pym.min.js"]')
         .waitFor({state:"attached",timeout:10000});
-      await page.addScriptTag({content:
-        "window.__phase06ThirdPartyObserved={disabled:document.querySelector('#local-runner-token')?.disabled,code:document.querySelector('#local-runner-token')?.value};"});
+      await page.waitForFunction(()=>Object.prototype.hasOwnProperty.call(
+        window,"__phase06ThirdPartyObserved"),null,{timeout:10000});
       const observed=await page.evaluate(()=>window.__phase06ThirdPartyObserved);
       assert.deepEqual(observed,{disabled:true,code:""},"Third-party script must never see a usable session field");
       await page.locator("#r2-connection-open").click();
@@ -111,7 +107,9 @@ for(const engine of requested){
       assert.equal(await page.locator("#scratch-code").count(),1);
       assert.equal(await page.locator("#local-runner-run").count(),1);
       assert.equal(await page.locator("#r2-test-head-status").innerText(),"Not run");
-      // A WebKit external-script abort can report an opaque undefined pageerror\n      // despite the first-party application remaining operational. Retain\n      // diagnostics and reject any concrete first-party error.\n      const substantive=errors.filter(e=>e.message!=="undefined"||e.stack);\n      assert.deepEqual(substantive,[],"browser errors");\n      if(errors.length)console.log("PHASE06 WEBKIT OPAQUE ABORT",engine,theme,width,errors);
+      // The deterministic loader has no aborts. All genuine page errors,
+      // including opaque ones, must be reported and fail the test.
+      assert.deepEqual(errors,[],"unexpected browser page errors");
       console.log("PHASE06 PRIVACY PASS",engine,theme,width);
     }finally{await page.close();}
   }}
